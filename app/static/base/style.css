@@ -11,7 +11,35 @@ body {
 }
 
 .navbar {
-    background-color: var(--color2);
+    background-color: var(--color4);
+    color: var(--color2);
+}
+
+.navbar-brand {
+    margin-left: 30px;
+    margin-right: 30px;
+    color: #ADA9BA; 
+    font-size: 34px;
+}
+
+.nav-item {
+    padding-left: 10px;
+}
+
+.card {
+    display: none; /* Ukryj wszystkie karty początkowo */
+}
+.card.active {
+    display: block; /* Wyświetl aktywną kartę */
+    
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px; 
+    height: 80%;
+    background-color: aquamarine;
 }
 
 .btn-primary {
