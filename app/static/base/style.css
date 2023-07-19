@@ -1,0 +1,25 @@
+:root {
+    --color1: #22222E;
+    --color2: #393A5A;
+    --color3: #706F8E;
+    --color4: #ADA9BA;
+}
+
+body {
+    background-color: var(--color1);
+    color: var(--color4);
+}
+
+.navbar {
+    background-color: var(--color2);
+}
+
+.btn-primary {
+    background-color: var(--color3);
+    border-color: var(--color3);
+}
+
+.btn-primary:hover {
+    background-color: var(--color4);
+    border-color: var(--color4);
+}
