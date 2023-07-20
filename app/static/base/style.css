@@ -8,17 +8,26 @@
 body {
     background-color: var(--color1);
     color: var(--color4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
 .navbar {
     background-color: var(--color4);
     color: var(--color2);
+    position: sticky;
+    top: 0;
+    width: 100%;
 }
 
 .navbar-brand {
     margin-left: 30px;
     margin-right: 30px;
-    color: #ADA9BA; 
+    color: var(--color4);
     font-size: 34px;
 }
 
@@ -26,28 +35,23 @@ body {
     padding-left: 10px;
 }
 
+.content-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .card {
     display: none; /* Ukryj wszystkie karty początkowo */
+    width: 70vw;
+    height: 70vh;
 }
 .card.active {
     display: block; /* Wyświetl aktywną kartę */
     
 }
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 800px; 
-    height: 80%;
-    background-color: aquamarine;
-}
 
-.btn-primary {
-    background-color: var(--color3);
-    border-color: var(--color3);
-}
-
-.btn-primary:hover {
-    background-color: var(--color4);
-    border-color: var(--color4);
+.navigation {
+    display: block;
 }
