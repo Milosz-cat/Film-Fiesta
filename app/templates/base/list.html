@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}List{% endblock title %}
+
+{% block content %}
+
+<ul class="list-group list-group-light">
+    {% for movie in movies %}
+        <li class="list-group-item px-3 border-0 rounded-3 list-group-item-light mb-2">
+            {{ movie.title }}
+            {{ movie.year }}
+            {% if movie.duration %}
+                {{ movie.duration }} 
+            {% endif %}
+            {{ movie.ranking }}     
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

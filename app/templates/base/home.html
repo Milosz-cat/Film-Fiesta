@@ -4,79 +4,35 @@
 
 {% block content %}
 
-<nav class="navbar navbar-expand-lg navbar-light">
-    <a class="navbar-brand" href="#">
-        Film
-        <img src="{% static 'camera.png'%}" width="45" height="45" class="d-inline-block align-top" alt="Icon">
-        Fiesta
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav" style="margin-left: 25px; margin-top: 10px; font-size: 24px;">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Watchlist</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="peopleDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">People of cinema</a>
-                <div class="dropdown-menu" aria-labelledby="peopleDropdown">
-                    <a class="dropdown-item" href="#">Actors</a>
-                    <a class="dropdown-item" href="#">Directors</a>
-                    <a class="dropdown-item" href="#">Producers</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</a>
-                <div class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                    <a class="dropdown-item" href="#">Top Rated</a>
-                    <a class="dropdown-item" href="#">Most Popular</a>
-                </div>
-            </li>           
-        </ul>
-        <ul class="navbar-nav" style='margin-left: auto; margin-right:10px;'>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Profile</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Register</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<div class="content-container">
-    <div class="card-navigation">
-        <button class="btn btn-primary prev-card"><</button>  
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Karta 1</h5>
-            <p class="card-text">Treść karty 1</p>
-            {% for movie in movies %}
-                <p>{{ movie.title }} {{ movie.year }} {{ movie.duration }} {{ movie.ranking }}</p>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Karta 2</h5>
-            <p class="card-text">Treść karty 2</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Karta 3</h5>
-            <p class="card-text">Treść karty 3</p>
-        </div>
-    </div>
-    <div class="card-navigation">
-        <button class="btn btn-primary next-card">></button>
+<div class="card-navigation">
+    <button class="btn btn-primary prev-card"><</button>  
+</div>
+<div class="card">
+    <div class="card-body">
+        <a href="{% url 'movies_list' 'imdb' %}">
+            <p class="card-text">Top 250 Imdb</p>
+            <p class="card-text">cos z modelami, pobrac jaka baze filmow, tworzenie wasnych list, moze user i logowanieitp, 
+                ....
+            </p>
+        </a>
     </div>
 </div>
-
+<div class="card">
+    <div class="card-body">
+        <a href="{% url 'movies_list' 'filmweb' %}">
+            <p class="card-text">Top 250 Filmweb</p>
+        </a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Karta 3</h5>
+        <p class="card-text">Treść karty 3</p>
+    </div>
+</div>
+<div class="card-navigation">
+    <button class="btn btn-primary next-card">></button>
+</div>
 
 <script>
     $(document).ready(function() {

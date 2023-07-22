@@ -12,8 +12,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     margin: 0;
+    min-height: 100vh;
 }
 
 .navbar {
@@ -22,6 +22,7 @@ body {
     position: sticky;
     top: 0;
     width: 100%;
+    z-index: 1000;
 }
 
 .navbar-brand {
@@ -46,12 +47,12 @@ body {
     display: none; /* Ukryj wszystkie karty początkowo */
     width: 70vw;
     height: 70vh;
+    margin-bottom: 20px;
 }
 .card.active {
     display: block; /* Wyświetl aktywną kartę */
-    
 }
 
-.navigation {
-    display: block;
+.list-group.list-group-light{
+    padding-top: 75px;
 }

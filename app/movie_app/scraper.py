@@ -37,4 +37,38 @@ def scrape_imdb_top_250():
         "duration": d,
         "ranking": r} for t, y, d, r in zip(titles, year, duration, rankings)]
      
-    return {"movies": movies}
+    return movies
+
+
+def scrape_fimlweb_top_250():
+    # Downloading imdb top 250 movie's data
+    url = "https://www.filmweb.pl/ranking/film"
+    headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+    }
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+
+    try:
+        titles = [t.get_text() for t in soup.find_all("h2", class_="rankingType__title")]
+    except:
+        titles = None
+
+    try:
+        year = [y.get_text() for y in soup.find_all("span", class_="rankingType__year")]
+    except:
+        year = None
+
+    try:
+        rankings = [r.get_text() for r in soup.find_all("span", class_="rankingType__rate--value")]
+    except:
+        rankings = None
+
+
+    movies = [{
+        "title": t,
+        "year": y, 
+        "ranking": r} for t, y, r in zip(titles, year, rankings)]
+     
+    return movies
