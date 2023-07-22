@@ -55,8 +55,8 @@
         <div class="card-body">
             <h5 class="card-title">Karta 1</h5>
             <p class="card-text">Treść karty 1</p>
-            {% for t in titles %}
-                <p>{{t}}</p>
+            {% for movie in movies %}
+                <p>{{ movie.title }} {{ movie.year }} {{ movie.duration }} {{ movie.ranking }}</p>
             {% endfor %}
         </div>
     </div>
