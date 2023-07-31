@@ -21,19 +21,39 @@ def list_movies(request, source):
 
 def movies(request):
 
-    env = environ.Env()
-    environ.Env.read_env()
-    api_key = env("TMDB_API_KEY")
+    if request.method == "POST":
+        search_term = request.POST.get('search')  # Get the search term from the POST data
+        env = environ.Env()
+        environ.Env.read_env()
+        bearer = env("BEARER")
 
-    headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiODJmMzhjZDllOWIxZjc2N2Q1NjBiNmMxOTdmOGM0YSIsInN1YiI6IjY0YmQzNTkxZTlkYTY5MDEyZTBlNTM1NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.0D_TCZv03KxgRTusmTexEEMeQGSJSeiLwdbSkGPc7L8"
-    }
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {bearer}"
+        }
 
-    url = "https://api.themoviedb.org/3/discover/movie"
+        url = f"https://api.themoviedb.org/3/search/movie?query={search_term}"  # Add the search term to the query parameters
 
-    response = requests.get(url, headers=headers).json()
+        response = requests.get(url, headers=headers).json()
+        #print(json.dumps(response, indent=4, sort_keys=True))
+        
+        # Extract the list of movies from the response
+        movies = response.get('results', [])
 
-    print(json.dumps(response, indent=4, sort_keys=True))
+        # Create a new list of movies, each represented as a dictionary with only the desired fields
+        movies = [
+            {
+                'genre_ids': movie['genre_ids'],
+                'title': movie['title'],
+                'popularity': movie['popularity'],
+                'poster_path': movie['poster_path'],
+                'release_date': movie['release_date'],
+                'vote_average': movie['vote_average'],
+            }
+            for movie in movies
+        ]
 
-    return render(request, "base/list.html")
+        # Pass the list of movies to the template via the context
+        return render(request, "base/movie.html", {'movies': movies})
+
+    return render(request, "base/movie.html")

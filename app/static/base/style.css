@@ -56,3 +56,14 @@ body {
 .list-group.list-group-light{
     padding-top: 75px;
 }
+
+.btn.btn-primary{
+    background-color: var(--color4) !important;
+    color: var(--color2) !important;
+    border: none !important; 
+}
+
+.poster{
+    width:200px;
+    height:300px;
+}
