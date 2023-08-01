@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+import time
 
 def scrape_imdb_top_250():
     # Downloading imdb top 250 movie's data
@@ -53,46 +51,28 @@ def scrape_imdb_top_250():
 
 
 def scrape_fimlweb_top_250():
-    chrome_driver_path = '/usr/local/bin/chromedriver'
-
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # Run the browser in headless mode (without GUI).
-    driver = webdriver.Chrome(options=options)
-
     url = "https://www.filmweb.pl/ranking/film"
+
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
-    
-    try:
-        # Wait for the page to load and the rankingType__title elements to be present.
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "rankingType__title")))
-    except TimeoutException:
-        print("Timeout waiting for page to load.")
-        driver.quit()
-        return None
 
-    # Scroll down to load more movies
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    while True:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        try:
-            # Wait for the new movies to load (you may adjust the waiting time as needed).
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "rankingType__title")))
-        except TimeoutException:
-            break
-        
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
 
-    # Extract data from the loaded page
-    titles = [t.text for t in driver.find_elements(By.CLASS_NAME, "rankingType__title")]
-    years = [y.text for y in driver.find_elements(By.CLASS_NAME, "rankingType__year")]
-    rankings = [r.text for r in driver.find_elements(By.CLASS_NAME, "rankingType__rate--value")]
-    poster_paths = [p.get_attribute("src") for p in driver.find_elements(By.TAG_NAME, "img")]
 
-    # Clean up resources
-    driver.quit()
+    # Scrolling the page by 1000 pixels each time
+    for _ in range(45):  # Increase the number of iterations if needed
+        driver.execute_script("window.scrollBy(0, 750);")
+        time.sleep(0.2)  # Wait for the page to load
+
+    # Now you can use Selenium to extract data
+    titles = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title')]
+    years = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__year')]
+    rankings = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
+    poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
 
     # Create the movies list
     movies = [{
@@ -101,5 +81,7 @@ def scrape_fimlweb_top_250():
         "ranking": r,
         "poster_path": p
     } for t, y, r, p in zip(titles, years, rankings, poster_paths)]
+
+    driver.quit()
 
     return movies
