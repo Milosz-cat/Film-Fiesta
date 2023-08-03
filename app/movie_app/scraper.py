@@ -4,6 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
+import json
+import environ
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 def scrape_imdb_top_250():
     # Downloading imdb top 250 movie's data
@@ -85,3 +91,38 @@ def scrape_fimlweb_top_250():
     driver.quit()
 
     return movies
+
+def scrape_movie_wallpaper(title, year):
+    # Initialise environment variables
+    env = environ.Env()
+    environ.Env.read_env()
+    
+    #klucz API
+    api_key = env("GOOGLE_API_KEY")
+
+    #identyfikator silnika wyszukiwania
+    cx = env("CX")
+
+    # Zapytanie wyszukiwania
+    query = f"{title} {year} movie wallpaper"
+
+    # URL API
+    url = f"https://www.googleapis.com/customsearch/v1"
+
+    # Parametry zapytania
+    params = {
+        'key': api_key,
+        'cx': cx,
+        'q': query,
+        'searchType': 'image',
+        'num': 1
+    }
+
+    # Wykonaj zapytanie do API
+    response = requests.get(url, params=params)
+    # Przetwórz odpowiedź
+    data = response.json()
+    image_url = data['items'][0]['link']
+
+    return image_url
+

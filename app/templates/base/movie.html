@@ -3,27 +3,5 @@
 {% block title %}Movie{% endblock title %}
 
 {% block content %}
-<div class="col">
-    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
-        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
-        <div class="input-group mb-3">
-            <input type="search" class="form-control" placeholder="Search" aria-label="Search" name="search">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
-
-    <ul class="list-group list-group-light">
-        {% for movie in movies %}
-            <li class="list-group-item px-3 border-0 rounded-3 list-group-item-light mb-2">
-                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.original_title }}" class="poster">
-                {{ movie.title }}
-                {{ movie.popularity }}
-                {{ movie.release_date }}     
-                {{ movie.vote_average }} 
-            </li>
-        {% endfor %}
-    </ul>
-
-</div>
+<div class="blurred-background" style="background-image: url('{% static wallpaper %}');"></div>
 {% endblock content %}
-

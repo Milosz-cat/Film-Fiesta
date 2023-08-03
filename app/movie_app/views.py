@@ -19,7 +19,7 @@ def list_movies(request, source):
     return render(request, "base/list.html", context)
 
 
-def movies(request):
+def search(request):
 
     if request.method == "POST":
         search_term = request.POST.get('search')  # Get the search term from the POST data
@@ -52,8 +52,16 @@ def movies(request):
             }
             for movie in movies
         ]
-
+        context = {'movies': movies}
         # Pass the list of movies to the template via the context
-        return render(request, "base/movie.html", {'movies': movies})
+        return render(request, "base/movie.html", context)
 
-    return render(request, "base/movie.html")
+    return render(request, "base/search.html")
+
+
+def movies(request):
+   title = "Harakiri"
+   year = "1962"
+   wallpaper = scraper.scrape_movie_wallpaper(title, year)
+   context = {'wallpaper': wallpaper}
+   return render(request, "base/movie.html", context)
