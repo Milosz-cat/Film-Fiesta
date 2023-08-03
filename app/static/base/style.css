@@ -2,7 +2,7 @@
     --color1: #22222E;
     --color2: #393A5A;
     --color3: #706F8E;
-    --color4: #ADA9BA;
+    --color4: #b3b1ba;
 }
 
 body {
@@ -17,8 +17,7 @@ body {
 }
 
 .navbar {
-    background-color: var(--color4);
-    color: var(--color2);
+    color: var(--color4) !important;
     position: sticky;
     top: 0;
     width: 100%;
@@ -26,15 +25,21 @@ body {
 }
 
 .navbar-brand {
+    color: var(--color4) !important;
     margin-left: 30px;
     margin-right: 30px;
-    color: var(--color4);
     font-size: 34px;
 }
 
 .nav-item {
     padding-left: 10px;
+    color: var(--color4) !important;
 }
+
+.nav-link {
+    color: var(--color4) !important;
+}
+
 
 .content-container {
     flex-grow: 1;
@@ -67,4 +72,10 @@ body {
     width:200px;
     height:300px;
 }
-
+.image-blurred-edge{
+    position: fixed; /* This will fix the position of the div */
+    top: 0; /* This will attach the div to the top */
+    width: 1200px;
+    height: 500px;
+    box-shadow: 0 0 50px 50px var(--color1) inset;
+}

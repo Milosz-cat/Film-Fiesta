@@ -23,7 +23,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.home),
     path('list/<str:source>/', views.list_movies, name="movies_list"),
-    path('movies/', views.movies, name="movies"),
+    path('movie/<str:title>/<str:year>/', views.movie, name="movie"),
     path('search/', views.search, name="search"),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
