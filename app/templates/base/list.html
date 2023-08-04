@@ -6,7 +6,7 @@
 
 <ul class="list-group list-group-light">
     {% for movie in movies %}
-        <a href="{% url 'movie' title=movie.title  year=movie.year %}">
+        <a href="{% url 'movie' title=movie.title year=movie.year%}">
             <li class="list-group-item px-3 border-0 rounded-3 list-group-item-light mb-2">
                 <img src="{{ movie.poster_path }}" alt="{{ movie.title }}" class="poster">
                 {{ movie.title }}

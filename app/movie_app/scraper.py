@@ -15,7 +15,8 @@ def scrape_imdb_top_250():
     # Downloading imdb top 250 movie's data
     url = "http://www.imdb.com/chart/top"
     headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.8"  # Set language to English
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -25,13 +26,19 @@ def scrape_imdb_top_250():
     except:
         titles = None
 
-    try:
-        meta = [m.get_text() for m in soup.find_all("span", class_="sc-14dd939d-6 kHVqMR cli-title-metadata-item")]
-        year = [meta[i] for i in range(0, len(meta), 3)]
-        duration = [meta[i+1] for i in range(0, len(meta), 3)]
-    except:
-        year = duration = None
+    meta_containers = soup.find_all("div", class_="sc-14dd939d-5 cPiUKY cli-title-metadata")
+    year = []
+    duration = []
 
+    for container in meta_containers:
+        meta_items = container.find_all("span", class_="sc-14dd939d-6 kHVqMR cli-title-metadata-item")
+        if len(meta_items) >= 2:
+            year.append(meta_items[0].get_text())
+            duration.append(meta_items[1].get_text())
+        else:
+            #print(f"Error: Unexpected number of elements in meta container ({len(meta_items)})")
+            year.append(None)
+            duration.append(None)
     try:
         rankings = [r.get_text() for r in soup.find_all("span", class_="ipc-rating-star ipc-rating-star--base ipc-rating-star--imdb ratingGroup--imdb-rating")]
     except:
@@ -93,9 +100,6 @@ def scrape_fimlweb_top_250():
     return movies
 
 def scrape_movie_wallpaper(title, year):
-    # Initialise environment variables
-    env = environ.Env()
-    environ.Env.read_env()
     
     #klucz API
     api_key = env("GOOGLE_API_KEY")
@@ -104,7 +108,7 @@ def scrape_movie_wallpaper(title, year):
     cx = env("CX")
 
     # Zapytanie wyszukiwania
-    query = f"{title} {year} movie wallpaper"
+    query = f"movie wallpaper {title} {year}"
 
     # URL API
     url = f"https://www.googleapis.com/customsearch/v1"

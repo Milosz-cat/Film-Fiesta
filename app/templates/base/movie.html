@@ -3,8 +3,38 @@
 {% block title %}Movie{% endblock title %}
 
 {% block content %}
-
-    <div class="image-blurred-edge" style="background-image: url({{ wallpaper }});"></div>
-    
+    <div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ movie.backdrop_path }}');"></div>
+    <div class="card-movie">
+        <div class="flex-container">
+            <div class="div-movie"><img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
+            <div class="div-movie">    
+            <div class="row">
+                {{ movie.title }}
+                {{ movie.release_date }}
+                {{ movie.vote_average }} 
+            </div> 
+            <div class="row">
+                {{ movie.overview }}
+            </div> 
+            <div class="actor-container">
+                {% for actor in cast %}
+                    <div class="actor">
+                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        <p>{{ actor.name }}</p>
+                        <p>{{ actor.character }}</p>
+                    </div>
+                {% endfor %}
+            </div>       
+            <div class="actor-container">
+                {% for actor in crew %}
+                    <div class="actor">
+                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        <p>{{ actor.name }}</p>
+                        <p>{{ actor.known_for_department }}</p>
+                    </div>
+                {% endfor %}
+            </div>    
+        </div>
+    </div>
 {% endblock content %}
 
