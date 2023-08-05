@@ -55,7 +55,7 @@
 
 
     <nav class="navbar navbar-expand-lg navbar-light">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href='{% url "home" %}'>
           Film
           <img src="{% static 'camera.png'%}" width="45" height="45" class="d-inline-block align-top" alt="Icon">
           Fiesta
@@ -79,8 +79,8 @@
               <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</a>
                   <div class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                      <a class="dropdown-item" href="#">Top Rated</a>
-                      <a class="dropdown-item" href="#">Most Popular</a>
+                      <a class="dropdown-item" href="{% url 'list' 'imdb' %}">Top 250 Imdb</a>
+                      <a class="dropdown-item" href="{% url 'list' 'filmweb' %}">Top 250 Filmweb</a>
                   </div>
               </li>           
           </ul>
@@ -102,7 +102,7 @@
     </div>
     
  
-  
+  </body>
   <!-- The following script is responsible for removing pop-up messages from
     the view by pressing the X button -->
   <script>
