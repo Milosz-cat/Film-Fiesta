@@ -83,17 +83,18 @@ def scrape_fimlweb_top_250():
 
     # Now you can use Selenium to extract data
     titles = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title')]
-    years = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__year')]
+    original_titles = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
     rankings = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
     poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
 
     # Create the movies list
     movies = [{
         "title": t,
-        "year": y,
+        'original_title': o[:-5],  # Extract everything but the last 5 characters (the year and space)
+        "year": o[-4:],  # Extract the last 4 characters (the year)
         "ranking": r,
         "poster_path": p
-    } for t, y, r, p in zip(titles, years, rankings, poster_paths)]
+    } for t, o, r, p in zip(titles, original_titles, rankings, poster_paths)]
 
     driver.quit()
 

@@ -64,5 +64,12 @@ def search(request):
 
 def movie(request, title, year):
     #wallpaper = scraper.scrape_movie_wallpaper(title, year)
-    movie = tmdb_helpers.tmdb_get_movie(title.split('.', 1)[1].strip(), year)
+    if '.' in title:
+        title = title.split('.', 1)[1].strip()
+
+    movie = tmdb_helpers.tmdb_get_single_movie(title, year)
+
     return render(request, "base/movie.html", movie)
+         
+   
+    

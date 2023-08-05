@@ -22,7 +22,7 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.home, name="home"),
-    path('list/<str:source>/', views.list_movies, name="movies_list"),
+    path('list/<str:source>/', views.list_movies, name="list"),
     path('movie/<str:title>/<str:year>/', views.movie, name="movie"),
     path('search/', views.search, name="search"),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
