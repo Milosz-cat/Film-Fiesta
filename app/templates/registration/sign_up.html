@@ -1,0 +1,56 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <br/><br/><br/><br/><br/><br/>
+        <h2>Sign up</h2>
+        <div style="background-image: url({% static 'marlon.jpg' %}); width: 500px; height: 250px; background-size: cover; background-repeat: no-repeat; box-shadow: 0 0 20px 20px #22222E inset;"></div>
+        <h2>It's an offer you can't refuse</h2>
+    </div>
+
+            
+    <div class="card-body p-5">
+                
+        <form action=" " method="POST">
+            {% csrf_token %}
+
+            <div class="form-outline mb-5" style="width: 500px;">
+                <input type="text" id="username" name="username" for="" placeholder="Create a username (only letters and numbers)" class="form-control form-control-lg" Required/>
+            </div>
+
+            <div class="form-outline mb-5" style="width: 500px;">
+                <input type="email" id="email" for="" name="email" placeholder="Enter Your Email Address" class="form-control form-control-lg" Required/>
+            </div>
+
+            <div class="form-outline mb-5" style="width: 500px;">
+                <input type="password" id="pass1" for="" name="pass1" placeholder="Create a Password" class="form-control form-control-lg" Required/>
+            </div>
+
+            <div class="form-outline mb-5" style="width: 500px;">
+                <input type="password" id="pass2" for="" name="pass2" placeholder="Confirm Your Password" class="form-control form-control-lg" Required/>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit"
+                class="btn btn-dark  btn-outline-light btn-block btn-lg gradient-custom-4 text-body">Register</button>
+            </div>
+
+        </form>
+
+
+        <p class="text-center text-muted mt-5 mb-0">Have already an account?           
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <a href="{% url 'login' %}" >  
+                        <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body"> Sign In </button> 
+                    </a>
+                </div>
+            </div>
+        </p>
+
+    </div>
+
+{% endblock content %}

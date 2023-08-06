@@ -85,16 +85,20 @@
               </li>           
           </ul>
           <ul class="navbar-nav" style='margin-left: auto; margin-right:10px;'>
-              <li class="nav-item">
-                  <a class="nav-link" href="#">Profile</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="#">Login</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="#">Register</a>
-              </li>
-          </ul>
+            <li class="nav-item">
+                <p>{{ request.user }}</p>
+            </li>
+            {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+
+            {% endif %}
+        </ul>
       </div>
     </nav>
     <div class="content-container">

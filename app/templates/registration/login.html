@@ -1,12 +1,42 @@
-
-
-{% extends 'base/base.html' %} {% block title %}Create{% endblock title %} 
+{% extends 'registration/base.html' %} 
+{% block title %}Login{% endblock title %} 
 {%block content %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+<div class="card-body p-5" style="text-align: center;">
+    <form method="post">
+        {% csrf_token %}
+    
+        <h1>Login</h1><br/><br/><br/><br/>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" style="width: 500px;">
+                <strong>An error occured:</strong> 
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="form-outline mb-5" style="width: 500px;">
+            <input type="text" id="username" name="username" for="" placeholder="Enter username" class="form-control form-control-lg" required />
+        </div>
 
+        <div class="form-outline mb-5" style="width: 500px;">
+            <input type="password" id="password" name="password" for="" placeholder="Enter Your Password" class="form-control form-control-lg" required />
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body">Login</button>
+        </div>
+        <br/><br/><br/><br/>
+
+    </form>
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'password_reset' %}">
+        <button class="btn btn-dark btn-outline-light btn-block btn-lg text-body">
+            Forgot password?
+        </button>
+        </a>
+        <a href="{% url 'sign_up' %}">
+        <button class="btn btn-dark btn-outline-light btn-block btn-lg text-body">Sign Up</button>
+        </a>
+    </div>
+</div>
 {% endblock content %}

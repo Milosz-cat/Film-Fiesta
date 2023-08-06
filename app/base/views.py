@@ -2,8 +2,9 @@ from django.shortcuts import render
 from . import scraper, tmdb_helpers
 from django.http import Http404
 import requests, environ
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def home(request):
     # Render the template with the context
     return render(request, "base/home.html")

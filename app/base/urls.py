@@ -18,6 +18,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.home, name="home"),
     path('list/<str:source>/', views.list_movies, name="list"),
