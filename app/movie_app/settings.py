@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "base.apps.BaseConfig",
-    "user_management.UserManagementConfig"
+    "user_management.apps.UserManagementConfig",
     'drf_spectacular',
 ]
 
