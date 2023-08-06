@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "movie_app",
     "base.apps.BaseConfig",
+    "user_management.UserManagementConfig"
     'drf_spectacular',
 ]
 
