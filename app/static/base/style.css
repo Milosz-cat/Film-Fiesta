@@ -101,12 +101,14 @@ body {
 
 .div-movie {
     height: 345px;
+    max-width: 970px;
 }
 
 .actor-container {
     display: flex;
     flex-wrap: nowrap; /* prevent wrapping onto multiple lines */
-    overflow-x: auto; /* add a horizontal scrollbar if necessary */
+    overflow: hidden;
+    overflow-x: auto;
     width: 100%; /* adjust as needed */
 }
 
@@ -136,3 +138,56 @@ body {
 .row{
     margin-left: 10px;
 }
+.poster-container {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    flex-direction: row-reverse; /* Reverse the order of the posters */
+    justify-content: flex-end; /* Align posters to the right */
+}
+
+.poster-container .poster-list:last-child {
+    margin-left: 0; /* Remove the negative margin for the first poster */
+}
+
+.poster-list {
+    position: relative;
+    width: 140px;
+    height: 210px;
+    margin-left: -50px; /* Adjust the overlap as needed */
+    z-index: 2; /* Higher z-index for normal state */
+    border-radius: 10px;
+    box-shadow: 9px 0px 10px black; /* Left shadow */
+}
+
+.poster-container-scroll {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+.poster-list-scroll {
+    position: relative;
+    width: 140px;
+    height: 210px;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.poster-item {
+    position: relative;
+    display: inline-block;
+  }
+  
+.watchlist-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.815);
+    padding: 10px; /* Zwiększ padding, aby etykieta była większa */
+    font-size: 20px; /* Zwiększ rozmiar czcionki, aby tekst był większy */
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  

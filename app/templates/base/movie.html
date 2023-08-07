@@ -19,7 +19,11 @@
             <div class="actor-container">
                 {% for actor in cast %}
                     <div class="actor">
-                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        {% if actor.profile_path != None %}
+                            <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        {% else %}
+                            <img src="{% static 'profile.jpg'%}" class="face">
+                        {% endif %}
                         <p>{{ actor.name }}</p>
                         <p>{{ actor.character }}</p>
                     </div>
@@ -28,7 +32,11 @@
             <div class="actor-container">
                 {% for actor in crew %}
                     <div class="actor">
-                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        {% if actor.profile_path != None %}
+                            <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        {% else %}
+                            <img src="{% static 'profile.jpg'%}" class="face">
+                        {% endif %}
                         <p>{{ actor.name }}</p>
                         <p>{{ actor.known_for_department }}</p>
                     </div>

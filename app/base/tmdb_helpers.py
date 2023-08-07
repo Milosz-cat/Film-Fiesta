@@ -72,5 +72,5 @@ def tmdb_get_single_movie(search_term, year):
     # Sort the crew list by popularity in descending order
     crew = sorted(crew, key=lambda x: x['popularity'], reverse=True)
 
-    return {'movie': movie, 'cast': cast[:10], 'crew': crew[:5]}
+    return {'movie': movie, 'cast': cast, 'crew': crew}
 
