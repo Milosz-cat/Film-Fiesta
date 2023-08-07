@@ -80,23 +80,26 @@ def scrape_fimlweb_top_250():
     for _ in range(45):  # Increase the number of iterations if needed
         driver.execute_script("window.scrollBy(0, 750);")
         time.sleep(0.2)  # Wait for the page to load
-
+    
     # Now you can use Selenium to extract data
-    titles = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title')]
-    original_titles = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
-    rankings = [element.text for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
+    titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
+    original_titles = [element.get_attribute('textContent')  for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
+    
+    rankings = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
     poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
 
     # Create the movies list
     movies = [{
         "title": t,
-        'original_title': o[:-5],  # Extract everything but the last 5 characters (the year and space)
-        "year": o[-4:],  # Extract the last 4 characters (the year)
+        'original_title': o,#o[:-5],  # Extract everything but the last 5 characters (the year and space)
+        #"year": o[-4:],  # Extract the last 4 characters (the year)
         "ranking": r,
         "poster_path": p
     } for t, o, r, p in zip(titles, original_titles, rankings, poster_paths)]
 
     driver.quit()
+
+    print(movies)
 
     return movies
 

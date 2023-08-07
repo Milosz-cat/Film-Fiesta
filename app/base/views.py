@@ -13,7 +13,7 @@ def home(request):
 def list_movies(request, source):
     context = {}
     if source == "imdb":
-        context = {"movies": scraper.scrape_imdb_top_250()}
+        pass #context = {"movies": scraper.scrape_imdb_top_250()}
     elif source == "filmweb":
         context = {"movies": scraper.scrape_fimlweb_top_250()}
     else:

@@ -6,11 +6,12 @@ class Movie(models.Model):
     year = models.IntegerField()
     custom_id = models.IntegerField(primary_key=True)
     WATCHLIST_CHOICES = (
-    ("yes"),
-    ("no"),
-    ("watched"),
+        ("yes", "Yes"),
+        ("no", "No"),
+        ("watched", "Watched"),
     )
-    on_watchlist = models.CharField(choices=WATCHLIST_CHOICES)
+    on_watchlist = models.CharField(max_length=10, choices=WATCHLIST_CHOICES, default="no")
+
 
     def __str__(self):
         return self.title
