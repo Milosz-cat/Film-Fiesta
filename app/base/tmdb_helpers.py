@@ -42,21 +42,18 @@ def tmdb_get_single_movie(search_term, year):
     url_2 = f"https://api.themoviedb.org/3/movie/{first_result['id']}/credits?api_key={api_key}"
     response = requests.get(url_2, headers=headers).json()
 
-    cast = sorted(
-        [
-            {
-                'name': person['name'],
-                'character': person['character'],
-                'popularity': person['popularity'],
-                'profile_path': person['profile_path'],
-            }
-            for person in response['cast']
-        ],
-        key=lambda x: x['popularity'],
-        reverse=True
-    )
+    cast = [
+        {
+            'name': person['name'],
+            'character': person['character'],
+            'popularity': person['popularity'],
+            'profile_path': person['profile_path'],
+        }
+        for person in response['cast']
+    ]
 
     # Create the crew list, avoiding repetitions in names
+    #TODO Ogarnij cos zeby byy wypisane wsytstkie role i co z rezyserem!!!!!!!!!!
     seen_names = set()
     crew = []
     for person in response['crew']:
@@ -74,3 +71,34 @@ def tmdb_get_single_movie(search_term, year):
 
     return {'movie': movie, 'cast': cast, 'crew': crew}
 
+
+def tmdb_get_single_movie_core(search_term, year):
+    
+    bearer = env("BEARER")
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {bearer}"
+    }
+
+    url = f"https://api.themoviedb.org/3/search/movie"  # Add the search term to the query parameters  # Add the search term to the query parameters
+
+    # Parametry zapytania
+    params = {
+        'query': search_term,
+        'year': year
+    }
+    
+    response = requests.get(url, headers=headers, params=params).json()
+    first_result = response['results'][0]
+    # Wyodrębnienie poszczególnych informacji z pierwszego wyniku
+
+
+    movie = {
+        'id' : first_result['id'],
+        'title' : first_result['title'],
+        'poster_path' : first_result['poster_path'],
+        'release_date' : first_result['release_date'][0:4],
+    }
+
+    return movie

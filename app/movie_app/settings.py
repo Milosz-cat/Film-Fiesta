@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "base.apps.BaseConfig",
     "user_management.apps.UserManagementConfig",
+    "list_management.apps.ListManagementConfig",
     "drf_spectacular",
 ]
 

@@ -27,7 +27,7 @@
                 {% endif %}
                     <div class="poster-item">
                         <img src="{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
-                        <div class="watchlist-label">+</div>
+                        <div class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</div>
                     </div>      
                     <p style="text-align: center;">{{forloop.counter}}</p>
                 </a>
@@ -39,9 +39,25 @@
     </div>
 </ul>
 
-{% comment %} 
-    {{ movie.title }}
-    {{ movie.year }}
-{% endcomment %}
+
+<script>
+    document.querySelectorAll('.watchlist-label').forEach(function(label) {
+        label.addEventListener('click', function(event) {
+            event.stopPropagation(); // Zatrzymaj propagację zdarzenia
+    
+            var movieTitle = encodeURIComponent(event.target.dataset.title); // Pobierz tytuł
+            var movieYear = encodeURIComponent(event.target.dataset.year); // Pobierz rok
+            fetch(`/add_to_watchlist/${movieTitle}/${movieYear}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Movie added to watchlist!');
+                    } else {
+                        alert('Error adding movie to watchlist.');
+                    }
+                });
+        });
+    });
+</script>
 
 {% endblock content %}

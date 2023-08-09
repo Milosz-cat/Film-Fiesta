@@ -4,6 +4,7 @@ class Movie(models.Model):
     title = models.CharField(max_length=30)
     year = models.IntegerField()
     custom_id = models.IntegerField(primary_key=True)
+    poster_path = models.CharField(max_length=200, default=None)
     WATCHLIST_CHOICES = (
         ("yes", "Yes"),
         ("no", "No"),
