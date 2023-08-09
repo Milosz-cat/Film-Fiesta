@@ -6,4 +6,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("base.urls")),
     path("", include("user_management.urls")),
+    path("", include("list_management.urls")),
 ]
