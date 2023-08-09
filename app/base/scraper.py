@@ -81,27 +81,42 @@ def scrape_fimlweb_top_250():
         driver.execute_script("window.scrollBy(0, 750);")
         time.sleep(0.2)  # Wait for the page to load
     
+
     # Now you can use Selenium to extract data
-    titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
-    original_titles = [element.get_attribute('textContent')  for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
-    
-    rankings = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
-    poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
+    try:
+        titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
+    except:
+        titles = None
+    try:
+        original_titles = [element.get_attribute('textContent')[:-5]  for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
+    except:
+        original_titles = None
+    try:
+        years = [element.get_attribute('textContent')[-4:]  for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
+    except:
+        years = None
+    try:
+        rankings = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
+    except:
+        rankings = None
+    try:
+        poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
+    except:
+        poster_paths = None
 
     # Create the movies list
     movies = [{
         "title": t,
-        'original_title': o,#o[:-5],  # Extract everything but the last 5 characters (the year and space)
-        #"year": o[-4:],  # Extract the last 4 characters (the year)
+        'original_title': o,
+        "year": y,
         "ranking": r,
         "poster_path": p
-    } for t, o, r, p in zip(titles, original_titles, rankings, poster_paths)]
+    } for t, o, y, r, p in zip(titles, original_titles, years, rankings, poster_paths)]
 
     driver.quit()
 
-    print(movies)
-
     return movies
+
 
 def scrape_movie_wallpaper(title, year):
     
