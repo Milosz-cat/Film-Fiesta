@@ -8,22 +8,23 @@ from django.contrib import messages
 from base import scraper
 from django.http import Http404
 
+@login_required
 def list_movies(request, name):
 
-    # if name == "imdb":
-    #     list_title = 'IMDb Top 250 Movies'
-    #     description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
-    #     context = {"movies": scraper.scrape_imdb_top_250(), 'list_title': list_title, 'description': description}
-    # elif name == "filmweb":
-    #     list_title = 'Filmweb Top 250 Movies'
-    #     description = 'Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings.'
-    #     context = {"movies": scraper.scrape_fimlweb_top_250(), 'list_title': list_title, 'description': description}
-
-    user = request.user
-    user_list = MovieList.objects.get(user=user, name=name)
-    movies = user_list.movies.all() if user_list.movies else user_list
-    #TODO obsluga bledu brak listy
-    context = {'user_list': movies, 'list_title': name}
+    if name == "imdb":
+        list_title = 'IMDb Top 250 Movies'
+        description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
+        context = {"user_list": scraper.scrape_imdb_top_250(), 'list_title': list_title, 'description': description}
+    elif name == "filmweb":
+        list_title = 'Filmweb Top 250 Movies'
+        description = 'Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings.'
+        context = {"user_list": scraper.scrape_fimlweb_top_250(), 'list_title': list_title, 'description': description}
+    else:
+        user = request.user
+        user_list = MovieList.objects.get(user=user, name=name)
+        movies = user_list.movies.all() if user_list.movies else user_list
+        #TODO obsluga bledu brak listy
+        context = {'user_list': movies, 'list_title': name}
     return render(request, "list_management/list.html", context)
 
 # Create your views here.

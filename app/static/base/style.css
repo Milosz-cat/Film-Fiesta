@@ -206,4 +206,5 @@ body {
 .movie-item {
     flex: 1 0 10%; /* Dla 5 elementów w rzędzie */
     align-items: center;
+    max-width: fit-content;
 }

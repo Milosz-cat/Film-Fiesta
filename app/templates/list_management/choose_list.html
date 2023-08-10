@@ -12,7 +12,7 @@
 
     </div>
         {% for user_list in user_lists %}
-            <a href="{% url 'list' '{{user_list.name}}' %}" class="movie-link">
+            <a href="{% url 'list' name=user_list.name %}" class="movie-link">
                 <div class="poster-container">
                     {% for movie in user_list.movies.all%}
                         <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} Poster" class="poster-list">
