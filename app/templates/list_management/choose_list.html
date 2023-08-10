@@ -5,28 +5,21 @@
 {% block content %}
 
 <ul class="list-group list-group-light">
-    {% comment %} <div class="row"> 
-        <div class="col text-center"> 
-            <h2 style="padding-bottom: 10px;">{{ list_title }}</h2>
-            <p style="max-width: 750px;">{{ description }}</p>
-        </div>
-    </div> {% endcomment %}
+
     <div class="movie-row">
         {% comment %} {% for movie in movies %}
         {% endfor %} {% endcomment %}
 
     </div>
-    <a href="{% url 'list' 'imdb' %}">
-        <div class="poster-container">
-            <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list">
-            <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 2" class="poster-list">
-            <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 3" class="poster-list">
-            <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 2" class="poster-list">
-            <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 3" class="poster-list">
-            <!-- Add more posters as needed -->
-        </div>
-    </a>
-
+        {% for user_list in user_lists %}
+            <a href="{% url 'list' '{{user_list.name}}' %}" class="movie-link">
+                <div class="poster-container">
+                    {% for movie in user_list.movies.all%}
+                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} Poster" class="poster-list">
+                    {% endfor %}
+                </div>
+            </a>
+        {% endfor %}
 
 </ul>
 
