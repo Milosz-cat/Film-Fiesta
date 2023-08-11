@@ -9,7 +9,8 @@ from base.models import Movie, Person
 
 class MovieList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=100, default=None)
+    description = models.CharField(max_length=500, default=None)
     movies = models.ManyToManyField(Movie)
 
     def __str__(self):
@@ -20,7 +21,9 @@ class MovieList(models.Model):
 @receiver(post_save, sender=User)
 def create_watchlist(sender, instance, created, **kwargs):
     if created:  # Jeśli to nowy użytkownik
-        MovieList.objects.create(user=instance, name="Watchlist")
+        MovieList.objects.create(
+            user=instance, name="Watchlist", description="Movies you'd like to see soon"
+        )
 
 
 class PersonList(models.Model):

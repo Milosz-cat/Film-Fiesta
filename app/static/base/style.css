@@ -144,6 +144,7 @@ body {
     overflow: hidden;
     flex-direction: row-reverse; /* Reverse the order of the posters */
     justify-content: flex-end; /* Align posters to the right */
+    margin: 20px;
 }
 
 .poster-container .poster-list:last-child {
@@ -163,6 +164,10 @@ body {
     z-index: 2; /* Higher z-index for normal state */
     border-radius: 10px;
     box-shadow: 9px 0px 10px black; /* Left shadow */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:  var(--color2);
 }
 
 .poster-container-scroll {

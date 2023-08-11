@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %}List{% endblock title %}
+{% block title %}Ranking{% endblock title %}
 
 {% block content %}
 
@@ -28,14 +28,10 @@
                     <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
                 {% endif %}
                     <div class="poster-item">
-                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
-                        {% comment %} {% if list_title != 'Watchlist' %}
-                            <a href="/add_to_watchlist/{{ movie.title|urlencode }}/{{ movie.year }}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
-                        {% endif %} {% endcomment %}
+                        <img src="{{ movie.poster_path }}" alt="Movie Poster">
+                        <a href="/add_to_watchlist/{{ movie.title|urlencode }}/{{ movie.year }}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
                     </div>
-                    {% comment %} {% if 'Top 250' in list_title %}
-                        <p style="text-align: center;">{{forloop.counter}}</p>                    
-                    {% endif %}       {% endcomment %}
+                        <p style="text-align: center;">{{forloop.counter}}</p>                      
                     
                 </a>
             </div>
@@ -46,7 +42,7 @@
     </div>
 </ul>
 
-{% comment %} <script>
+<script>
     document.querySelectorAll('.watchlist-label').forEach(function(label) {
         label.addEventListener('click', function(event) {
             event.preventDefault(); // Zapobiegaj domyślnemu działaniu linku
@@ -68,6 +64,6 @@
                 });
         });
     });
-</script> {% endcomment %}
+</script>
 
 {% endblock content %}

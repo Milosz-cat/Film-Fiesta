@@ -9,7 +9,7 @@
 </div>
 <div class="card">
     <div class="card-body">
-        <a href="{% url 'list' 'imdb' %}">
+        <a href="{% url 'ranking' 'imdb' %}">
             <p class="card-text">Top 250 Imdb</p>
             <p class="card-text">watchlist, wasne listy, rankingi aktorow, rezyserow, rekomendacje(tmdb api),
                  redis/celery do zapisywania scrapowanych top250 imdb/filmweb, dokumnetacja
@@ -21,34 +21,6 @@
                 <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
                 <div class="watchlist-label">+</div>
             </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
-            <div class="poster-item">
-                <img src="{% static 'marlon.jpg' %}" alt="Movie Poster 1" class="poster-list-scroll">
-                <div class="watchlist-label">+</div>
-            </div>
             <!-- Add more posters as needed -->
         </div>
         
@@ -56,7 +28,7 @@
 </div>
 <div class="card">
     <div class="card-body">
-        <a href="{% url 'list' 'filmweb' %}">
+        <a href="{% url 'ranking' 'filmweb' %}">
             <p class="card-text">Top 250 Filmweb</p>
         </a>
     </div>

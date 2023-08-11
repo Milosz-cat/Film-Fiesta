@@ -6,20 +6,41 @@
 
 <ul class="list-group list-group-light">
 
-    <div class="movie-row">
-        {% comment %} {% for movie in movies %}
-        {% endfor %} {% endcomment %}
-
-    </div>
-        {% for user_list in user_lists %}
+    <form action="{% url 'add_list' %}" method="post">
+        {% csrf_token %}
+        <div class="flex">
+            <input type="text" name="name" placeholder="Enter list name" required>
+            <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg text-body">
+                Create new list
+            </button>
+        </div>
+    </form>
+    {% for user_list in user_lists %}
+        <div class="d-inline-flex">
             <a href="{% url 'list' name=user_list.name %}" class="movie-link">
-                <div class="poster-container">
-                    {% for movie in user_list.movies.all%}
-                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} Poster" class="poster-list">
-                    {% endfor %}
-                </div>
+                {% if not user_list.movies.all %}
+                    <div class="poster-container" style="min-height: 210px;">
+                        <p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p>
+                        <p class="poster-list">
+                            You haven't<br>
+                            added any<br>
+                            movies to<br>
+                            the list yet!
+                        </p>
+                    </div>
+                {% else %}
+                    <div class="poster-container">
+                        {% for movie in user_list.movies.all|slice:":6"%}
+                            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} Poster" class="poster-list">
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </a>
-        {% endfor %}
+            <h3>{{user_list.name}}</h3>
+            <h5>{{user_list.description}}</h5>
+            
+        </div>
+    {% endfor %}
 
 </ul>
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from base.tmdb_helpers import tmdb_get_single_movie_core
@@ -8,8 +8,8 @@ from django.contrib import messages
 from base import scraper
 from django.http import Http404
 
-@login_required
-def list_movies(request, name):
+
+def ranking(request, name):
 
     if name == "imdb":
         list_title = 'IMDb Top 250 Movies'
@@ -20,11 +20,19 @@ def list_movies(request, name):
         description = 'Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings.'
         context = {"user_list": scraper.scrape_fimlweb_top_250(), 'list_title': list_title, 'description': description}
     else:
-        user = request.user
-        user_list = MovieList.objects.get(user=user, name=name)
-        movies = user_list.movies.all() if user_list.movies else user_list
         #TODO obsluga bledu brak listy
-        context = {'user_list': movies, 'list_title': name}
+        pass
+
+    return render(request, "list_management/list.html", context)
+
+@login_required
+def list_movies(request, name):
+
+    user = request.user
+    user_list = MovieList.objects.get(user=user, name=name)
+    movies = user_list.movies.all()
+    #TODO obsluga bledu brak listy
+    context = {'user_list': movies, 'list_title': name}
     return render(request, "list_management/list.html", context)
 
 # Create your views here.
@@ -35,6 +43,17 @@ def choose_list(request):
     
     context = {'user_lists': user_lists}
     return render(request, "list_management/choose_list.html", context)
+
+
+@login_required
+def add_list(request):
+    if request.method == 'POST':
+        user = request.user
+        name = request.POST.get('name')
+        new_list = MovieList(user=user, name=name)
+        new_list.save()
+
+    return redirect('choose_list')
 
 
 
@@ -50,8 +69,6 @@ def add_to_watchlist(request, movie_title, movie_year):
 
     # Logika do pobrania filmu (zakładam, że masz odpowiednią funkcję do tego)
     movie_data = tmdb_get_single_movie_core(movie_title, movie_year)
-
-    print(movie_data)
 
     # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
     movie_obj, _ = Movie.objects.get_or_create(
