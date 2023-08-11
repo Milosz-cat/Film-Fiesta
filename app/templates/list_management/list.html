@@ -5,14 +5,16 @@
 {% block content %}
 
 <ul class="list-group list-group-light">
+
     <div class="row"> 
         <div class="col text-center"> 
-            <h2 style="padding-bottom: 10px;">{{ list_title }}</h2>
+            <h2 style="padding-bottom: 10px;">{{ name }}</h2>
             {% if description %}
                 <p style="max-width: 750px;">{{ description }}</p>
             {% endif %}
         </div>
     </div>
+    
     <div class="movie-row">
         {% for movie in user_list %}
             {% if forloop.counter0|divisibleby:5 %}
@@ -44,30 +46,27 @@
             {% endif %}
         {% endfor %}
     </div>
+
+
+    <div class="row" style="margin-top: 50px; margin-bottom: 20px;"> 
+        <div class="col text-center"> 
+            <h4 style="padding-bottom: 10px;"> Want to add some movie to your list ?</h4>
+        </div>
+    </div>
+    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
+        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
+        <div class="input-group mb-3">
+            <input type="search" class="form-control" placeholder="Search your movie and add it by clicking on poster" aria-label="Search" name="search">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 800px;">
+        {% for movie in search_results %}
+            <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.release_date }}/{{ name }}" data-title="{{ movie.title }}" data-year="{{ movie.release_date }}">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+            </a>
+        {% endfor %}
+    </div>
+    
 </ul>
-
-{% comment %} <script>
-    document.querySelectorAll('.watchlist-label').forEach(function(label) {
-        label.addEventListener('click', function(event) {
-            event.preventDefault(); // Zapobiegaj domyślnemu działaniu linku
-            event.stopPropagation(); // Zatrzymaj propagację zdarzenia
-    
-            var movieTitle = encodeURIComponent(event.target.dataset.title);
-            var movieYear = encodeURIComponent(event.target.dataset.year);
-            var url = `/add_to_watchlist/${movieTitle}/${movieYear}/`;
-    
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert('Movie added to watchlist!');
-                        // Tutaj możesz dodać dodatkową logikę do aktualizacji strony
-                    } else {
-                        alert('Error adding movie to watchlist.');
-                    }
-                });
-        });
-    });
-</script> {% endcomment %}
-
 {% endblock content %}

@@ -3,6 +3,10 @@ from . import scraper, tmdb_helpers
 import requests, environ
 from django.contrib.auth.decorators import login_required
 
+
+env = environ.Env()
+environ.Env.read_env()
+
 @login_required
 def home(request):
     # Render the template with the context
@@ -13,8 +17,7 @@ def home(request):
 
 
 def search(request):
-    env = environ.Env()
-    environ.Env.read_env()
+    
     if request.method == "POST":
         search_term = request.POST.get(
             "search"
@@ -31,6 +34,7 @@ def search(request):
 
         # Extract the list of movies from the response
         movies = response.get("results", [])
+        print(movies)
 
         # Create a new list of movies, each represented as a dictionary with only the desired fields
         movies = [
@@ -39,8 +43,7 @@ def search(request):
                 "title": movie["title"],
                 "popularity": movie["popularity"],
                 "poster_path": movie["poster_path"],
-                "release_date": movie["release_date"],
-                "vote_average": movie["vote_average"],
+                "release_date": movie["release_date"][:4],
             }
             for movie in movies
         ]

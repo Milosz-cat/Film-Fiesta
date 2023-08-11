@@ -28,12 +28,12 @@
                     <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
                 {% endif %}
                     <div class="poster-item">
-                        <img src="{{ movie.poster_path }}" alt="Movie Poster">
-                        <a href="/add_to_watchlist/{{ movie.title|urlencode }}/{{ movie.year }}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                        <img src="{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                        <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
                     </div>
                         <p style="text-align: center;">{{forloop.counter}}</p>                      
                     
-                </a>
+                    </a>
             </div>
             {% if forloop.last %}
                 </div>
@@ -41,29 +41,4 @@
         {% endfor %}
     </div>
 </ul>
-
-<script>
-    document.querySelectorAll('.watchlist-label').forEach(function(label) {
-        label.addEventListener('click', function(event) {
-            event.preventDefault(); // Zapobiegaj domyślnemu działaniu linku
-            event.stopPropagation(); // Zatrzymaj propagację zdarzenia
-    
-            var movieTitle = encodeURIComponent(event.target.dataset.title);
-            var movieYear = encodeURIComponent(event.target.dataset.year);
-            var url = `/add_to_watchlist/${movieTitle}/${movieYear}/`;
-    
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert('Movie added to watchlist!');
-                        // Tutaj możesz dodać dodatkową logikę do aktualizacji strony
-                    } else {
-                        alert('Error adding movie to watchlist.');
-                    }
-                });
-        });
-    });
-</script>
-
 {% endblock content %}

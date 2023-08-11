@@ -7,7 +7,11 @@ from list_management.models import MovieList, PersonList
 from django.contrib import messages
 from base import scraper
 from django.http import Http404
+import environ
+import requests
 
+env = environ.Env()
+environ.Env.read_env()
 
 def ranking(request, name):
 
@@ -23,16 +27,40 @@ def ranking(request, name):
         #TODO obsluga bledu brak listy
         pass
 
-    return render(request, "list_management/list.html", context)
+    return render(request, "list_management/ranking.html", context)
 
 @login_required
 def list_movies(request, name):
+    context = {}
+    if request.method == "POST":
+
+        search_term = request.POST.get("search")  # Get the search term from the POST data
+        bearer = env("BEARER")
+        headers = {"accept": "application/json", "Authorization": f"Bearer {bearer}"}
+        url = f"https://api.themoviedb.org/3/search/movie?query={search_term}"
+
+        response = requests.get(url, headers=headers).json()
+        # print(json.dumps(response, indent=4, sort_keys=True))
+
+        movies = response.get("results", [])
+        movies = [
+            {
+                "id": movie["id"],
+                "title": movie["title"],
+                "poster_path": movie["poster_path"],
+                "release_date": movie["release_date"][:4],
+            }
+            for movie in movies
+        ]
+        context["search_results"] = movies
 
     user = request.user
     user_list = MovieList.objects.get(user=user, name=name)
     movies = user_list.movies.all()
     #TODO obsluga bledu brak listy
-    context = {'user_list': movies, 'list_title': name}
+    context["user_list"] = movies
+    context["name"] = user_list.name
+    context["description"] = user_list.description
     return render(request, "list_management/list.html", context)
 
 # Create your views here.
@@ -50,7 +78,8 @@ def add_list(request):
     if request.method == 'POST':
         user = request.user
         name = request.POST.get('name')
-        new_list = MovieList(user=user, name=name)
+        description = request.POST.get('description')
+        new_list = MovieList(user=user, name=name, description=description)
         new_list.save()
 
     return redirect('choose_list')
@@ -58,11 +87,11 @@ def add_list(request):
 
 
 @login_required
-def add_to_watchlist(request, movie_title, movie_year):
+def add_to_list(request, movie_title, movie_year, name):
     user = request.user
 
-    # Pobierz watchlistę użytkownika lub utwórz ją, jeśli nie istnieje
-    user_watchlist, _ = MovieList.objects.get_or_create(user=user, name="Watchlist")
+    # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
+    user_list, _ = MovieList.objects.get_or_create(user=user, name=name)
 
     if "." in movie_title:
         movie_title = movie_title.split(".", 1)[1].strip()
@@ -76,10 +105,14 @@ def add_to_watchlist(request, movie_title, movie_year):
         year=movie_data['release_date'],
         poster_path=movie_data['poster_path'],
         custom_id=movie_data['id'],
-        on_watchlist="yes",
+        on_watchlist="yes" if name=='Watchlist' else "no",
     )
 
     # Dodaj film do watchlisty użytkownika
-    user_watchlist.movies.add(movie_obj)
+    user_list.movies.add(movie_obj)
+    
+    referer = request.META.get('HTTP_REFERER')
+    return redirect(referer) 
 
-    return JsonResponse({'status': 'success'})
+
+

@@ -151,6 +151,10 @@ body {
     margin-left: 0; /* Remove the negative margin for the first poster */
 }
 
+.poster-container .poster-list:first-child {
+    margin-right: 10px; /* Remove the negative margin for the first poster */
+}
+
 .movie-link {
   position: relative;
   display: inline-block;

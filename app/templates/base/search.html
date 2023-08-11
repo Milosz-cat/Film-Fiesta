@@ -14,13 +14,8 @@
 
     <ul class="list-group list-group-light">
         {% for movie in movies %}
-            <li class="list-group-item px-3 border-0 rounded-3 list-group-item-light mb-2">
-                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.original_title }}" class="poster">
-                {{ movie.title }}
-                {{ movie.popularity }}
-                {{ movie.release_date }}     
-                {{ movie.vote_average }} 
-            </li>
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+
         {% endfor %}
     </ul>
 

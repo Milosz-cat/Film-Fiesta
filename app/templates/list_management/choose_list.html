@@ -6,15 +6,6 @@
 
 <ul class="list-group list-group-light">
 
-    <form action="{% url 'add_list' %}" method="post">
-        {% csrf_token %}
-        <div class="flex">
-            <input type="text" name="name" placeholder="Enter list name" required>
-            <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg text-body">
-                Create new list
-            </button>
-        </div>
-    </form>
     {% for user_list in user_lists %}
         <div class="d-inline-flex">
             <a href="{% url 'list' name=user_list.name %}" class="movie-link">
@@ -36,11 +27,28 @@
                     </div>
                 {% endif %}
             </a>
-            <h3>{{user_list.name}}</h3>
-            <h5>{{user_list.description}}</h5>
-            
+            <div style="margin: 20px; max-width: 200px;">
+                <h3>{{user_list.name}}</h3>
+                <h5>{{user_list.description}}</h5>
+            </div>
         </div>
     {% endfor %}
+    
+    <form action="{% url 'add_list' %}" method="post">
+        {% csrf_token %}
+        <div class="flex" style="margin: 100px;">
+            <div style="display: flex; justify-content: center;">
+                <input type="text" name="name" placeholder="Enter list name" required class="form-control form-control-lg" style="margin: 10px;">
+                <input type="text" name="description" placeholder="Enter list description" required class="form-control form-control-lg" style="margin: 10px;">
+            </div>
+            
+            <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg text-body">
+                Create new list
+            </button>
+        </div>
+    </form>
+    
+
 
 </ul>
 

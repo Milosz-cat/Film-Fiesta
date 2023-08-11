@@ -8,8 +8,8 @@ urlpatterns = [
     path('add_list', views.add_list, name="add_list"),
     path("choose_list", views.choose_list, name="choose_list"),
     path(
-        "add_to_watchlist/<str:movie_title>/<int:movie_year>/",
-        views.add_to_watchlist,
-        name="add_to_watchlist",
+        "add_to_list/<str:movie_title>/<int:movie_year>/<str:name>/",
+        views.add_to_list,
+        name="add_to_list",
     ),
 ]
