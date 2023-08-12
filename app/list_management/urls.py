@@ -12,4 +12,5 @@ urlpatterns = [
         views.add_to_list,
         name="add_to_list",
     ),
+    path('actor_list/<str:name>/', views.actor_list, name="actor_list"),
 ]

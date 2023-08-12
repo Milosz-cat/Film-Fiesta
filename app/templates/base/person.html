@@ -1,0 +1,58 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}{{ person.name }}{% endblock title %}
+
+{% block content %}
+<div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ person.known_for.0.backdrop_path }}');"></div>
+<div class="card-movie">
+    <div class="flex-container">
+        <div class="div-movie">
+            <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="poster">
+            <div class="person-details">
+                <p>{{ person.name }}</p>
+                <p>{{ person.overview }}</p>
+            </div>
+        </div>
+
+        <div class="div-movie">
+            <h2>Known For:</h2>
+        
+            
+        <div class="movie-row">
+            {% for movie in movies %}
+                {% if forloop.counter0|divisibleby:5 %}
+                    {% if not forloop.first %}
+                        </div>
+                    {% endif %}
+                    <div class="movie-row">
+                {% endif %}
+                <div class="movie-item">
+                    {% if movie.year and not '/' in movie.title %}
+                        <a href="{% url 'movie' title=movie.title year=movie.year %}" class="movie-link">
+                        
+                            <div class="poster-item">
+                                {% if movie.poster_path %}
+                                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                                {% else %}
+                                    <p class="poster-list-scroll"></p>
+                                {% endif %}
+                                <p style="text-align: center;">{{ movie.title }}</p>
+                                <p style="text-align: center;">{{ movie.character }}</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+                {% if forloop.last %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+  
+    </div>
+</div>
+
+  
+{% endblock content %}
+
+

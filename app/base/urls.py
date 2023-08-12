@@ -22,6 +22,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name="home"),
     path('movie/<str:title>/<str:year>/', views.movie, name="movie"),
+    path('person/<str:name>/', views.person, name="person"),
     path('search/', views.search, name="search"),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

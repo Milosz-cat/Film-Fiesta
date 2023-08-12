@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from base.tmdb_helpers import tmdb_get_single_movie_core
+from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
 from list_management.models import MovieList, PersonList
 from django.contrib import messages
@@ -35,14 +35,11 @@ def list_movies(request, name):
     if request.method == "POST":
 
         search_term = request.POST.get("search")  # Get the search term from the POST data
-        bearer = env("BEARER")
-        headers = {"accept": "application/json", "Authorization": f"Bearer {bearer}"}
-        url = f"https://api.themoviedb.org/3/search/movie?query={search_term}"
+        tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
+        movies = tmdb_client.search_movies(search_term)  # Call the search_movie method on the instance
 
-        response = requests.get(url, headers=headers).json()
-        # print(json.dumps(response, indent=4, sort_keys=True))
 
-        movies = response.get("results", [])
+        # Create a new list of movies, each represented as a dictionary with only the desired fields
         movies = [
             {
                 "id": movie["id"],
@@ -96,8 +93,8 @@ def add_to_list(request, movie_title, movie_year, name):
     if "." in movie_title:
         movie_title = movie_title.split(".", 1)[1].strip()
 
-    # Logika do pobrania filmu (zakładam, że masz odpowiednią funkcję do tego)
-    movie_data = tmdb_get_single_movie_core(movie_title, movie_year)
+    tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
+    movie_data = tmdb_client.get_single_movie_core(movie_title, movie_year) 
 
     # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
     movie_obj, _ = Movie.objects.get_or_create(
@@ -113,6 +110,12 @@ def add_to_list(request, movie_title, movie_year, name):
     
     referer = request.META.get('HTTP_REFERER')
     return redirect(referer) 
+
+def actor_list(request, name):
+    
+    tmdb_client = TMDBClient()
+    movies = tmdb_client.get_movies_by_name('Christopher Nolan')
+    print(movies['director_movies'])  
 
 
 

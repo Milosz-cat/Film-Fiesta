@@ -11,6 +11,12 @@ class TMDBClient:
             "Authorization": f"Bearer {self.bearer}"
         }
 
+    def search_movies(self, search_term):
+        url = "https://api.themoviedb.org/3/search/movie"
+        params = {'query': search_term}
+        response = requests.get(url, headers=self.headers, params=params).json()
+        return response['results']
+    
     def search_movie(self, search_term, year):
         url = "https://api.themoviedb.org/3/search/movie"
         params = {'query': search_term, 'year': year}
@@ -30,6 +36,7 @@ class TMDBClient:
                 'character': person['character'],
                 'popularity': person['popularity'],
                 'profile_path': person['profile_path'],
+                
             }
             for person in cast_data
         ]
@@ -58,6 +65,9 @@ class TMDBClient:
             'title': movie_result['title'],
             'poster_path': movie_result['poster_path'],
             'release_date': movie_result['release_date'][0:4],
+            'backdrop_path': movie_result['backdrop_path'],
+            'vote_average': movie_result['vote_average'],
+            'overview': movie_result['overview'],
         }
 
         cast = self.process_cast(movie_details['cast'])
@@ -74,3 +84,21 @@ class TMDBClient:
             'release_date': movie_result['release_date'][0:4],
         }
         return movie
+
+    def search_person(self, name):
+        url = f"https://api.themoviedb.org/3/search/person?api_key={self.api_key}&query={name}"
+        response = requests.get(url, headers=self.headers).json()
+        return response['results']
+    
+    def get_movies_by_person(self, person_id):
+        url = f"https://api.themoviedb.org/3/person/{person_id}/movie_credits?api_key={self.api_key}"
+        response = requests.get(url, headers=self.headers).json()
+        return response['cast'], response['crew']
+    
+    def get_movies_by_name(self, name):
+        person_results = self.search_person(name)
+        if person_results:
+            person_id = person_results[0]['id']
+            cast_movies, crew_movies = self.get_movies_by_person(person_id)
+            return {'actor_movies': cast_movies, 'director_movies': [movie for movie in crew_movies if movie['job'] == 'Director']}
+        return {'actor_movies': [], 'director_movies': []}

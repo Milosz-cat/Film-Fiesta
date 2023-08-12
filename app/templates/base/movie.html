@@ -15,31 +15,35 @@
             </div> 
             <div class="row">
                 {{ movie.overview }}
-            </div> 
+            </div>
             <div class="actor-container">
                 {% for actor in cast %}
-                    <div class="actor">
-                        {% if actor.profile_path != None %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                        {% else %}
-                            <img src="{% static 'profile.jpg'%}" class="face">
-                        {% endif %}
-                        <p>{{ actor.name }}</p>
-                        <p>{{ actor.character }}</p>
-                    </div>
+                    <a href="{% url 'person' actor.name %}">
+                        <div class="actor">
+                            {% if actor.profile_path != None %}
+                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                            {% else %}
+                                <img src="{% static 'profile.jpg'%}" class="face">
+                            {% endif %}
+                            <p>{{ actor.name }}</p>
+                            <p>{{ actor.character }}</p>
+                        </div>
+                    </a>
                 {% endfor %}
             </div>       
             <div class="actor-container">
                 {% for actor in crew %}
-                    <div class="actor">
-                        {% if actor.profile_path != None %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                        {% else %}
-                            <img src="{% static 'profile.jpg'%}" class="face">
-                        {% endif %}
-                        <p>{{ actor.name }}</p>
-                        <p>{{ actor.known_for_department }}</p>
-                    </div>
+                    <a href="{% url 'person' actor.name %}">
+                        <div class="actor">
+                            {% if actor.profile_path != None %}
+                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                            {% else %}
+                                <img src="{% static 'profile.jpg'%}" class="face">
+                            {% endif %}
+                            <p>{{ actor.name }}</p>
+                            <p>{{ actor.known_for_department }}</p>
+                        </div>
+                    </a>
                 {% endfor %}
             </div>    
         </div>
