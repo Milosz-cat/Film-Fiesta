@@ -1,104 +1,76 @@
-import requests, environ, json
-
-env = environ.Env()
-environ.Env.read_env()
-
-
-def tmdb_get_single_movie(search_term, year):
-    bearer = env("BEARER")
-    api_key = env("TMDB_API_KEY")
-
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {bearer}"
-    }
-
-    url = f"https://api.themoviedb.org/3/search/movie"  # Add the search term to the query parameters  # Add the search term to the query parameters
-
-    # Parametry zapytania
-    params = {
-        'query': search_term,
-        'year': year
-    }
-    
-    response = requests.get(url, headers=headers, params=params).json()
-    first_result = response['results'][0]
-    # Wyodrębnienie poszczególnych informacji z pierwszego wyniku
-
-
-    movie = {
-        'backdrop_path' : first_result['backdrop_path'],
-        'genre_ids' : first_result['genre_ids'],
-        'id' : first_result['id'],
-        'title' : first_result['title'],
-        'original_title' : first_result['original_title'],
-        'overview' : first_result['overview'],
-        'popularity' : first_result['popularity'],
-        'poster_path' : first_result['poster_path'],
-        'release_date' : first_result['release_date'][0:4],
-        'vote_average' : first_result['vote_average'],
-        'vote_count' : first_result['vote_count'],
-    }
-    url_2 = f"https://api.themoviedb.org/3/movie/{first_result['id']}/credits?api_key={api_key}"
-    response = requests.get(url_2, headers=headers).json()
-
-    cast = [
-        {
-            'name': person['name'],
-            'character': person['character'],
-            'popularity': person['popularity'],
-            'profile_path': person['profile_path'],
-        }
-        for person in response['cast']
-    ]
+import requests, environ
 
     # Create the crew list, avoiding repetitions in names
     #TODO Ogarnij cos zeby byy wypisane wsytstkie role i co z rezyserem!!!!!!!!!!
-    seen_names = set()
-    crew = []
-    for person in response['crew']:
-        if person['name'] not in seen_names:
-            crew.append({
+class TMDBClient:
+    def __init__(self):
+        self.bearer = environ.Env()("BEARER")
+        self.api_key = environ.Env()("TMDB_API_KEY")
+        self.headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.bearer}"
+        }
+
+    def search_movie(self, search_term, year):
+        url = "https://api.themoviedb.org/3/search/movie"
+        params = {'query': search_term, 'year': year}
+        response = requests.get(url, headers=self.headers, params=params).json()
+        return response['results'][0]
+
+    def get_movie_details(self, movie_id):
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={self.api_key}"
+        response = requests.get(url, headers=self.headers).json()
+        return response
+
+    def process_cast(self, cast_data):
+        return [
+            {
+                'id': person['id'],
                 'name': person['name'],
+                'character': person['character'],
                 'popularity': person['popularity'],
                 'profile_path': person['profile_path'],
-                'known_for_department': person['known_for_department']
-            })
-            seen_names.add(person['name'])
+            }
+            for person in cast_data
+        ]
 
-    # Sort the crew list by popularity in descending order
-    crew = sorted(crew, key=lambda x: x['popularity'], reverse=True)
+    def process_crew(self, crew_data):
+        seen_names = set()
+        crew = []
+        for person in crew_data:
+            if person['name'] not in seen_names:
+                crew.append({
+                    'id': person['id'],
+                    'name': person['name'],
+                    'popularity': person['popularity'],
+                    'profile_path': person['profile_path'],
+                    'known_for_department': person['known_for_department']
+                })
+                seen_names.add(person['name'])
+        return sorted(crew, key=lambda x: x['popularity'], reverse=True)
 
-    return {'movie': movie, 'cast': cast, 'crew': crew}
+    def get_single_movie(self, search_term, year):
+        movie_result = self.search_movie(search_term, year)
+        movie_details = self.get_movie_details(movie_result['id'])
+        
+        movie = {
+            'id': movie_result['id'],
+            'title': movie_result['title'],
+            'poster_path': movie_result['poster_path'],
+            'release_date': movie_result['release_date'][0:4],
+        }
 
+        cast = self.process_cast(movie_details['cast'])
+        crew = self.process_crew(movie_details['crew'])
 
-def tmdb_get_single_movie_core(search_term, year):
-    
-    bearer = env("BEARER")
+        return {'movie': movie, 'cast': cast, 'crew': crew}
 
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {bearer}"
-    }
-
-    url = f"https://api.themoviedb.org/3/search/movie"  # Add the search term to the query parameters  # Add the search term to the query parameters
-
-    # Parametry zapytania
-    params = {
-        'query': search_term,
-        'year': year
-    }
-    
-    response = requests.get(url, headers=headers, params=params).json()
-    first_result = response['results'][0]
-    # Wyodrębnienie poszczególnych informacji z pierwszego wyniku
-
-
-    movie = {
-        'id' : first_result['id'],
-        'title' : first_result['title'],
-        'poster_path' : first_result['poster_path'],
-        'release_date' : first_result['release_date'][0:4],
-    }
-
-    return movie
+    def get_single_movie_core(self, search_term, year):
+        movie_result = self.search_movie(search_term, year)
+        movie = {
+            'id': movie_result['id'],
+            'title': movie_result['title'],
+            'poster_path': movie_result['poster_path'],
+            'release_date': movie_result['release_date'][0:4],
+        }
+        return movie

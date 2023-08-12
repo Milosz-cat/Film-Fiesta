@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . import scraper, tmdb_helpers
+from tmdb_helpers import TMDBClient
 import requests, environ
 from django.contrib.auth.decorators import login_required
 
@@ -13,7 +13,20 @@ def home(request):
     return render(request, "base/home.html")
 
 
+def movie(request, title, year):
+    # wallpaper = scraper.scrape_movie_wallpaper(title, year)
+    if "." in title:
+        title = title.split(".", 1)[1].strip()
 
+    movie = TMDBClient.tmdb_get_single_movie(title, year)
+
+    return render(request, "base/movie.html", movie)
+
+
+def actor(request, id):
+    actor = ""
+
+    return render(request, "base/movie.html", actor)
 
 
 def search(request):
@@ -54,11 +67,4 @@ def search(request):
     return render(request, "base/search.html")
 
 
-def movie(request, title, year):
-    # wallpaper = scraper.scrape_movie_wallpaper(title, year)
-    if "." in title:
-        title = title.split(".", 1)[1].strip()
 
-    movie = tmdb_helpers.tmdb_get_single_movie(title, year)
-
-    return render(request, "base/movie.html", movie)
