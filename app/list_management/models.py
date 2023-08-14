@@ -29,6 +29,7 @@ def create_watchlist(sender, instance, created, **kwargs):
 class PersonList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=200)
+    #    description = models.CharField(max_length=500, default=None)
     persons = models.ManyToManyField(Person)
 
     def __str__(self):

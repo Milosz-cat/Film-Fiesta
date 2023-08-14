@@ -93,7 +93,6 @@ class TMDBClient:
     def search_person_by_id(self, person_id):
         url = f"https://api.themoviedb.org/3/person/{person_id}?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
-        print(response)
         return response
 
     def search_person(self, name):
@@ -104,12 +103,19 @@ class TMDBClient:
     def get_movies_by_person(self, person_id):
         url = f"https://api.themoviedb.org/3/person/{person_id}/movie_credits?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
-        return response['cast'], response['crew']
-    
-    def get_movies_by_name(self, name):
-        person_results = self.search_person(name)
-        if person_results:
-            person_id = person_results[0]['id']
-            cast_movies, crew_movies = self.get_movies_by_person(person_id)
-            return {'actor_movies': cast_movies, 'director_movies': [movie for movie in crew_movies if movie['job'] == 'Director']}
-        return {'actor_movies': [], 'director_movies': []}
+        cast_movies, crew_movies = response['cast'], response['crew']
+
+        actor_movies = [
+            movie for movie in cast_movies
+            if 'self' not in movie.get('character', '').lower()
+        ]
+
+        director_movies = [
+            movie for movie in crew_movies
+            if movie['job'] == 'Director' or movie.get('department') == 'Directing'
+        ]
+
+        actor_movies = sorted(actor_movies, key=lambda x: x.get('popularity', 0), reverse=True)
+        director_movies = sorted(director_movies, key=lambda x: x.get('popularity', 0), reverse=True)
+        return actor_movies, director_movies
+

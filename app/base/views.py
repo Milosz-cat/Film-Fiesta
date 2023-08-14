@@ -21,23 +21,45 @@ def movie(request, title, year):
 
 def person(request, name):
 
+    
     tmdb_client = TMDBClient()
     person = tmdb_client.search_person(name)
     person_id = person[0]['id']
-    person_movies = [
-            {
-                'title': movie['title'],
-                'character': movie['character'],
-                'poster_path': movie['poster_path'],
-                'year': movie['release_date'][0:4],
-                'poster_path': movie['poster_path'],
-                
-            }
-            for movie in tmdb_client.get_movies_by_person(person_id)[0]
+    
+    # Get movies by person
+    cast_movies, director_movies = tmdb_client.get_movies_by_person(person_id)
+    
+    # Filter and structure movies where the person is an actor
+    person_movies_as_actor = [
+        {
+            'title': movie['title'],
+            'character': movie.get('character', ''),
+            'poster_path': movie['poster_path'],
+            'year': movie['release_date'][0:4] if movie['release_date'] else None
+        }
+        for movie in cast_movies if movie['release_date'] and '/' not in movie['title']
     ]
-
-    context = {'person': person[0], 'movies': person_movies}
-    print(context)
+    
+    # Filter and structure movies where the person is a director
+    person_movies_as_director = [
+        {
+            'title': movie['title'],
+            'poster_path': movie['poster_path'],
+            'year': movie['release_date'][0:4] if movie['release_date'] else None
+        }
+        for movie in director_movies if movie['release_date'] and '/' not in movie['title']
+    ]
+    
+    # Get biography
+    biography = tmdb_client.search_person_by_id(person_id)['biography']
+    
+    # Create the context for rendering
+    context = {
+        'person': person[0],
+        'movies': person_movies_as_actor,
+        'movies_director': person_movies_as_director,
+        'biography': biography
+    }
     
     return render(request, "base/person.html", context)
 

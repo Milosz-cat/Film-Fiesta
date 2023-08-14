@@ -71,9 +71,8 @@
               <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="peopleDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">People of cinema</a>
                   <div class="dropdown-menu" aria-labelledby="peopleDropdown">
-                      <a class="dropdown-item" href="#">Actors</a>
-                      <a class="dropdown-item" href="#">Directors</a>
-                      <a class="dropdown-item" href="#">Producers</a>
+                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Actors' %}">Actors</a>
+                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Directors' %}">Directors</a>
                   </div>
               </li>
               <li class="nav-item dropdown">

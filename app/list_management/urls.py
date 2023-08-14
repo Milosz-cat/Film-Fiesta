@@ -12,6 +12,6 @@ urlpatterns = [
         views.add_to_list,
         name="add_to_list",
     ),
-    path('actor_list', views.actor_list, name="actor_list"),
+    path('person_list/<str:name>', views.person_list, name="person_list"),
     path('add_person_to_list/<str:name>/<int:id>', views.add_person_to_list, name="add_person_to_list"),
 ]

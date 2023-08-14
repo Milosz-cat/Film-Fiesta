@@ -124,10 +124,10 @@ def add_to_list(request, movie_title, movie_year, name):
 
 
 @login_required
-def actor_list(request):
+def person_list(request, name):
 
     user = request.user
-    user_list, _ = PersonList.objects.get_or_create(user=user, name="Favourite Actors")
+    user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
 
     context = {}
     if request.method == "POST":
@@ -135,26 +135,27 @@ def actor_list(request):
             "search"
         )  # Get the search term from the POST data
         tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
-        actors = tmdb_client.search_person(
+        persons = tmdb_client.search_person(
             search_term
         ) 
 
-        actors = [
+        persons = [
             {
                 "id": actor["id"],
                 "name": actor["name"],
                 "profile_path": actor["profile_path"],
                 "role": actor["known_for_department"],
             }
-            for actor in actors
+            for actor in persons
         ]
-        context["search_results"] = actors
+        context["search_results"] = persons
 
 
-    actors = user_list.persons.all()
+    persons = user_list.persons.all()
     # TODO obsluga bledu brak listy
-    context["user_list"] = actors
-    return render(request, "list_management/actor_list.html", context)
+    context["user_list"] = persons
+    context["name"] = name
+    return render(request, "list_management/person_list.html", context)
 
 
 @login_required
@@ -167,6 +168,23 @@ def add_person_to_list(request, name, id):
 
     tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
     person = tmdb_client.search_person_by_id(id)
+
+    if person["known_for_department"] == "Directing" and name == "Favourite Actors":
+        messages.error(
+            request,
+            "This person is more recognizable as a director add him/her to list of favorite directors",
+        )
+        referer = request.META.get("HTTP_REFERER")
+        return redirect(referer)
+
+
+    if person["known_for_department"] == "Acting" and name == "Favourite Directors":
+        messages.error(
+            request,
+            "This person is more recognizable as an actor add him/her to list of favorite actors",
+        )
+        referer = request.META.get("HTTP_REFERER")
+        return redirect(referer)
 
     # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
     person, _ = Person.objects.get_or_create(

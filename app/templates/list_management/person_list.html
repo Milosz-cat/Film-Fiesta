@@ -25,7 +25,6 @@
                         <img src="{% static 'profile.jpg'%}" class="face">
                     {% endif %}
                     <p>{{ actor.name }}</p>
-                    <p>{{ actor.character }}</p>
                 </div>
             </a>
         {% endfor %}
@@ -46,13 +45,16 @@
     </form>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 800px;">
         {% for actor in search_results %}
+            <a href="/add_person_to_list/{{ name }}/{{ actor.id }}" data-name="{{ name }}" data-id="{{ actor.id }}">
+                <div class="actor">
             {% if actor.profile_path != None %}
-                <a href="/add_person_to_list/Favourite Actors/{{ actor.id }}" data-name="Favourite Actors" data-id="{{ actor.id }}">
-                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face"> 
-                </a> 
+                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
             {% else %}
-                <img src="{% static 'profile.jpg'%}" class="face">
+                        <img src="{% static 'profile.jpg'%}" class="face">   
             {% endif %}
+                    <p>{{ actor.name }}</p> 
+                </div>
+            </a> 
         {% endfor %}
     </div>
     
