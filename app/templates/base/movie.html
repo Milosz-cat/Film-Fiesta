@@ -14,6 +14,12 @@
                 {{ movie.vote_average }} 
             </div> 
             <div class="row">
+                Directed by {% for person in directors %}{{ person.name }} {% endfor %}
+            </div>
+            <div class="row">
+                Written by {% for person in writers %}{{ person.name }} {% endfor %}
+            </div>
+            <div class="row">
                 {{ movie.overview }}
             </div>
             <div class="actor-container">

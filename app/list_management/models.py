@@ -33,3 +33,14 @@ class PersonList(models.Model):
 
     def __str__(self):
         return self.user.username + "'s Person List: " + self.name
+
+# Sygnał, który jest wywoływany po zapisaniu obiektu User, aby utworzyć listę ulubionych aktorów i reżyserów
+@receiver(post_save, sender=User)
+def create_favourite_actors_and_directors(sender, instance, created, **kwargs):
+    if created:  # Jeśli to nowy użytkownik
+        PersonList.objects.create(
+            user=instance, name="Favourite Actors", persons=[]
+        )
+        PersonList.objects.create(
+            user=instance, name="Favourite Directors", persons=[]
+        )

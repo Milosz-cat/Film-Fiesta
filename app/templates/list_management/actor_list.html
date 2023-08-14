@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Actors List{% endblock title %}
+
+{% block content %}
+
+<ul class="list-group list-group-light">
+
+    <div class="row"> 
+        <div class="col text-center"> 
+            <h2 style="padding-bottom: 10px;">{{ name }}</h2>
+            {% if description %}
+                <p style="max-width: 750px;">{{ description }}</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="actor-container">
+        {% for actor in user_list %}
+            <a href="{% url 'person' actor.name %}">
+                <div class="actor">
+                    {% if actor.profile_path != None %}
+                        <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                    {% else %}
+                        <img src="{% static 'profile.jpg'%}" class="face">
+                    {% endif %}
+                    <p>{{ actor.name }}</p>
+                    <p>{{ actor.character }}</p>
+                </div>
+            </a>
+        {% endfor %}
+    </div>   
+
+
+    <div class="row" style="margin-top: 50px; margin-bottom: 20px;"> 
+        <div class="col text-center"> 
+            <h4 style="padding-bottom: 10px;"> Want to add some actor to your list ?</h4>
+        </div>
+    </div>
+    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
+        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
+        <div class="input-group mb-3">
+            <input type="search" class="form-control" placeholder="Search your movie and add it by clicking on poster" aria-label="Search" name="search">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 800px;">
+        {% for actor in search_results %}
+            {% if actor.profile_path != None %}
+                <a href="/add_person_to_list/Favourite Actors/{{ actor.id }}" data-name="Favourite Actors" data-id="{{ actor.id }}">
+                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face"> 
+                </a> 
+            {% else %}
+                <img src="{% static 'profile.jpg'%}" class="face">
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+</ul>
+{% endblock content %}

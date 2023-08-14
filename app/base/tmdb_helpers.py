@@ -59,6 +59,7 @@ class TMDBClient:
     def get_single_movie(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
         movie_details = self.get_movie_details(movie_result['id'])
+        print(movie_details)
         
         movie = {
             'id': movie_result['id'],
@@ -73,7 +74,11 @@ class TMDBClient:
         cast = self.process_cast(movie_details['cast'])
         crew = self.process_crew(movie_details['crew'])
 
-        return {'movie': movie, 'cast': cast, 'crew': crew}
+        # Separate directors and writers from the crew data
+        directors = [person for person in movie_details['crew'] if person['job'] == 'Director']
+        writers = [person for person in movie_details['crew'] if person['job'] in ['Writer', 'Screenplay', 'Novel']]
+
+        return {'movie': movie, 'cast': cast, 'crew': crew, 'directors': directors , 'writers': writers}
 
     def get_single_movie_core(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
@@ -84,6 +89,12 @@ class TMDBClient:
             'release_date': movie_result['release_date'][0:4],
         }
         return movie
+    
+    def search_person_by_id(self, person_id):
+        url = f"https://api.themoviedb.org/3/person/{person_id}?api_key={self.api_key}"
+        response = requests.get(url, headers=self.headers).json()
+        print(response)
+        return response
 
     def search_person(self, name):
         url = f"https://api.themoviedb.org/3/search/person?api_key={self.api_key}&query={name}"

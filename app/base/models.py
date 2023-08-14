@@ -3,7 +3,7 @@ from django.db import models
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     year = models.IntegerField()
-    custom_id = models.IntegerField(primary_key=True)
+    custom_id = models.IntegerField(primary_key=True, default=None)
     poster_path = models.CharField(max_length=200, default=None)
     WATCHLIST_CHOICES = (
         ("yes", "Yes"),
@@ -19,16 +19,9 @@ class Movie(models.Model):
 
 class Person(models.Model):
     name = models.CharField(max_length=100)
-    ROLE_CHOICES = (
-        ("actor", "Aktor"),
-        ("director", "Reżyser"),
-        ("cameraman", "Kamerzysta"),
-        ("lighting", "Oświetlenie"),
-        ("sound", "Dźwięk"),
-        # Dodaj więcej ról według potrzeb
-    )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-    movies = models.ManyToManyField("Movie", related_name="people")
+    custom_id = models.IntegerField(primary_key=True, default=None)
+    role = models.CharField(max_length=30)
+    profile_path = models.CharField(max_length=200, default=None)
 
     def __str__(self):
         return self.name
