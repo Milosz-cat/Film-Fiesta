@@ -37,6 +37,34 @@ def ranking(request, name):
 
     return render(request, "list_management/ranking.html", context)
 
+@login_required
+def rate_movie(request, title, year, rating):
+    user = request.user
+    user_ranking, _ = MovieList.objects.get_or_create(user=user, name='Rated Films')
+
+
+    if "." in title:
+        title = title.split(".", 1)[1].strip()
+
+    tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
+    movie_data = tmdb_client.get_single_movie_core(title, year)
+
+    # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
+    movie_obj, _ = Movie.objects.get_or_create(
+        title=movie_data["title"],
+        year=movie_data["release_date"],
+        poster_path=movie_data["poster_path"],
+        custom_id=movie_data["id"],
+        rating=rating,
+        on_watchlist="watched",
+    )
+
+    # Dodaj film do watchlisty użytkownika
+    user_ranking.movies.add(movie_obj)
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
 
 @login_required
 def list_movies(request, name):
@@ -63,7 +91,9 @@ def list_movies(request, name):
         context["search_results"] = movies
 
     user = request.user
-    user_list = MovieList.objects.get(user=user, name=name)
+
+    # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
+    user_list, _ = MovieList.objects.get_or_create(user=user, name=name)
     movies = user_list.movies.all()
     # TODO obsluga bledu brak listy
     context["user_list"] = movies

@@ -21,7 +21,6 @@ def movie(request, title, year):
 
 def person(request, name):
 
-    
     tmdb_client = TMDBClient()
     person = tmdb_client.search_person(name)
     person_id = person[0]['id']

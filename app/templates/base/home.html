@@ -19,12 +19,9 @@
 
     <div class="poster-container-scroll">
       <div class="poster-item">
-        <img
-          src="{% static 'marlon.jpg' %}"
-          alt="Movie Poster 1"
-          class="poster-list-scroll"
-        />
-        <div class="watchlist-label">+</div>
+        <img src="{% static 'marlon.jpg' %}" alt="Movie Poster" class="poster-list-scroll">
+        <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+        <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}" class="rating-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">☆</a>
       </div>
       <!-- Add more posters as needed -->
     </div>
