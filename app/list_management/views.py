@@ -9,6 +9,11 @@ from base import scraper
 from django.http import Http404
 import environ
 import requests
+import json
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 env = environ.Env()
 environ.Env.read_env()
@@ -37,33 +42,43 @@ def ranking(request, name):
 
     return render(request, "list_management/ranking.html", context)
 
+
+# @csrf_exempt
+# @require_POST
 @login_required
 def rate_movie(request, title, year, rating):
     user = request.user
     user_ranking, _ = MovieList.objects.get_or_create(user=user, name='Rated Films')
 
-
     if "." in title:
         title = title.split(".", 1)[1].strip()
 
-    tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
+    tmdb_client = TMDBClient()
     movie_data = tmdb_client.get_single_movie_core(title, year)
 
-    # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
-    movie_obj, _ = Movie.objects.get_or_create(
-        title=movie_data["title"],
-        year=movie_data["release_date"],
-        poster_path=movie_data["poster_path"],
-        custom_id=movie_data["id"],
-        rating=rating,
-        on_watchlist="watched",
-    )
+    try:
+        # Attempt to retrieve the movie based on the custom_id
+        movie_obj = Movie.objects.get(custom_id=movie_data["id"])
+        # If the movie already exists, update the rating
+        movie_obj.rating = rating
+        movie_obj.save()
 
-    # Dodaj film do watchlisty użytkownika
+    except Movie.DoesNotExist:
+        # If the movie doesn't exist, create a new one
+        movie_obj = Movie.objects.create(
+            title=movie_data["title"],
+            year=movie_data["release_date"],
+            poster_path=movie_data["poster_path"],
+            custom_id=movie_data["id"],
+            rating=rating,
+            on_watchlist="watched",
+        )
+
+    # Always add the movie to user's rated list, regardless of it being new or existing
     user_ranking.movies.add(movie_obj)
-
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
+
 
 
 @login_required
