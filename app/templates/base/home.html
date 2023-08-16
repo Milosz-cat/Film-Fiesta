@@ -2,13 +2,28 @@
 {% block title %}Home{%endblock title %}
 {% block content %}
 
+
 <div class="card-navigation">
   <button class="btn btn-primary prev-card"><</button>
 </div>
 <div class="card">
   <div class="card-body"  style="display: flex; flex-direction: column; align-items: center;">
     <h1>Welcome to the FilmFiesta!</h1>
+    {% comment %}
     <h5 style="width: 1000px;">Enter a realm where your cinematic journey is immortalized. FilmFiesta is not just another movie site;<br> it’s your personal movie cataloging haven. Here, you can keep track of all the films you've watched,<br> from timeless classics to the latest releases. Create collections, rate your favorites, and discover new gems based on your preferences. With FilmFiesta, every film you watch becomes a part of your unique story!</h5>
+    {% endcomment %}
+    <h5 style="width: 1000px;">
+      Install TMDb API Wrapper
+      ile procent filmow danego aktora/rezysera/listy objerzales
+      wyglad strony movie, people of ciname Others
+      reviews do movies, oglnie usuwanie edytowanie list itp,
+      dodaj rtykiety do filmow i aktorow
+      moze cos z best picture z kazego roku oscary
+      copyright imdb/tmdb
+      testy, ngnix, itp refrokturyzajca zeby obslugiwal bledy kiedy nic nie ma
+      redis/celery do zapisywania scrapowanych top250 imdb/filmweb, 
+      style.css rozdzielic jakos sensownie
+      dokumnetacja</h5>
     <h2 style="margin-top: 35px; margin-bottom: 0px; padding: 0px;">Now playing</h2>
     <p style="margin: 0px; padding: 0px;">Don't waste your time and watch these movies at the cinema.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
@@ -84,60 +99,3 @@
 </div>
 
 {% endblock content %}
-
-{% comment %} <div class="card-navigation">
-  <button class="btn btn-primary prev-card"><</button>
-</div>
-<div class="card">
-  <div class="card-body">
-    <a href="{% url 'ranking' 'imdb' %}">
-      <p class="card-text">Top 250 Imdb</p>
-      <p class="card-text">
-        Install TMDb API Wrapper
-        rankingi aktorow, rezyserow, rekomendacje(tmdb api), ocenianie filmow (
-        i zeby po dodaniu do watchlistyzmianila sie ikonka) redis/celery do
-        zapisywania scrapowanych top250 imdb/filmweb, dokumnetacja
-      </p>
-    </a>
-
-    <div class="poster-container-scroll">
-      <div class="poster-item">
-        <img src="{% static 'marlon.jpg' %}" alt="Movie Poster" class="poster-list-scroll">
-        <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
-        <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}" class="rating-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">☆</a>
-      </div>
-      <!-- Add more posters as needed -->
-    </div>
-  </div>
-</div>
-<div class="card">
-  <div class="card-body">
-    <a href="{% url 'ranking' 'filmweb' %}">
-      <p class="card-text">Top 250 Filmweb</p>
-    </a>
-  </div>
-</div>
-<div class="card">
-  <div class="card-body">
-<div class="col">
-    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
-        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
-        <div class="input-group mb-3">
-            <input type="search" class="form-control" placeholder="Search" aria-label="Search" name="search">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
-
-    <ul class="list-group list-group-light">
-        {% for movie in movies %}
-        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-
-        {% endfor %}
-    </ul>
-
-</div>
-  </div>
-</div>
-<div class="card-navigation">
-  <button class="btn btn-primary next-card">></button>
-</div> {% endcomment %}

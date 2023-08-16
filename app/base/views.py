@@ -6,8 +6,9 @@ from base.models import Movie
 
 @login_required
 def home(request):
-    tmdb_client = TMDBClient()
+
     context = {}
+    tmdb_client = TMDBClient()
     trending_movies = [
         {
             'title': movie['title'],
@@ -148,7 +149,7 @@ def search(request):
             for movie in movies
         ]
         context = {"movies": movies}
-        # Pass the list of movies to the template via the context
+        print(movies)
         return render(request, "base/search.html", context)
 
     return render(request, "base/search.html")

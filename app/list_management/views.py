@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.db import transaction
 
 env = environ.Env()
 environ.Env.read_env()
@@ -150,17 +151,22 @@ def add_to_list(request, movie_title, movie_year, name):
     tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
     movie_data = tmdb_client.get_single_movie_core(movie_title, movie_year)
 
-    # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
-    movie_obj, _ = Movie.objects.get_or_create(
-        title=movie_data["title"],
-        year=movie_data["release_date"],
-        poster_path=movie_data["poster_path"],
-        custom_id=movie_data["id"],
-        on_watchlist="yes" if name == "Watchlist" else "no",
-    )
+    with transaction.atomic():  # Start of transaction block
+        movie_obj, created = Movie.objects.get_or_create(
+            title=movie_data["title"],
+            year=movie_data["release_date"],
+            poster_path=movie_data["poster_path"],
+            custom_id=movie_data["id"],
+            defaults={"on_watchlist": "yes" if name == "Watchlist" else "no"}
+        )
+        
+        if not created:
+            # If the movie was not created (i.e., it already existed), update the on_watchlist field
+            movie_obj.on_watchlist = "yes" if name == "Watchlist" else "no"
+            movie_obj.save()
 
-    # Dodaj film do watchlisty użytkownika
-    user_list.movies.add(movie_obj)
+        # Add the movie to the user's watchlist
+        user_list.movies.add(movie_obj)
 
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)

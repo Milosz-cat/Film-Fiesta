@@ -3,22 +3,39 @@
 {% block title %}Movie{% endblock title %}
 
 {% block content %}
-<div class="col">
-    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
-        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
-        <div class="input-group mb-3">
-            <input type="search" class="form-control" placeholder="Search" aria-label="Search" name="search">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
 
     <ul class="list-group list-group-light">
-        {% for movie in movies %}
-        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-
-        {% endfor %}
+        {% with valid_movies_count=0 %}
+        <div class="movie-row">
+            {% for movie in movies %}
+                {% if movie.release_date and movie.poster_path %}
+                    {% with new_count=valid_movies_count|add:"1" %}
+                        {% if new_count|divisibleby:5 %}
+                            {% if valid_movies_count > 0 %}
+                                </div>
+                            {% endif %}
+                            <div class="movie-row">
+                        {% endif %}
+                        <div class="movie-item">
+                            <div class="poster-item">
+                                    <a href="{% url 'movie' title=movie.title year=movie.release_date%}" class="movie-link">
+                                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+                                    </a>
+                                    <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">☆</a>
+                            </div>
+                        </div>
+                        {% if forloop.last and not new_count|divisibleby:5 %}
+                            </div>
+                        {% endif %}
+                        {% with valid_movies_count=new_count %}
+                        {% endwith %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endwith %}
     </ul>
 
-</div>
 {% endblock content %}
 
