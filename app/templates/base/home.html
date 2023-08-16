@@ -6,6 +6,89 @@
   <button class="btn btn-primary prev-card"><</button>
 </div>
 <div class="card">
+  <div class="card-body"  style="display: flex; flex-direction: column; align-items: center;">
+    <h1>Welcome to the FilmFiesta!</h1>
+    <h5 style="width: 1000px;">Enter a realm where your cinematic journey is immortalized. FilmFiesta is not just another movie site;<br> it’s your personal movie cataloging haven. Here, you can keep track of all the films you've watched,<br> from timeless classics to the latest releases. Create collections, rate your favorites, and discover new gems based on your preferences. With FilmFiesta, every film you watch becomes a part of your unique story!</h5>
+    <h2 style="margin-top: 35px; margin-bottom: 0px; padding: 0px;">Now playing</h2>
+    <p style="margin: 0px; padding: 0px;">Don't waste your time and watch these movies at the cinema.</p>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
+      {% for movie in now_playing_movies %}
+        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
+    <h2 style="margin: 0px; padding: 0px;">Tranding movies</h2>
+    <p style="margin: 0px; padding: 0px;">This week's top movies.</p>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
+      {% for movie in trending_movies %}
+        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+        </a>
+      {% endfor %}
+    </div>
+    <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px;">Popular celebrities</h2>
+    <p style="margin-bottom: 5px; padding: 0px;">This week's top popular persons.</p>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 960px;">
+          {% for person in popular_persons %}
+          <a href="{% url 'person' person.name %}">
+              <div class="person">
+                  {% if person.profile_path != None %}
+                      <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="face">
+                  {% else %}
+                      <img src="{% static 'profile.jpg'%}" class="face">
+                  {% endif %}
+                  <p>{{ person.name }}</p>
+              </div>
+          </a>
+      {% endfor %}
+    </div>
+   
+  </div>
+</div>
+<div class="card">
+  <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
+    <h2 style="margin: 0px; padding: 0px;">Watchlist</h2>
+    <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
+      {% if watchlist_movies %}
+        {% for movie in watchlist_movies %}
+          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+          </a>
+        {% endfor %}
+      {% else %}
+        <h4 style="height: 150px; margin-top: 50px;">You haven't added any movies to your watchlist, you can do so by clicking + in the top right corner of the poster after hovering over it.</h4>
+      {% endif %}
+    </div>
+      <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px;">Recommendations</h2>
+      <p style="margin: 0px; padding: 0px;">Based on movies you've seen recently.</p>
+      <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
+        {% if watchlist_movies %}
+          {% for movie in recommendations %}
+            <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+              <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+            </a>
+          {% endfor %}
+          {% else %}
+          <h4 style="height: 150px; margin-top: 50px;">You haven't watched any movies yet, you can do so by clicking ☆ in the top left corner of the poster after hovering over it.</h4>
+        {% endif %}
+      </div>
+  </div>
+</div>
+<div class="card-navigation">
+  <button class="btn btn-primary next-card">></button>
+</div>
+
+{% endblock content %}
+
+{% comment %} <div class="card-navigation">
+  <button class="btn btn-primary prev-card"><</button>
+</div>
+<div class="card">
   <div class="card-body">
     <a href="{% url 'ranking' 'imdb' %}">
       <p class="card-text">Top 250 Imdb</p>
@@ -36,38 +119,25 @@
 </div>
 <div class="card">
   <div class="card-body">
-    <h5 class="card-title">Karta 3</h5>
-    <p class="card-text">Treść karty 3</p>
+<div class="col">
+    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
+        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
+        <div class="input-group mb-3">
+            <input type="search" class="form-control" placeholder="Search" aria-label="Search" name="search">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <ul class="list-group list-group-light">
+        {% for movie in movies %}
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
+
+        {% endfor %}
+    </ul>
+
+</div>
   </div>
 </div>
 <div class="card-navigation">
   <button class="btn btn-primary next-card">></button>
-</div>
-
-<script>
-  $(document).ready(function () {
-    // Set which cards should be displayed at the start
-    var activeCard = 0;
-    $(".card").eq(activeCard).addClass("active");
-
-    // Function to handle the click of the page number
-    $(".prev-card").click(function () {
-      $(".card").eq(activeCard).removeClass("active"); // Hide the current card
-      activeCard = Math.max(0, activeCard - 1); // Set the new active card
-      $(".card").eq(activeCard).addClass("active"); // Display the new card
-    });
-
-    $(".next-card").click(function () {
-      $(".card").eq(activeCard).removeClass("active"); // Hide the current card
-      activeCard = Math.min($(".card").length - 1, activeCard + 1); // Set the new active card
-      $(".card").eq(activeCard).addClass("active"); // Display the new card
-    });
-  });
-</script>
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-
-{% endblock content %}
+</div> {% endcomment %}

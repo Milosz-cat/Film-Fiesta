@@ -1,4 +1,5 @@
 import requests, environ
+from datetime import datetime
 
     # Create the crew list, avoiding repetitions in names
     #TODO Ogarnij cos zeby byy wypisane wsytstkie role i co z rezyserem!!!!!!!!!!
@@ -119,3 +120,25 @@ class TMDBClient:
         director_movies = sorted(director_movies, key=lambda x: x.get('popularity', 0), reverse=True)
         return actor_movies, director_movies
 
+    def get_trending_movies(self):
+        """Retrieve a list of trending movies from TMDb."""
+        url = "https://api.themoviedb.org/3/trending/movie/day?language=en-US"
+        response = requests.get(url, headers=self.headers).json()
+        return response['results']
+    
+    def get_now_playing_movies(self):
+        """Retrieve a list of popular movies from TMDb."""
+        url = "https://api.themoviedb.org/3/movie/now_playing"
+        response = requests.get(url, headers=self.headers).json()
+        return response['results']
+    
+    def get_movie_recommendations(self, movie_id):
+        """Retrieve a list of recommended movies for a given movie ID from TMDb."""
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}/recommendations"
+        response = requests.get(url, headers=self.headers).json()
+        return response['results']
+
+    def get_popular_people(self):
+        url = "https://api.themoviedb.org/3/person/popular"
+        response = requests.get(url, headers=self.headers).json()
+        return response['results']

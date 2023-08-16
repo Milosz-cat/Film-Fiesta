@@ -36,11 +36,13 @@
                     <div id="ratingModal" class="modal">
                         <div class="modal-content">
                             <span class="close">&times;</span>
-                            <p>Rate the movie:</p>
+                            <p style="text-align: center;">Rate the movie:</p> 
                             <div class="stars">
                                 <div class="stars">
-                                    {% for i in "1234567890"|make_list %}
-                                        <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">☆</a>
+                                    {% for i in "0123456789"|make_list %}
+                                        <div class="star-container">
+                                            <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">☆</a>
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>

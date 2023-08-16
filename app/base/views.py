@@ -1,11 +1,76 @@
 from django.shortcuts import render
 from base.tmdb_helpers import TMDBClient
 from django.contrib.auth.decorators import login_required
+from list_management.models import MovieList
+from base.models import Movie
 
 @login_required
 def home(request):
-    # Render the template with the context
-    return render(request, "base/home.html")
+    tmdb_client = TMDBClient()
+    context = {}
+    trending_movies = [
+        {
+            'title': movie['title'],
+            'popularity': movie.get('popularity', ''),
+            'poster_path': movie['poster_path'],
+            'custom_id': movie['id'],
+            'year': movie['release_date'][0:4] if movie['release_date'] else None
+        }
+        for movie in tmdb_client.get_trending_movies()  
+    ]
+
+    now_playing_movies = [
+        {
+            'title': movie['title'],
+            'popularity': movie.get('popularity', ''),
+            'poster_path': movie['poster_path'],
+            'custom_id': movie['id'],
+            'year': movie['release_date'][0:4] if movie['release_date'] else None
+        }
+        for movie in tmdb_client.get_now_playing_movies()  
+    ]
+
+    user = request.user
+
+    # Get the user's watchlist movies
+    user_watchlist = MovieList.objects.get(user=user, name="Watchlist")
+    watchlist_movies = user_watchlist.movies.all() if user_watchlist else None  # If MovieList has a many-to-many field called movies
+
+
+
+    user_watched_films = MovieList.objects.get(user=user, name="My Films")
+    if user_watched_films.movies.exists():
+        last_added_movie_id = user_watched_films.movies.last()
+
+        recommendations = [
+            {
+                'title': movie['title'],
+                'popularity': movie.get('popularity', ''),
+                'poster_path': movie['poster_path'],
+                'custom_id': movie['id'],
+                'year': movie['release_date'][0:4] if movie['release_date'] else None
+            }
+            for movie in tmdb_client.get_movie_recommendations(last_added_movie_id.custom_id)
+        ]
+    else:
+        recommendations = None
+
+    popular_persons = [
+        {
+            'name': person['name'],
+            'popularity': person.get('popularity', ''),
+            'profile_path': person['profile_path']
+        }
+        for person in tmdb_client.get_popular_people()
+    ]
+
+    context['popular_persons'] = popular_persons
+    context['recommendations'] = recommendations
+    context["trending_movies"] = trending_movies
+    context["now_playing_movies"] = now_playing_movies
+    context["watchlist_movies"] = watchlist_movies
+    
+    return render(request, "base/home.html", context)
 
 
 def movie(request, title, year):

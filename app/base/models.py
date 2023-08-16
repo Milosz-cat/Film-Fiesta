@@ -11,7 +11,7 @@ class Movie(models.Model):
             MaxValueValidator(10),
             MinValueValidator(0)
         ],
-    default=None)
+    default=0)
     WATCHLIST_CHOICES = (
         ("yes", "Yes"),
         ("no", "No"),

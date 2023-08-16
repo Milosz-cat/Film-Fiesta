@@ -48,14 +48,14 @@ def ranking(request, name):
 @login_required
 def rate_movie(request, title, year, rating):
     user = request.user
-    user_ranking, _ = MovieList.objects.get_or_create(user=user, name='Rated Films')
+    user_ranking, _ = MovieList.objects.get_or_create(user=user, name="My Films")
 
     if "." in title:
         title = title.split(".", 1)[1].strip()
 
     tmdb_client = TMDBClient()
     movie_data = tmdb_client.get_single_movie_core(title, year)
-
+    rating += 1
     try:
         # Attempt to retrieve the movie based on the custom_id
         movie_obj = Movie.objects.get(custom_id=movie_data["id"])
@@ -78,7 +78,6 @@ def rate_movie(request, title, year, rating):
     user_ranking.movies.add(movie_obj)
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
-
 
 
 @login_required
@@ -110,8 +109,7 @@ def list_movies(request, name):
     # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
     user_list, _ = MovieList.objects.get_or_create(user=user, name=name)
     movies = user_list.movies.all()
-    # TODO obsluga bledu brak listy
-    context["user_list"] = movies
+    context["user_list"] = user_list.movies.order_by("-rating")
     context["name"] = user_list.name
     context["description"] = user_list.description
     return render(request, "list_management/list.html", context)
@@ -170,7 +168,6 @@ def add_to_list(request, movie_title, movie_year, name):
 
 @login_required
 def person_list(request, name):
-
     user = request.user
     user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
 
@@ -180,9 +177,7 @@ def person_list(request, name):
             "search"
         )  # Get the search term from the POST data
         tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
-        persons = tmdb_client.search_person(
-            search_term
-        ) 
+        persons = tmdb_client.search_person(search_term)
 
         persons = [
             {
@@ -194,7 +189,6 @@ def person_list(request, name):
             for actor in persons
         ]
         context["search_results"] = persons
-
 
     persons = user_list.persons.all()
     # TODO obsluga bledu brak listy
@@ -210,7 +204,6 @@ def add_person_to_list(request, name, id):
     # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
     user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
 
-
     tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
     person = tmdb_client.search_person_by_id(id)
 
@@ -221,7 +214,6 @@ def add_person_to_list(request, name, id):
         )
         referer = request.META.get("HTTP_REFERER")
         return redirect(referer)
-
 
     if person["known_for_department"] == "Acting" and name == "Favourite Directors":
         messages.error(

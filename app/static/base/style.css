@@ -50,12 +50,15 @@ body {
 
 .card {
     display: none; /* Ukryj wszystkie karty początkowo */
-    width: 70vw;
+    width: 65vw;
     height: 70vh;
     margin-bottom: 20px;
+    
 }
 .card.active {
     display: block; /* Wyświetl aktywną kartę */
+    justify-content: center;
+    align-items: center;
 }
 
 .card-movie {
@@ -68,6 +71,19 @@ body {
     z-index: 1;
 }
 
+.card h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333; /* Ciemny odcień szarości */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Delikatne cieniowanie */
+}
+
+.card h5 {
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.5; /* Poprawia czytelność tekstu */
+    color: #555; /* Średni odcień szarości */
+}
 
 .list-group.list-group-light{
     padding-top: 30px;
@@ -130,9 +146,10 @@ body {
 
 .face {
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
+    padding-right: 10px;
 }
 
 .row{
@@ -228,15 +245,22 @@ body {
       opacity: 1;
   }
 
+
 .star {
     font-size: 24px;
     padding: 5px;
     cursor: pointer;
     transition: color 0.2s;
+    color: gold; /* Tutaj zmieniamy domyślny kolor na złoty */
 }
 
-.star:hover, .star:hover ~ .star {
-    color: gold;
+.star-container {
+    display: inline-block;
+}
+
+.star-container:hover .star,
+.star-container:hover ~ .star-container .star {
+    color: black;
 }
 
 .modal {
@@ -250,6 +274,8 @@ body {
 }
 
 .modal-content {
+    max-width: 400px; /* maksymalna szerokość karty */
+    border-radius: 8px;
     position: absolute;
     top: 50%;
     left: 50%;

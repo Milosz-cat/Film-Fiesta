@@ -31,13 +31,10 @@
                 {% endif %}
                     <div class="poster-item">
                         <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
-                        {% comment %} {% if list_title != 'Watchlist' %}
-                            <a href="/add_to_watchlist/{{ movie.title|urlencode }}/{{ movie.year }}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
-                        {% endif %} {% endcomment %}
+                        {% if movie.rating and movie.rating != 0 %}
+                            <p style="text-align: center;">☆ {{movie.rating}}</p>     
+                        {% endif %}
                     </div>
-                    {% comment %} {% if 'Top 250' in list_title %}
-                        <p style="text-align: center;">{{forloop.counter}}</p>                    
-                    {% endif %}       {% endcomment %}
                     
                 </a>
             </div>
