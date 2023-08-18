@@ -71,12 +71,8 @@
               <li class="nav-item active">
                   <a class="nav-link" href="{% url 'choose_list' %}">Lists</a>
               </li>
-              <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="peopleDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">People of cinema</a>
-                  <div class="dropdown-menu" aria-labelledby="peopleDropdown">
-                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Actors' %}">Actors</a>
-                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Directors' %}">Directors</a>
-                  </div>
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'person_choose_list' %}">People of cinema</a>
               </li>
               <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</a>
@@ -157,7 +153,7 @@
       $(".prev-card").click(showPreviousCard);
       $(".next-card").click(showNextCard);
   
-      setInterval(showNextCard, 8000);
+      setInterval(showNextCard, 15000);
     });  
   </script>
   <script>

@@ -125,6 +125,7 @@ a:hover {
     justify-content: space-between;
 }
 
+
 .div-movie {
     height: 345px;
     max-width: 970px;
@@ -185,10 +186,45 @@ a:hover {
     border-radius: 50%;
     width: 120px;
     height: 120px;
+    margin-left: 10px;
     object-fit: cover;
-    padding-right: 10px;
 }
 
+.face-list {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    padding-right: 10px;
+    background-color:  var(--color2);
+    box-shadow: 9px 0px 10px black;
+    margin-left: -50px;
+}
+
+.face-list-img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    box-shadow: 9px 0px 10px black;
+    margin-left: -20px;
+}
+
+.poster-container .face-list:last-child {
+    margin-left: 0; /* Remove the negative margin for the first poster */
+}
+
+.poster-container .face-list:first-child {
+    margin-right: 10px; /* Remove the negative margin for the first poster */
+}
+
+.poster-container .face-list-img:last-child {
+    margin-left: 0; /* Remove the negative margin for the first poster */
+}
+
+.poster-container .face-list-img:first-child {
+    margin-right: 10px; /* Remove the negative margin for the first poster */
+}
 .row{
     margin-left: 10px;
 }
@@ -262,6 +298,24 @@ a:hover {
     cursor: pointer;
     border-radius: 10px;
   }
+
+  .watchlist-link {
+    position: absolute; /* This takes the element out of the normal flow and positions it relative to its nearest positioned ancestor */
+    top: 8px;
+    left: 8px;
+    background-color: rgba(255, 255, 255, 0.815); /* Optional: Add a background color with some transparency for better visibility */
+    font-size: 30px; /* Zwiększ rozmiar czcionki, aby tekst był większy */
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+    text-align: center;
+}
+
+
+.div-movie-link {
+    position: relative;
+}
 
 .rating-label{
     position: absolute;
@@ -361,4 +415,5 @@ a:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 120px; /* Adjust this value based on your design requirements */
+    text-align: center;
 }

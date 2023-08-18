@@ -58,9 +58,11 @@ def home(request):
 
     popular_persons = [
         {
+            'id': person['id'],
             'name': person['name'],
             'popularity': person.get('popularity', ''),
-            'profile_path': person['profile_path']
+            'profile_path': person['profile_path'],
+            'known_for_department': person['known_for_department']
         }
         for person in tmdb_client.get_popular_people()
     ]

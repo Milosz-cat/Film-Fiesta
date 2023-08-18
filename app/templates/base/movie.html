@@ -30,65 +30,69 @@
             </a>
         </div>
         <div class="flex-container">
-            <div class="div-movie">
-                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
-                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}" style="top: 4px !important;left: 4px !important;;">+</a>
-            <div class="div-movie"> 
-            <div class="genres-container">
-                {% for genre in movie.genres %}
-                    <div class="genre-item">
-                        {{ genre.name }}
-                    </div>
-                {% endfor %}
+            <div class="div-movie-link">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.release_date }}/{{'Watchlist'}}" class="watchlist-link" data-title="{{ movie.title }}" data-year="{{ movie.release_date }}">+</a> 
             </div>
-            <div class="row" style="margin: 25px;">
-                {{ movie.overview }}
-            </div>   
-            <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-top: 1px solid white; border-bottom: 1px solid white;">
-                Directed by  
-                {% for person in directors %}
-                    {{ person.name }}
-                    {% if not forloop.last %} ● {% endif %}
-                {% endfor %}
-            </div>
-            <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
-                Written by 
-                {% for person in writers %}
-                    {{ person.name }}
-                    {% if not forloop.last %} ● {% endif %}
-                {% endfor %}
-            </div>
+                <div class="div-movie"> 
+                <div class="genres-container">
+                    {% for genre in movie.genres %}
+                        <div class="genre-item">
+                            {{ genre.name }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin: 25px;">
+                    {{ movie.overview }}
+                </div>   
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-top: 1px solid white; border-bottom: 1px solid white;">
+                    Directed by  
+                    {% for person in directors %}
+                        {{ person.name }}
+                        {% if not forloop.last %} ● {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
+                    Written by 
+                    {% for person in writers %}
+                        {{ person.name }}
+                        {% if not forloop.last %} ● {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
+                    Budget: {{movie.budget}} ● Revenue: {{movie.revenue}}
+                </div>
 
-            <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
-                {% for actor in cast %}
-                    <a href="{% url 'person' actor.name %}">
-                        <div class="actor">
-                            {% if actor.profile_path != None %}
-                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                            {% else %}
-                                <img src="{% static 'profile.jpg'%}" class="face">
-                            {% endif %}
-                            <p class="truncate">{{ actor.name }}</p>
-                            <p class="truncate">{{ actor.character }}</p>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>       
-            <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
-                {% for actor in crew %}
-                    <a href="{% url 'person' actor.name %}">
-                        <div class="actor">
-                            {% if actor.profile_path != None %}
-                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                            {% else %}
-                                <img src="{% static 'profile.jpg'%}" class="face">
-                            {% endif %}
-                            <p class="truncate">{{ actor.name }}</p>
-                            <p class="truncate">{{ actor.known_for_department }}</p>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>    
+                <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
+                    {% for actor in cast %}
+                        <a href="{% url 'person' actor.name %}">
+                            <div class="actor">
+                                {% if actor.profile_path != None %}
+                                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                                {% else %}
+                                    <img src="{% static 'profile.jpg'%}" class="face">
+                                {% endif %}
+                                <p class="truncate">{{ actor.name }}</p>
+                                <p class="truncate">{{ actor.character }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>       
+                <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
+                    {% for actor in crew %}
+                        <a href="{% url 'person' actor.name %}">
+                            <div class="actor">
+                                {% if actor.profile_path != None %}
+                                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                                {% else %}
+                                    <img src="{% static 'profile.jpg'%}" class="face">
+                                {% endif %}
+                                <p class="truncate">{{ actor.name }}</p>
+                                <p class="truncate">{{ actor.known_for_department }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>    
         </div>
     </div>
 {% endblock content %}

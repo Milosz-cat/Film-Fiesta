@@ -127,15 +127,22 @@ def choose_list(request):
 
 
 @login_required
-def add_list(request):
+def add_list(request, type):
     if request.method == "POST":
         user = request.user
         name = request.POST.get("name")
         description = request.POST.get("description")
-        new_list = MovieList(user=user, name=name, description=description)
+
+        if type == "Movie":
+            new_list = MovieList(user=user, name=name, description=description)
+        else:
+            new_list = PersonList(user=user, name=name, description=description)
+
         new_list.save()
 
-    return redirect("choose_list")
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
 
 
 @login_required
@@ -207,27 +214,18 @@ def person_list(request, name):
 def add_person_to_list(request, name, id):
     user = request.user
 
+    known_for_department = name
+
+    if name == 'Acting':
+        known_for_department = 'Favourite Actors' 
+    elif name == 'Directing':
+        known_for_department = 'Favourite Directors'     
+
     # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
-    user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
+    user_list, _ = PersonList.objects.get_or_create(user=user, name=known_for_department)
 
     tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
     person = tmdb_client.search_person_by_id(id)
-
-    if person["known_for_department"] == "Directing" and name == "Favourite Actors":
-        messages.error(
-            request,
-            "This person is more recognizable as a director add him/her to list of favorite directors",
-        )
-        referer = request.META.get("HTTP_REFERER")
-        return redirect(referer)
-
-    if person["known_for_department"] == "Acting" and name == "Favourite Directors":
-        messages.error(
-            request,
-            "This person is more recognizable as an actor add him/her to list of favorite actors",
-        )
-        referer = request.META.get("HTTP_REFERER")
-        return redirect(referer)
 
     # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
     person, _ = Person.objects.get_or_create(
@@ -242,3 +240,13 @@ def add_person_to_list(request, name, id):
 
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
+
+
+# Create your views here.
+@login_required
+def person_choose_list(request):
+    user = request.user
+    user_lists = PersonList.objects.filter(user=user)
+
+    context = {"user_lists": user_lists}
+    return render(request, "list_management/person_choose_list.html", context)

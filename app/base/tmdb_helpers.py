@@ -59,6 +59,16 @@ class TMDBClient:
                 seen_names.add(person['name'])
         return sorted(crew, key=lambda x: x['popularity'], reverse=True)
 
+    def format_number(self, number):
+        if number >= 1_000_000_000:  # billions
+            return f"{number // 1_000_000_000} mld $ "
+        elif number >= 1_000_000:  # millions
+            return f"{number // 1_000_000} mln $ "
+        elif number >= 1_000:  # thousands
+            return f"{number // 1_000} k $ "
+        else:
+            return str(number)
+
     def get_single_movie(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
         movie_persons = self.get_movie_persons(movie_result['id'])
@@ -75,8 +85,8 @@ class TMDBClient:
             'vote_average': movie_result['vote_average'],
             'overview': movie_result['overview'],
             'genres': movie_detalis['genres'],
-            'budget': movie_detalis['budget'],
-            'revenue': movie_detalis['revenue'],
+            'budget' : self.format_number(movie_detalis['budget']),
+            'revenue' : self.format_number(movie_detalis['revenue']),
             'duration': duration,
         }
 
