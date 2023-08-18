@@ -3,33 +3,63 @@
 {% block title %}Movie{% endblock title %}
 
 {% block content %}
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p style="text-align: center;">Rate the movie:</p> 
+            <div class="stars">
+                <div class="stars">
+                    {% for i in "0123456789"|make_list %}
+                        <div class="star-container">
+                            <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ movie.backdrop_path }}');"></div>
     <div class="card-movie">
         <div class="flex-container">
             <div class="row">
-                <h1 style="padding: 0px; margin: 0px;"> {{ movie.title }} </h1>
-                <h6 style="padding: 0px; margin: 0px;"> {{ movie.release_date }} </h6>
+                <h1 style="padding: 0px; margin-top: 10px;"> {{ movie.title }} </h1>
+                <h6 style="padding: 0px; margin-bottom: 20px;"> {{ movie.release_date }} ● {{movie.duration}}</h6>
             </div>
-            {{ movie.vote_average }} 
-            
+            <a href="#" style="display: flex; justify-content: center; align-items: center; height: 100px;" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">
+                <h3> ★ {{ movie.vote_average|floatformat:1 }} </h3>
+            </a>
         </div>
         <div class="flex-container">
             <div class="div-movie">
                 <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
-                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
-                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}" style="top: 4px !important;left: 4px !important;;">+</a>
             <div class="div-movie"> 
-            <div class="row">
+            <div class="genres-container">
+                {% for genre in movie.genres %}
+                    <div class="genre-item">
+                        {{ genre.name }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row" style="margin: 25px;">
                 {{ movie.overview }}
             </div>   
-            <div class="row">
-                Directed by {% for person in directors %}{{ person.name }} {% endfor %}
+            <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-top: 1px solid white; border-bottom: 1px solid white;">
+                Directed by  
+                {% for person in directors %}
+                    {{ person.name }}
+                    {% if not forloop.last %} ● {% endif %}
+                {% endfor %}
             </div>
-            <div class="row">
-                Written by {% for person in writers %}{{ person.name }} {% endfor %}
+            <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
+                Written by 
+                {% for person in writers %}
+                    {{ person.name }}
+                    {% if not forloop.last %} ● {% endif %}
+                {% endfor %}
             </div>
 
-            <div class="actor-container">
+            <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
                 {% for actor in cast %}
                     <a href="{% url 'person' actor.name %}">
                         <div class="actor">
@@ -38,13 +68,13 @@
                             {% else %}
                                 <img src="{% static 'profile.jpg'%}" class="face">
                             {% endif %}
-                            <p>{{ actor.name }}</p>
-                            <p>{{ actor.character }}</p>
+                            <p class="truncate">{{ actor.name }}</p>
+                            <p class="truncate">{{ actor.character }}</p>
                         </div>
                     </a>
                 {% endfor %}
             </div>       
-            <div class="actor-container">
+            <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
                 {% for actor in crew %}
                     <a href="{% url 'person' actor.name %}">
                         <div class="actor">
@@ -53,8 +83,8 @@
                             {% else %}
                                 <img src="{% static 'profile.jpg'%}" class="face">
                             {% endif %}
-                            <p>{{ actor.name }}</p>
-                            <p>{{ actor.known_for_department }}</p>
+                            <p class="truncate">{{ actor.name }}</p>
+                            <p class="truncate">{{ actor.known_for_department }}</p>
                         </div>
                     </a>
                 {% endfor %}

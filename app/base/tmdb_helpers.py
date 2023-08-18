@@ -21,8 +21,13 @@ class TMDBClient:
         response = requests.get(url, headers=self.headers, params=params).json()
         return response['results'][0]
 
-    def get_movie_details(self, movie_id):
+    def get_movie_persons(self, movie_id):
         url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={self.api_key}"
+        response = requests.get(url, headers=self.headers).json()
+        return response
+    
+    def get_movie_detalis(self, movie_id):
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
         return response
 
@@ -56,8 +61,11 @@ class TMDBClient:
 
     def get_single_movie(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
-        movie_details = self.get_movie_details(movie_result['id'])
-        
+        movie_persons = self.get_movie_persons(movie_result['id'])
+        movie_detalis = self.get_movie_detalis(movie_result['id'])
+
+        duration = f"{movie_detalis['runtime'] // 60}h {movie_detalis['runtime'] - (movie_detalis['runtime'] // 60)*60}m"
+
         movie = {
             'id': movie_result['id'],
             'title': movie_result['title'],
@@ -66,20 +74,23 @@ class TMDBClient:
             'backdrop_path': movie_result['backdrop_path'],
             'vote_average': movie_result['vote_average'],
             'overview': movie_result['overview'],
+            'genres': movie_detalis['genres'],
+            'budget': movie_detalis['budget'],
+            'revenue': movie_detalis['revenue'],
+            'duration': duration,
         }
 
-        cast = self.process_cast(movie_details['cast'])
-        crew = self.process_crew(movie_details['crew'])
+        cast = self.process_cast(movie_persons['cast'])
+        crew = self.process_crew(movie_persons['crew'])
 
         # Separate directors and writers from the crew data
-        directors = [person for person in movie_details['crew'] if person['job'] == 'Director']
-        writers = [person for person in movie_details['crew'] if person['job'] in ['Writer', 'Screenplay', 'Novel']]
+        directors = [person for person in movie_persons['crew'] if person['job'] == 'Director']
+        writers = [person for person in movie_persons['crew'] if person['job'] in ['Writer', 'Screenplay', 'Novel']]
 
         return {'movie': movie, 'cast': cast, 'crew': crew, 'directors': directors , 'writers': writers}
 
     def get_single_movie_core(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
-        print(movie_result)
         movie = {
             'id': movie_result['id'],
             'title': movie_result['title'],

@@ -41,6 +41,15 @@ body {
 }
 
 
+a {
+    color: var(--color4);
+}
+
+a:hover {
+    color: var(--color4); 
+}
+
+
 .content-container {
     flex-grow: 1;
     display: flex;
@@ -101,6 +110,7 @@ body {
 }
 
 .image-blurred-edge{
+    padding-bottom: 20px;
     position: fixed; /* This will fix the position of the div */
     top: 0; /* This will attach the div to the top */
     width: 1200px;
@@ -126,6 +136,33 @@ body {
     overflow: hidden;
     overflow-x: auto;
     width: 100%; /* adjust as needed */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Thumb and track color for Firefox */
+}
+
+.actor-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.actor-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.actor-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.actor-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.actor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
 }
 
 .actor {
@@ -301,4 +338,27 @@ body {
     flex: 1 0 10%; /* Dla 5 elementów w rzędzie */
     align-items: center;
     max-width: fit-content;
+}
+
+.genres-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* odstęp między divami gatunków */
+    margin-left: 20px;
+}
+
+.genre-item {
+    padding:10px;
+    background-color: #f5f5f5; /* jasnoszary kolor tła */
+    border-radius: 4px; /* zaokrąglone rogi */
+    font-size: 14px;
+    font-weight: bold;
+    color: #333; /* ciemnoszary kolor tekstu */
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* Adjust this value based on your design requirements */
 }

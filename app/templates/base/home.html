@@ -14,17 +14,17 @@
     {% endcomment %}
     <h5 style="width: 1000px;">
       Install TMDb API Wrapper
-      ile procent filmow danego aktora/rezysera/listy objerzales
-      wyglad strony movie, people of ciname Others
+      people of ciname Others
       reviews do movies, oglnie usuwanie edytowanie list itp,
-      dodaj rtykiety do filmow i aktorow
+      dodaj rtykiety aktorow
       moze cos z best picture z kazego roku oscary
       copyright imdb/tmdb
       testy, ngnix, itp refrokturyzajca zeby obslugiwal bledy kiedy nic nie ma
       redis/celery do zapisywania scrapowanych top250 imdb/filmweb, 
       style.css rozdzielic jakos sensownie
       uzyjwaj git merge poprawnie, try rebase
-      dokumnetacja</h5>
+      dokumnetacja
+    </h5>
     <h2 style="margin-top: 35px; margin-bottom: 0px; padding: 0px;">Now playing</h2>
     <p style="margin: 0px; padding: 0px;">Don't waste your time and watch these movies at the cinema.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
@@ -70,7 +70,7 @@
                   {% else %}
                       <img src="{% static 'profile.jpg'%}" class="face">
                   {% endif %}
-                  <p>{{ person.name }}</p>
+                  <p class="truncate">{{ person.name }}</p>
               </div>
           </a>
       {% endfor %}
