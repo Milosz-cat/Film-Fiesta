@@ -22,7 +22,7 @@
                                         <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
                                     </a>
                                     <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
-                                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">☆</a>
+                                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
                             </div>
                         </div>
                         {% if forloop.last and not new_count|divisibleby:5 %}

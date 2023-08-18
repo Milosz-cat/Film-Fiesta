@@ -6,22 +6,29 @@
     <div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ movie.backdrop_path }}');"></div>
     <div class="card-movie">
         <div class="flex-container">
-            <div class="div-movie"><img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
-            <div class="div-movie">    
             <div class="row">
-                {{ movie.title }}
-                {{ movie.release_date }}
-                {{ movie.vote_average }} 
-            </div> 
+                <h1 style="padding: 0px; margin: 0px;"> {{ movie.title }} </h1>
+                <h6 style="padding: 0px; margin: 0px;"> {{ movie.release_date }} </h6>
+            </div>
+            {{ movie.vote_average }} 
+            
+        </div>
+        <div class="flex-container">
+            <div class="div-movie">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+            <div class="div-movie"> 
+            <div class="row">
+                {{ movie.overview }}
+            </div>   
             <div class="row">
                 Directed by {% for person in directors %}{{ person.name }} {% endfor %}
             </div>
             <div class="row">
                 Written by {% for person in writers %}{{ person.name }} {% endfor %}
             </div>
-            <div class="row">
-                {{ movie.overview }}
-            </div>
+
             <div class="actor-container">
                 {% for actor in cast %}
                     <a href="{% url 'person' actor.name %}">

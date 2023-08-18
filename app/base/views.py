@@ -115,6 +115,19 @@ def person(request, name):
         for movie in director_movies if movie['release_date'] and '/' not in movie['title']
     ]
     
+    user = request.user
+    my_films_list = MovieList.objects.get(user=user, name="My Films")
+    # retrieve the titles of movies in the user's "My Films" list
+    my_films_titles = set(my_films_list.movies.values_list('title', flat=True))
+
+    # Check how many movies from person_movies_as_actor are in the user's list
+    if person_movies_as_actor:
+        wachted_actor_movies = [movie for movie in person_movies_as_actor if movie['title'] in my_films_titles]
+        percentage_watched_actor = round((len(wachted_actor_movies) / len(person_movies_as_actor))*100)
+    if person_movies_as_director:
+        wachted_director_movies = [movie for movie in person_movies_as_director if movie['title'] in my_films_titles]
+        percentage_watched_director = round((len(wachted_director_movies) / len(person_movies_as_director))*100)
+
     # Get biography
     biography = tmdb_client.search_person_by_id(person_id)['biography']
     
@@ -123,8 +136,15 @@ def person(request, name):
         'person': person[0],
         'movies': person_movies_as_actor,
         'movies_director': person_movies_as_director,
-        'biography': biography
+        'biography': biography,
     }
+
+    if person_movies_as_actor:
+        context['actor_movies_count'] = len(wachted_actor_movies)
+        context['percentage_watched_actor'] = percentage_watched_actor
+    if person_movies_as_director:
+        context['director_movies_count'] = len(wachted_director_movies)
+        context['percentage_watched_director'] = percentage_watched_director
     
     return render(request, "base/person.html", context)
 
@@ -149,7 +169,6 @@ def search(request):
             for movie in movies
         ]
         context = {"movies": movies}
-        print(movies)
         return render(request, "base/search.html", context)
 
     return render(request, "base/search.html")

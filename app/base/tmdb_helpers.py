@@ -1,8 +1,5 @@
 import requests, environ
-from datetime import datetime
 
-    # Create the crew list, avoiding repetitions in names
-    #TODO Ogarnij cos zeby byy wypisane wsytstkie role i co z rezyserem!!!!!!!!!!
 class TMDBClient:
     def __init__(self):
         self.bearer = environ.Env()("BEARER")
@@ -60,7 +57,6 @@ class TMDBClient:
     def get_single_movie(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
         movie_details = self.get_movie_details(movie_result['id'])
-        print(movie_details)
         
         movie = {
             'id': movie_result['id'],
@@ -83,6 +79,7 @@ class TMDBClient:
 
     def get_single_movie_core(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
+        print(movie_result)
         movie = {
             'id': movie_result['id'],
             'title': movie_result['title'],

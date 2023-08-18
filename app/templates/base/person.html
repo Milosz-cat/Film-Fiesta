@@ -13,12 +13,20 @@
                 <p style="max-width: 250px;">{{ biography }}</p>
             </div>
         </div>
-
         {% if movies_director %}
-            <div class="div-movie">
-                <h2>Director:</h2>
-                
             <div class="movie-row">
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <div style="margin-right: 130px;">
+                        <h2>As Director</h2>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 10px; width: 200px; text-align: center; border-radius: 5px; height: 120px;">
+                        <p>You’ve watched</p>
+                        <h5>{{ actor_movies_count }} of {{ movies|length }} </h5>
+                        <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
+                            <div style="width: {{ percentage_watched_actor }}%; background-color: #2ecc71; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
                 {% for movie in movies_director %}
                     {% if forloop.counter0|divisibleby:5 %}
                         {% if not forloop.first %}
@@ -28,10 +36,13 @@
                     {% endif %}
                     <div class="movie-item">
                         <a href="{% url 'movie' title=movie.title year=movie.year %}" class="movie-link">
-                        
                             <div class="poster-item">
                                 {% if movie.poster_path %}
-                                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                                    <div class="poster-item">
+                                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                                        <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                                        <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                                    </div>  
                                 {% else %}
                                     <p class="poster-list-scroll"></p>
                                 {% endif %}
@@ -44,12 +55,21 @@
                     {% endif %}
                 {% endfor %}
         {% endif %}
-
-        <div class="div-movie">
-            <h2>Actor:</h2>
         
         {% if movies %}
             <div class="movie-row">
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <div style="margin-right: 170px;">
+                        <h2>As Actor</h2>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 10px; width: 200px; text-align: center; border-radius: 5px; height: 120px;">
+                        <p>You’ve watched</p>
+                        <h3>{{ actor_movies_count }} of {{ movies|length }}</h3>
+                        <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
+                            <div style="width: {{ percentage_watched_actor }}%; background-color: #2ecc71; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
                 {% for movie in movies %}
                     {% if forloop.counter0|divisibleby:5 %}
                         {% if not forloop.first %}
@@ -62,10 +82,29 @@
                         
                             <div class="poster-item">
                                 {% if movie.poster_path %}
+                                <div class="poster-item">
                                     <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                                    <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                                </div>        
                                 {% else %}
                                     <p class="poster-list-scroll"></p>
                                 {% endif %}
+                                <div id="ratingModal" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close">&times;</span>
+                                        <p style="text-align: center;">Rate the movie:</p> 
+                                        <div class="stars">
+                                            <div class="stars">
+                                                {% for i in "0123456789"|make_list %}
+                                                    <div class="star-container">
+                                                        <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p style="text-align: center; max-width: 150px;">{{ movie.title }}</p>
                                 <p style="text-align: center; max-width: 150px;">{{ movie.character }}</p>
                             </div>

@@ -29,9 +29,15 @@
     <p style="margin: 0px; padding: 0px;">Don't waste your time and watch these movies at the cinema.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% for movie in now_playing_movies %}
-        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-        </a>
+        {% if '/' not in movie.title and movie.poster_path%}
+          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+            <div class="poster-item">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+            </div>
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -42,9 +48,15 @@
     <p style="margin: 0px; padding: 0px;">This week's top movies.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% for movie in trending_movies %}
-        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-        </a>
+        {% if '/' not in movie.title and movie.poster_path%}
+          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+            <div class="poster-item">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+            </div>
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
     <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px;">Popular celebrities</h2>
@@ -72,9 +84,15 @@
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% if watchlist_movies %}
         {% for movie in watchlist_movies %}
-          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-          </a>
+          {% if '/' not in movie.title and movie.poster_path%}
+            <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+              <div class="poster-item">
+                  <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                  <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                  <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+              </div>
+            </a>
+          {% endif %}
         {% endfor %}
       {% else %}
         <h4 style="height: 150px; margin-top: 50px;">You haven't added any movies to your watchlist, you can do so by clicking + in the top right corner of the poster after hovering over it.</h4>
@@ -85,13 +103,34 @@
       <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
         {% if watchlist_movies %}
           {% for movie in recommendations %}
-            <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-              <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-            </a>
+              {% if '/' not in movie.title and movie.poster_path%}
+              <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+                <div class="poster-item">
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                    <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                </div>
+              </a>
+            {% endif %}
           {% endfor %}
           {% else %}
-          <h4 style="height: 150px; margin-top: 50px;">You haven't watched any movies yet, you can do so by clicking ☆ in the top left corner of the poster after hovering over it.</h4>
+          <h4 style="height: 150px; margin-top: 50px;">You haven't watched any movies yet, you can do so by clicking ★ in the top left corner of the poster after hovering over it.</h4>
         {% endif %}
+      </div>
+  </div>
+</div>
+<div id="ratingModal" class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+      <p style="text-align: center;">Rate the movie:</p> 
+      <div class="stars">
+          <div class="stars">
+              {% for i in "0123456789"|make_list %}
+                  <div class="star-container">
+                      <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
+                  </div>
+              {% endfor %}
+          </div>
       </div>
   </div>
 </div>

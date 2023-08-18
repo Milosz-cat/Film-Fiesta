@@ -160,4 +160,34 @@
       setInterval(showNextCard, 8000);
     });  
   </script>
+  <script>
+    function showRatingModal(title, year) {
+        // Display the modal
+        var modal = document.getElementById('ratingModal');
+        modal.style.display = "block";
+    
+        // Adjust links inside the modal for the specific movie
+        var stars = document.querySelectorAll('.star');
+        stars.forEach(function(star) {
+            var rating = star.dataset.rating;
+            star.href = "/rate_movie/" + title + "/" + year + "/" + rating;
+        });
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById('ratingModal');
+        var close = document.querySelector('.close');
+    
+        close.onclick = function() {
+            modal.style.display = "none";
+        };
+    
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    });
+    
+  </script>
 </html>
