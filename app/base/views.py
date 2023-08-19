@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from base.tmdb_helpers import TMDBClient
 from django.contrib.auth.decorators import login_required
 from list_management.models import MovieList
-from base.models import Movie, Review
-from .forms import ReviewForm
+from base.models import Movie, Review, Comment
+from django.contrib import messages
 
 @login_required
 def home(request):
@@ -84,12 +84,10 @@ def movie(request, title, year):
 
     tmdb_client = TMDBClient()
     movie = tmdb_client.get_single_movie(title, year)
+
     movie_reviews = get_object_or_404(Movie, custom_id=movie['movie']['id'])
     reviews = Review.objects.filter(movie=movie_reviews)
-    form = ReviewForm()
-
-    movie['review'] = reviews
-    movie['form'] = form
+    movie['reviews'] = reviews
 
     return render(request, "base/movie.html", movie)
 
@@ -186,15 +184,31 @@ def search(request):
 def add_review(request, movie_id):
 
     movie = get_object_or_404(Movie, custom_id=movie_id)
+
     if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.movie = movie
-            review.user = request.user 
-            review.save()
-            return redirect('movie_reviews', movie_id=movie_id)
-    
+        content = request.POST.get('content')
+
+        # Create and save the review
+        review = Review(movie=movie, user=request.user, content=content)
+        review.save()
+        messages.success(request, "Your review has been successfully created.")
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+@login_required
+def add_comment(request, review_id):
+
+    review = get_object_or_404(Review, custom_id=review_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+
+        # Create and save the review
+        comment = Comment(review=review, user=request.user, content=content)
+        comment.save()
+        messages.success(request, "Your comment has been successfully created.")
+
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
 

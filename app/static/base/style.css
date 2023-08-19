@@ -124,10 +124,14 @@ a:hover {
     display: flex;
     justify-content: space-between;
 }
+.alert {
+    z-index: 1000;  /* Adjust this value as needed */
+    position: relative;  /* z-index only works on positioned elements */
+}
 
 
 .div-movie {
-    height: 345px;
+    height: fit-content;
     max-width: 970px;
 }
 
@@ -449,30 +453,4 @@ a:hover {
     border-radius: 5px;
     color: white;
     cursor: pointer;
-}
-
-.reviews {
-    width: 80%;
-    margin: 0 auto;
-}
-
-.review {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.review-title {
-    cursor: pointer;
-}
-
-.comments {
-    margin-top: 10px;
-    padding-left: 20px;
-}
-
-.comment {
-    border-top: 1px dashed #ccc;
-    margin-top: 5px;
-    padding-top: 5px;
 }

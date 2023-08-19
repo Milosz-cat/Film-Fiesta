@@ -34,7 +34,7 @@
                 <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster">
                 <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.release_date }}/{{'Watchlist'}}" class="watchlist-link" data-title="{{ movie.title }}" data-year="{{ movie.release_date }}">+</a> 
             </div>
-                <div class="div-movie"> 
+            <div class="div-movie"> 
                 <div class="genres-container">
                     {% for genre in movie.genres %}
                         <div class="genre-item">
@@ -63,7 +63,7 @@
                     Budget: {{movie.budget}} ● Revenue: {{movie.revenue}}
                 </div>
 
-                <div class="actor-container" style="margin-top: 25px; margin-left: 25px; width: 880px;">
+                <div class="actor-container" style="margin-top: 50px; margin-left: 25px; width: 880px;">
                     {% for actor in cast %}
                         <a href="{% url 'person' actor.name %}">
                             <div class="actor">
@@ -99,26 +99,59 @@
                         </a>
                     {% endfor %}
                 </div>    
-                <div>
-                    <h2>Recenzje:</h2>
-                    {% for review in movie.reviews %}
-                        <div class="review">
-                            <h3>{{ review.title }}</h3>
+                <div style="margin-top: 50px; margin-bottom: 60px;">
+                    <div class="row" style="border-bottom: 1px solid white;">
+                        <h3 style="margin: 0x; padding: 0px">Recent Reviews</h3>
+                    </div>
+                    
+                    {% for review in reviews %}
+                        <div style="border-bottom: 1px solid rgba(255, 255, 255, 0.5); margin: 25px;">
+                            <h5>Review by <strong>{{ review.user.username }}</strong></h5>
                             <p>{{ review.content }}</p>
                         </div>
+                        
+                        <!-- Display comments for the review -->
+                        <div style="margin-left: 20px;">
+                            {% for comment in review.comment_set.all %}
+                                <div style="border-top: 1px dashed rgba(255, 255, 255, 0.5); margin-top: 10px;">
+                                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Form to add a comment for the review -->
+                        <div style="margin-top: 20px;">
+                            <form method="post" action="{% url 'add_comment' review.id %}">
+                                {% csrf_token %}
+                                <textarea name="comment_content" placeholder="Add a comment..." required></textarea>
+                                <button type="submit">Add Comment</button>
+                            </form>
+                        </div>
+
                     {% endfor %}
                     
-                    <h2>Dodaj recenzję:</h2>
-                    <form method="post">
+                    <div class="row" style="border-bottom: 1px solid white; margin-bottom: 20px; margin-top: 50px;">
+                        <h3 style="margin: 0x; padding: 0px">Want to write review?</h3>
+                    </div>
+
+                    <form method="post" action="{% url 'add_review' movie.id %}">
                         {% csrf_token %}
-                        {{ movie.form.as_p }}
-                        <button type="submit">Dodaj recenzję</button>
+                
+                            <div class="form-outline mb-5" style="margin: 40px;">
+                                <textarea type="text" id="content" name="content" placeholder="Write your review !" class="form-control form-control-lg" Required rows="4"></textarea>
+                            </div>
+                
+                            <div class="d-flex justify-content-center">
+                                <button type="submit"
+                                class="btn btn-dark  btn-outline-light btn-block btn-lg gradient-custom-4 text-body" style="width: 890px;"> Send review</button>
+                            </div>
                     </form>
                 </div>
+            </div>
         </div>
     </div>
 
-    <script>
+    {% comment %} <script>
         function toggleComments(element) {
             const commentsDiv = element.nextElementSibling;
             if (commentsDiv.style.display === "none") {
@@ -127,6 +160,6 @@
                 commentsDiv.style.display = "none";
             }
         }
-    </script>
+    </script> {% endcomment %}
 {% endblock content %}
 
