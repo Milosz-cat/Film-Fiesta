@@ -33,6 +33,9 @@
                         <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
                         <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
                         <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                        <a href="{% url 'remove_from_list' name=name type='Movie' id=movie.custom_id %}">
+                            <button type="button" class="btn btn-danger delete-button">Remove from list</button>
+                        </a>
                         {% if movie.rating and movie.rating != 0 %}
                             <p style="text-align: center;">★ {{movie.rating}}</p>     
                         {% endif %}

@@ -126,6 +126,8 @@ def choose_list(request):
     return render(request, "list_management/choose_list.html", context)
 
 
+
+
 @login_required
 def add_list(request, type):
     if request.method == "POST":
@@ -250,3 +252,45 @@ def person_choose_list(request):
 
     context = {"user_lists": user_lists}
     return render(request, "list_management/person_choose_list.html", context)
+
+@login_required
+def remove_list(request, name, type):
+    user = request.user
+
+    if type == "Movie":
+        list_to_remove = MovieList.objects.filter(user=user, name=name).first()
+    else:
+        list_to_remove = PersonList.objects.filter(user=user, name=name).first()
+
+    if list_to_remove:
+        if name==("Watchlist" or "My Films" or "Favourite Actors" or "Favourite Directors"):
+            messages.error(
+                request,
+                "You cannot delete this list because it is the primary list that every user has!",
+            )
+        else:
+            list_to_remove.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+@login_required
+def remove_from_list(request, name, type, id):
+
+    user = request.user
+
+    if type == "Movie":
+        list_to_remove_from = MovieList.objects.filter(user=user, name=name).first()
+        if list_to_remove_from:
+            movie_to_remove = Movie.objects.filter(custom_id=id).first()
+            if movie_to_remove:
+                list_to_remove_from.movies.remove(movie_to_remove)
+    else:
+        list_to_remove_from = PersonList.objects.filter(user=user, name=name).first()
+        if list_to_remove_from:
+            person_to_remove = Person.objects.filter(custom_id=id).first()
+            if person_to_remove:
+                list_to_remove_from.persons.remove(person_to_remove)
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)

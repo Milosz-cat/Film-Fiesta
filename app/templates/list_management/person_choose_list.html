@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %}List{% endblock title %}
+{% block title %}Person List{% endblock title %}
 
 {% block content %}
 
@@ -27,6 +27,7 @@
             <div style="margin: 20px; max-width: 200px;">
                 <h3>{{user_list.name}}</h3>
                 <h5>{{user_list.description}}</h5>
+                <a href="{% url 'remove_list' name=user_list.name type='Person' %}"><button type="button" class="btn btn-danger delete-button">Remove list</button></a>
             </div>
         </div>
     {% endfor %}

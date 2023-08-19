@@ -13,9 +13,9 @@
     <h5 style="width: 1000px;">Enter a realm where your cinematic journey is immortalized. FilmFiesta is not just another movie site;<br> it’s your personal movie cataloging haven. Here, you can keep track of all the films you've watched,<br> from timeless classics to the latest releases. Create collections, rate your favorites, and discover new gems based on your preferences. With FilmFiesta, every film you watch becomes a part of your unique story!</h5>
     {% endcomment %}
     <h5 style="width: 1000px;">
-      TODO DOKONCZ dodaj rtykiety aktorow
+      TODO DOKONCZ
       Install TMDb API Wrapper
-      reviews do movies, oglnie usuwanie edytowanie list itp,
+      reviews do movies
       moze cos z best picture z kazego roku oscary
       copyright imdb/tmdb
       testy, ngnix, itp refrokturyzajca zeby obslugiwal bledy kiedy nic nie ma
@@ -65,8 +65,10 @@
           <a href="{% url 'person' person.name %}">
               <div class="person" style="position: relative;">
                   {% if person.profile_path != None %}
+                  <div class="poster-item">
                       <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="face">
-                      <a href="/add_person_to_list/{{ person.known_for_department }}/{{ person.id }}" class="watchlist-label" data-name="{{ person.name }}" data-known_for_department="{{ person.known_for_department }}">+</a>
+                      <a href="/add_person_to_list/{{ person.known_for_department }}/{{ person.id }}" class="watchlist-label" data-name="{{ person.name }}" data-known_for_department="{{ person.known_for_department }}" style="top: 4px; left: 4px; background-color: #706F8E;">+</a>
+                  </div>
                   {% endif %}
                   <p class="truncate">{{ person.name }}</p>
               </div>

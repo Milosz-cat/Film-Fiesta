@@ -7,9 +7,10 @@
 <div class="card-movie">
     <div class="flex-container">
         <div class="div-movie">
+            <h1 style="padding: 0px; margin-top: 10px;"> {{ person.name }} </h1>
             <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="poster">
-            <div class="person-details">
-                <p>{{ person.name }}</p>
+            <a href="/add_person_to_list/{{ person.known_for_department }}/{{ id }}" class="watchlist-link" data-name="{{ person.known_for_department }}" data-id="{{ id }}" style="top: 80px;">+</a> 
+            <div class="person-details" style="margin-top: 20px;">
                 <p style="max-width: 250px;">{{ biography }}</p>
             </div>
         </div>
@@ -21,9 +22,9 @@
                     </div>
                     <div style="border: 1px solid #ccc; padding: 12px; margin: 5px; width: 200px; text-align: center; border-radius: 5px; height: 120px;">
                         <p>You’ve watched</p>
-                        <h5>{{ actor_movies_count }} of {{ movies|length }} </h5>
+                        <h5>{{ director_movies_count }} of {{ movies_director|length }} </h5>
                         <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
-                            <div style="width: {{ percentage_watched_actor }}%; background-color: #2ecc71; height: 100%;"></div>
+                            <div style="width: {{ percentage_watched_director }}%; background-color: #2ecc71; height: 100%;"></div>
                         </div>
                     </div>
                 </div>
@@ -64,7 +65,7 @@
                     </div>
                     <div style="border: 1px solid #ccc; padding: 12px; margin: 5px; width: 200px; text-align: center; border-radius: 5px; height: 120px;">
                         <p>You’ve watched</p>
-                        <h3>{{ actor_movies_count }} of {{ movies|length }}</h3>
+                        <h5>{{ actor_movies_count }} of {{ movies|length }} </h5>
                         <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
                             <div style="width: {{ percentage_watched_actor }}%; background-color: #2ecc71; height: 100%;"></div>
                         </div>

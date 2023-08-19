@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %}Actors List{% endblock title %}
+{% block title %}Person List{% endblock title %}
 
 {% block content %}
 
@@ -21,6 +21,9 @@
                 <div class="actor">
                     {% if actor.profile_path != None %}
                         <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                        <a href="{% url 'remove_from_list' name=name type='Person' id=actor.custom_id %}">
+                            <button type="button" class="btn btn-danger delete-button">Remove</button>
+                        </a>
                     {% else %}
                         <img src="{% static 'profile.jpg'%}" class="face">
                     {% endif %}

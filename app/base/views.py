@@ -139,6 +139,7 @@ def person(request, name):
         'movies': person_movies_as_actor,
         'movies_director': person_movies_as_director,
         'biography': biography,
+        'id': person_id,
     }
 
     if person_movies_as_actor:
