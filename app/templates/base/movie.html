@@ -110,21 +110,25 @@
                             <p>{{ review.content }}</p>
                         </div>
 
-                        <!-- Display comments for the review -->
-                        <div style="margin-left: 20px;">
+                        <h6 style="margin-left: 80px; margin-bottom: 5px;">Comments</h6>
+                        <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
+                        </div>
+                        <div style="margin-left: 80px;">
                             {% for comment in review.comment_set.all %}
-                                <div style="border-top: 1px dashed rgba(255, 255, 255, 0.5); margin-top: 10px;">
+                                <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
                                     <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
                                 </div>
                             {% endfor %}
                         </div>
 
                         <!-- Form to add a comment for the review -->
-                        <div style="margin-top: 20px;">
-                            <form method="post" action="{% url 'add_comment' review.custom_id %}">
+                        <div style="margin-top: 20px; margin-left: 80px;">
+                            <form method="post" action="{% url 'add_comment' review.pk %}">
                                 {% csrf_token %}
-                                <textarea name="comment_content" placeholder="Add a comment..." required></textarea>
-                                <button type="submit">Add Comment</button>
+                                <div class="form-outline" style="width: 300px; display: flex; justify-content: space-between; align-items: center;">
+                                    <textarea type="text" id="comment_content" name="comment_content" placeholder="Add a comment..." class="form-control form-control-lg" style="font-size: 15px; height: 50px" required></textarea>
+                                    <button type="submit" class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body" style="width: 200px; height: 50px; font-size: 15px; margin-left:10px;">Comment</button>
+                                </div>                    
                             </form>
                         </div>
 

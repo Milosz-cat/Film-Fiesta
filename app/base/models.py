@@ -37,7 +37,6 @@ class Person(models.Model):
     
 
 class Review(models.Model):
-    review_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, default=None)
     content = models.CharField(max_length=4000)
