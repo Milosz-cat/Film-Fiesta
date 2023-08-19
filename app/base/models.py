@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
-import uuid
 
 
 class Movie(models.Model):
@@ -38,9 +37,9 @@ class Person(models.Model):
     
 
 class Review(models.Model):
+    review_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, default=None)
-    custom_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.CharField(max_length=4000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

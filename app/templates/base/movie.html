@@ -109,7 +109,7 @@
                             <h5>Review by <strong>{{ review.user.username }}</strong></h5>
                             <p>{{ review.content }}</p>
                         </div>
-                        
+
                         <!-- Display comments for the review -->
                         <div style="margin-left: 20px;">
                             {% for comment in review.comment_set.all %}
@@ -121,7 +121,7 @@
 
                         <!-- Form to add a comment for the review -->
                         <div style="margin-top: 20px;">
-                            <form method="post" action="{% url 'add_comment' review.id %}">
+                            <form method="post" action="{% url 'add_comment' review.custom_id %}">
                                 {% csrf_token %}
                                 <textarea name="comment_content" placeholder="Add a comment..." required></textarea>
                                 <button type="submit">Add Comment</button>

@@ -199,7 +199,7 @@ def add_review(request, movie_id):
 @login_required
 def add_comment(request, review_id):
 
-    review = get_object_or_404(Review, custom_id=review_id)
+    review = get_object_or_404(Review, id=review_id)
 
     if request.method == 'POST':
         content = request.POST.get('content')
