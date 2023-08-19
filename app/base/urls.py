@@ -24,6 +24,7 @@ urlpatterns = [
     path('movie/<str:title>/<str:year>/', views.movie, name="movie"),
     path('person/<str:name>/', views.person, name="person"),
     path('search/', views.search, name="search"),
+    path('add_review/<int:movie_id>', views.add_review, name='add_review'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

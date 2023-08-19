@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from base.tmdb_helpers import TMDBClient
 from django.contrib.auth.decorators import login_required
 from list_management.models import MovieList
-from base.models import Movie
+from base.models import Movie, Review
+from .forms import ReviewForm
 
 @login_required
 def home(request):
@@ -83,9 +84,14 @@ def movie(request, title, year):
 
     tmdb_client = TMDBClient()
     movie = tmdb_client.get_single_movie(title, year)
+    movie_reviews = get_object_or_404(Movie, custom_id=movie['movie']['id'])
+    reviews = Review.objects.filter(movie=movie_reviews)
+    form = ReviewForm()
+
+    movie['review'] = reviews
+    movie['form'] = form
 
     return render(request, "base/movie.html", movie)
-
 
 def person(request, name):
 
@@ -176,5 +182,20 @@ def search(request):
 
     return render(request, "base/search.html")
 
+@login_required
+def add_review(request, movie_id):
+
+    movie = get_object_or_404(Movie, custom_id=movie_id)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.movie = movie
+            review.user = request.user 
+            review.save()
+            return redirect('movie_reviews', movie_id=movie_id)
+    
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
 
 

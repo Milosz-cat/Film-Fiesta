@@ -451,3 +451,28 @@ a:hover {
     cursor: pointer;
 }
 
+.reviews {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.review {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.review-title {
+    cursor: pointer;
+}
+
+.comments {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.comment {
+    border-top: 1px dashed #ccc;
+    margin-top: 5px;
+    padding-top: 5px;
+}

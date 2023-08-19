@@ -63,7 +63,7 @@
                     Budget: {{movie.budget}} ● Revenue: {{movie.revenue}}
                 </div>
 
-                <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
+                <div class="actor-container" style="margin-top: 25px; margin-left: 25px; width: 880px;">
                     {% for actor in cast %}
                         <a href="{% url 'person' actor.name %}">
                             <div class="actor">
@@ -81,7 +81,7 @@
                         </a>
                     {% endfor %}
                 </div>       
-                <div class="actor-container" style="margin-top: 25px; margin-left: 25px;">
+                <div class="actor-container" style="margin-top: 25px; margin-left: 25px; width: 880px;">
                     {% for actor in crew %}
                         <a href="{% url 'person' actor.name %}">
                             <div class="actor">
@@ -99,7 +99,34 @@
                         </a>
                     {% endfor %}
                 </div>    
+                <div>
+                    <h2>Recenzje:</h2>
+                    {% for review in movie.reviews %}
+                        <div class="review">
+                            <h3>{{ review.title }}</h3>
+                            <p>{{ review.content }}</p>
+                        </div>
+                    {% endfor %}
+                    
+                    <h2>Dodaj recenzję:</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ movie.form.as_p }}
+                        <button type="submit">Dodaj recenzję</button>
+                    </form>
+                </div>
         </div>
     </div>
+
+    <script>
+        function toggleComments(element) {
+            const commentsDiv = element.nextElementSibling;
+            if (commentsDiv.style.display === "none") {
+                commentsDiv.style.display = "block";
+            } else {
+                commentsDiv.style.display = "none";
+            }
+        }
+    </script>
 {% endblock content %}
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
@@ -32,3 +33,25 @@ class Person(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, default=None)
+    title = models.CharField(max_length=100)
+    content = models.CharField(max_length=4000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username + "'s Review:" + self.title
+    
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, default=None)
+    content = models.CharField(max_length=2000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username + "'s comment to " + str(self.review)
