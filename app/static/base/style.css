@@ -454,3 +454,13 @@ a:hover {
     color: white;
     cursor: pointer;
 }
+
+/* Style for the expanded comments */
+.comments-container.expanded {
+    display: block;
+}
+
+/* Style for the collapsed comments */
+.comments-container:not(.expanded) {
+    display: none;
+}

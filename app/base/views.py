@@ -213,3 +213,32 @@ def add_comment(request, review_id):
     return redirect(referer)
 
 
+@login_required
+def profile_reviews(request):
+
+    user = request.user
+    reviews = Review.objects.filter(user=user)
+    comments = Comment.objects.filter(user=user)
+
+    context={'reviews': reviews, 'comments': comments}
+    return render(request, "base/reviews.html", context)
+
+
+@login_required
+def remove_review(request, pk):
+
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+
+@login_required
+def remove_comment(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)

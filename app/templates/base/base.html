@@ -79,9 +79,13 @@
           </ul>
           <ul class="navbar-nav" style='margin-left: auto; margin-right:10px;'>
             {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                    <a class="dropdown-item" href="{% url 'profile_reviews' %}">My reviews</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+              </li> 
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Login</a>
@@ -189,4 +193,28 @@
     });
     
   </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Pobierz wszystkie przyciski "Toggle Comments"
+      var toggleButtons = document.querySelectorAll(".toggle-comments");
+  
+      // Dodaj obsługę zdarzenia dla każdego przycisku
+      toggleButtons.forEach(function(button) {
+          button.addEventListener("click", function() {
+              // Znajdź element rodzica zawierający przycisk i znajdź kontener komentarzy
+              var parent = button.parentElement;
+              var commentsContainer = parent.nextElementSibling;
+  
+              // Zwijaj lub rozwijaj kontener komentarzy
+              if (commentsContainer.style.display === "none") {
+                  commentsContainer.style.display = "block";
+              } else {
+                  commentsContainer.style.display = "none";
+              }
+          });
+      });
+    });
+  </script>
+
+
 </html>
