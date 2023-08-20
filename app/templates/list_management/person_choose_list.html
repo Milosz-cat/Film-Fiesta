@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %}List{% endblock title %}
+{% block title %}Person List{% endblock title %}
 
 {% block content %}
 
@@ -8,21 +8,18 @@
 
     {% for user_list in user_lists %}
         <div class="d-inline-flex">
-            <a href="{% url 'list' name=user_list.name %}" class="movie-link">
-                {% if not user_list.movies.all %}
+            <a href="{% url 'person_list' name=user_list.name %}" class="movie-link">
+                {% if not user_list.persons.all %}
                     <div class="poster-container" style="min-height: 210px;">
-                        <p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p><p class="poster-list"></p>
-                        <p class="poster-list">
-                            You haven't<br>
-                            added any<br>
-                            movies to<br>
-                            the list yet!
+                        <p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p>
+                        <p class="face-list" style="padding: 10px;">
+                            <br/> Add at least one person.
                         </p>
                     </div>
                 {% else %}
                     <div class="poster-container">
-                        {% for movie in user_list.movies.all|slice:":6"%}
-                            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} Poster" class="poster-list">
+                        {% for person in user_list.persons.all|slice:":6"%}
+                        <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="face-list-img">
                         {% endfor %}
                     </div>
                 {% endif %}
@@ -30,13 +27,12 @@
             <div style="margin: 20px; max-width: 200px;">
                 <h3>{{user_list.name}}</h3>
                 <h5>{{user_list.description}}</h5>
-                <a href="{% url 'remove_list' name=user_list.name type='Movie' %}"><button type="button" class="btn btn-danger delete-button">Remove list</button></a>
-                
+                <a href="{% url 'remove_list' name=user_list.name type='Person' %}"><button type="button" class="btn btn-danger delete-button">Remove list</button></a>
             </div>
         </div>
     {% endfor %}
     
-    <form action="{% url 'add_list' 'Movie' %}" method="post">
+    <form action="{% url 'add_list' 'Person' %}" method="post">
         {% csrf_token %}
         <div class="flex" style="margin: 100px;">
             <div style="display: flex; justify-content: center;">

@@ -1,58 +1,154 @@
 {% extends 'base/base.html' %}
 {% load static %}
-{% block title %}Movie{% endblock title %}
+{% block title %}{{ movie.title }}{% endblock title %}
 
 {% block content %}
     <div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ movie.backdrop_path }}');"></div>
     <div class="card-movie">
         <div class="flex-container">
-            <div class="div-movie"><img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster"></div>
-            <div class="div-movie">    
             <div class="row">
-                {{ movie.title }}
-                {{ movie.release_date }}
-                {{ movie.vote_average }} 
-            </div> 
-            <div class="row">
-                Directed by {% for person in directors %}{{ person.name }} {% endfor %}
+                <h1 style="padding: 0px; margin-top: 10px;"> {{ movie.title }} </h1>
+                <h6 style="padding: 0px; margin-bottom: 20px;"> {{ movie.release_date }} ● {{movie.duration}}</h6>
             </div>
-            <div class="row">
-                Written by {% for person in writers %}{{ person.name }} {% endfor %}
+            <a href="#" style="display: flex; justify-content: center; align-items: center; height: 100px;" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">
+                <h3> ★ {{ movie.vote_average|floatformat:1 }} </h3>
+            </a>
+        </div>
+        <div class="flex-container">
+            <div class="div-movie-link">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="poster">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.release_date }}/{{'Watchlist'}}" class="watchlist-link" data-title="{{ movie.title }}" data-year="{{ movie.release_date }}">+</a> 
             </div>
-            <div class="row">
-                {{ movie.overview }}
-            </div>
-            <div class="actor-container">
-                {% for actor in cast %}
-                    <a href="{% url 'person' actor.name %}">
-                        <div class="actor">
-                            {% if actor.profile_path != None %}
-                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                            {% else %}
-                                <img src="{% static 'profile.jpg'%}" class="face">
-                            {% endif %}
-                            <p>{{ actor.name }}</p>
-                            <p>{{ actor.character }}</p>
+            <div class="div-movie"> 
+                <div class="genres-container">
+                    {% for genre in movie.genres %}
+                        <div class="genre-item">
+                            {{ genre.name }}
                         </div>
-                    </a>
-                {% endfor %}
-            </div>       
-            <div class="actor-container">
-                {% for actor in crew %}
-                    <a href="{% url 'person' actor.name %}">
-                        <div class="actor">
-                            {% if actor.profile_path != None %}
-                                <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
-                            {% else %}
-                                <img src="{% static 'profile.jpg'%}" class="face">
-                            {% endif %}
-                            <p>{{ actor.name }}</p>
-                            <p>{{ actor.known_for_department }}</p>
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin: 25px;">
+                    {{ movie.overview }}
+                </div>   
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-top: 1px solid white; border-bottom: 1px solid white;">
+                    Directed by  
+                    {% for person in directors %}
+                        {{ person.name }}
+                        {% if not forloop.last %} ● {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
+                    Written by 
+                    {% for person in writers %}
+                        {{ person.name }}
+                        {% if not forloop.last %} ● {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row" style="margin-left: 25px; margin-right: 25px; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid white;">
+                    Budget: {{movie.budget}} ● Revenue: {{movie.revenue}}
+                </div>
+
+                <div class="actor-container" style="margin-top: 50px; margin-left: 25px; width: 880px;">
+                    {% for actor in cast %}
+                        <a href="{% url 'person' actor.name %}">
+                            <div class="actor">
+                                {% if actor.profile_path != None %}
+                                <div class="poster-item">
+                                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                                    <a href="/add_person_to_list/{{ actor.known_for_department }}/{{ actor.id }}" class="watchlist-label" data-name="{{ actor.name }}" data-known_for_department="{{ actor.known_for_department }}" style="top: 4px; left: 4px; background-color: #706F8E;">+</a>
+                                </div>
+                                {% else %}
+                                    <img src="{% static 'profile.jpg'%}" class="face">
+                                {% endif %}
+                                <p class="truncate">{{ actor.name }}</p>
+                                <p class="truncate">{{ actor.character }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>       
+                <div class="actor-container" style="margin-top: 25px; margin-left: 25px; width: 880px;">
+                    {% for actor in crew %}
+                        <a href="{% url 'person' actor.name %}">
+                            <div class="actor">
+                                {% if actor.profile_path != None %}
+                                <div class="poster-item">
+                                    <img src="https://image.tmdb.org/t/p/w500{{ actor.profile_path }}" class="face">
+                                    <a href="/add_person_to_list/{{ actor.known_for_department }}/{{ actor.id }}" class="watchlist-label" data-name="{{ actor.name }}" data-known_for_department="{{ actor.known_for_department }}" style="top: 4px; left: 4px; background-color: #706F8E;">+</a>
+                                </div>
+                                {% else %}
+                                    <img src="{% static 'profile.jpg'%}" class="face">
+                                {% endif %}
+                                <p class="truncate">{{ actor.name }}</p>
+                                <p class="truncate">{{ actor.known_for_department }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>    
+                <div style="margin-top: 50px; margin-bottom: 60px;">
+                    <div class="row" style="border-bottom: 1px solid white;">
+                        <h3 style="margin: 0x; padding: 0px">Recent Reviews</h3>
+                    </div>
+                    
+                    {% for review in reviews %}
+                        <div style="border-bottom: 1px solid rgba(255, 255, 255, 0.5); margin: 25px;">
+                            <h5>Review by <strong>{{ review.user.username }}</strong></h5>
+                            <p>{{ review.content }}</p>
                         </div>
-                    </a>
-                {% endfor %}
-            </div>    
+
+                        
+                        <h6 style="margin-left: 80px; margin-bottom: 5px;">
+                            <button class="btn btn-dark btn-outline-light toggle-comments">Toggle Comments</button>
+                        </h6>                   
+                        <div class="comments-container" style="display: none;">
+                            <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
+                            </div>
+                            <div style="margin-left: 80px;">
+                                {% for comment in review.comment_set.all %}
+                                <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
+                                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Form to add a comment for the review -->
+                            <div style="margin-top: 20px; margin-left: 80px;">
+                                <form method="post" action="{% url 'add_comment' review.pk %}">
+                                    {% csrf_token %}
+                                    <div class="form-outline"
+                                        style="width: 300px; display: flex; justify-content: space-between; align-items: center;">
+                                        <textarea type="text" id="comment_content" name="comment_content"
+                                            placeholder="Add a comment..." class="form-control form-control-lg"
+                                            style="font-size: 15px; height: 50px" required></textarea>
+                                        <button type="submit"
+                                            class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body"
+                                            style="width: 200px; height: 50px; font-size: 15px; margin-left:10px;">Comment</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                    
+                    <div class="row" style="border-bottom: 1px solid white; margin-bottom: 20px; margin-top: 50px;">
+                        <h3 style="margin: 0x; padding: 0px">Want to write review?</h3>
+                    </div>
+
+                    <form method="post" action="{% url 'add_review' movie.id %}">
+                        {% csrf_token %}
+                
+                            <div class="form-outline mb-5" style="margin: 40px;">
+                                <textarea type="text" id="content" name="content" placeholder="Write your review !" class="form-control form-control-lg" Required rows="4"></textarea>
+                            </div>
+                
+                            <div class="d-flex justify-content-center">
+                                <button type="submit"
+                                class="btn btn-dark  btn-outline-light btn-block btn-lg gradient-custom-4 text-body" style="width: 890px;"> Send review</button>
+                            </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
 {% endblock content %}
 

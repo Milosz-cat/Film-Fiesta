@@ -12,52 +12,60 @@
     {% comment %}
     <h5 style="width: 1000px;">Enter a realm where your cinematic journey is immortalized. FilmFiesta is not just another movie site;<br> it’s your personal movie cataloging haven. Here, you can keep track of all the films you've watched,<br> from timeless classics to the latest releases. Create collections, rate your favorites, and discover new gems based on your preferences. With FilmFiesta, every film you watch becomes a part of your unique story!</h5>
     {% endcomment %}
-    <h5 style="width: 1000px;">
-      Install TMDb API Wrapper
-      ile procent filmow danego aktora/rezysera/listy objerzales
-      wyglad strony movie, people of ciname Others
-      reviews do movies, oglnie usuwanie edytowanie list itp,
-      dodaj rtykiety do filmow i aktorow
-      moze cos z best picture z kazego roku oscary
-      copyright imdb/tmdb
+    <h5 style="width: 1000px; color: #333;">
       testy, ngnix, itp refrokturyzajca zeby obslugiwal bledy kiedy nic nie ma
       redis/celery do zapisywania scrapowanych top250 imdb/filmweb, 
       style.css rozdzielic jakos sensownie
-      dokumnetacja</h5>
-    <h2 style="margin-top: 35px; margin-bottom: 0px; padding: 0px;">Now playing</h2>
-    <p style="margin: 0px; padding: 0px;">Don't waste your time and watch these movies at the cinema.</p>
+      uzyjwaj git merge poprawnie, try rebase
+      dokumnetacja
+    </h5>
+    <h2 style="margin-top: 35px; margin-bottom: 0px; padding: 0px; color: #333;">Now playing</h2>
+    <p style="margin: 0px; padding: 0px; color: #333;">Don't waste your time and watch these movies at the cinema.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% for movie in now_playing_movies %}
-        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-        </a>
+        {% if '/' not in movie.title and movie.poster_path%}
+          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+            <div class="poster-item">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+            </div>
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
 </div>
 <div class="card">
   <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
-    <h2 style="margin: 0px; padding: 0px;">Tranding movies</h2>
-    <p style="margin: 0px; padding: 0px;">This week's top movies.</p>
+    <h2 style="margin: 0px; padding: 0px; color: #333;">Tranding movies</h2>
+    <p style="margin: 0px; padding: 0px; color: #333;">This week's top movies.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% for movie in trending_movies %}
-        <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-        </a>
+        {% if '/' not in movie.title and movie.poster_path%}
+          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+            <div class="poster-item">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+            </div>
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
-    <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px;">Popular celebrities</h2>
-    <p style="margin-bottom: 5px; padding: 0px;">This week's top popular persons.</p>
+    <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px; color: #333;">Popular celebrities</h2>
+    <p style="margin-bottom: 5px; padding: 0px;  color: #333;">This week's top popular persons.</p>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 960px;">
           {% for person in popular_persons %}
           <a href="{% url 'person' person.name %}">
-              <div class="person">
+              <div class="person" style="position: relative;">
                   {% if person.profile_path != None %}
+                  <div class="poster-item">
                       <img src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}" class="face">
-                  {% else %}
-                      <img src="{% static 'profile.jpg'%}" class="face">
+                      <a href="/add_person_to_list/{{ person.known_for_department }}/{{ person.id }}" class="watchlist-label" data-name="{{ person.name }}" data-known_for_department="{{ person.known_for_department }}" style="top: 4px; left: 4px; background-color: #706F8E;">+</a>
+                  </div>
                   {% endif %}
-                  <p>{{ person.name }}</p>
+                  <p class="truncate" style=" color: #333;">{{ person.name }}</p>
               </div>
           </a>
       {% endfor %}
@@ -67,33 +75,46 @@
 </div>
 <div class="card">
   <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
-    <h2 style="margin: 0px; padding: 0px;">Watchlist</h2>
+    <h2 style="margin: 0px; padding: 0px; color: #333;">Watchlist</h2>
     <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
       {% if watchlist_movies %}
         {% for movie in watchlist_movies %}
-          <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-          </a>
+          {% if '/' not in movie.title and movie.poster_path%}
+            <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+              <div class="poster-item">
+                  <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                  <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                  <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+              </div>
+            </a>
+          {% endif %}
         {% endfor %}
       {% else %}
         <h4 style="height: 150px; margin-top: 50px;">You haven't added any movies to your watchlist, you can do so by clicking + in the top right corner of the poster after hovering over it.</h4>
       {% endif %}
     </div>
-      <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px;">Recommendations</h2>
-      <p style="margin: 0px; padding: 0px;">Based on movies you've seen recently.</p>
+      <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px; color: #333;">Recommendations</h2>
+      <p style="margin: 0px; padding: 0px; color: #333;">Based on movies you've seen recently.</p>
       <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
         {% if watchlist_movies %}
           {% for movie in recommendations %}
-            <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
-              <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}{{ movie.release_date }}" class="poster-list-scroll"> 
-            </a>
+              {% if '/' not in movie.title and movie.poster_path%}
+              <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
+                <div class="poster-item">
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="Movie Poster" class="poster-list-scroll">
+                    <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
+                    <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
+                </div>
+              </a>
+            {% endif %}
           {% endfor %}
           {% else %}
-          <h4 style="height: 150px; margin-top: 50px;">You haven't watched any movies yet, you can do so by clicking ☆ in the top left corner of the poster after hovering over it.</h4>
+          <h4 style="height: 150px; margin-top: 50px;">You haven't watched any movies yet, you can do so by clicking ★ in the top left corner of the poster after hovering over it.</h4>
         {% endif %}
       </div>
   </div>
 </div>
+
 <div class="card-navigation">
   <button class="btn btn-primary next-card">></button>
 </div>

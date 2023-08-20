@@ -37,21 +37,7 @@
   </head>
 
   <body>
-    {% for message in messages %}
-    <div class="base-container">
-      <div class="alert {{ message.tags }} alert-dismissible" role="alert">
-        {{ message }}
-        <button
-          type="button"
-          class="close"
-          data-dismiss="alert"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    </div>
-    {% endfor %}
+    
 
 
     <nav class="navbar navbar-expand-lg navbar-light">
@@ -71,18 +57,15 @@
               <li class="nav-item active">
                   <a class="nav-link" href="{% url 'choose_list' %}">Lists</a>
               </li>
-              <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="peopleDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">People of cinema</a>
-                  <div class="dropdown-menu" aria-labelledby="peopleDropdown">
-                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Actors' %}">Actors</a>
-                      <a class="dropdown-item" href="{% url 'person_list' 'Favourite Directors' %}">Directors</a>
-                  </div>
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'person_choose_list' %}">People of cinema</a>
               </li>
               <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</a>
                   <div class="dropdown-menu" aria-labelledby="rankingsDropdown">
                       <a class="dropdown-item" href="{% url 'ranking' 'imdb' %}">Top 250 Imdb</a>
                       <a class="dropdown-item" href="{% url 'ranking' 'filmweb' %}">Top 250 Filmweb</a>
+                      <a class="dropdown-item" href="{% url 'best_picture' %}">Best Picture</a>
                   </div>
               </li>      
               <li class="nav-item active">
@@ -97,9 +80,14 @@
           </ul>
           <ul class="navbar-nav" style='margin-left: auto; margin-right:10px;'>
             {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="rankingsDropdown">
+                    <a class="dropdown-item" href="{% url 'profile_reviews' %}">My reviews</a>
+                    <a id="aboutLink" href="#" class="dropdown-item">About</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+              </li> 
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Login</a>
@@ -110,54 +98,154 @@
       </div>
     </nav>
 
+    {% for message in messages %}
+    <div class="base-container">
+      <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+        {{ message }}
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+
     <div class="content-container">
       {% block content %} {% endblock content %}
     </div>
-    
+    <div id="tmdbModal" class="close-tmdb">
+      <div class="modal-content">
+          <span class="close-tmdb" style="cursor: pointer; font-size: 24px;">&times;</span>
+          <h4 style="margin:20px;">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+      </div>
+    </div>
+    <div id="ratingModal" class="close-rating">
+      <div class="modal-content">
+          <span class="close-rating" style="cursor: pointer; font-size: 24px;">&times;</span>
+          <h4 style="text-align: center;">Rate the movie:</h4> 
+          <div class="stars">
+              <div class="stars">
+                  {% for i in "0123456789"|make_list %}
+                      <div class="star-container">
+                          <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
+                      </div>
+                  {% endfor %}
+              </div>
+      </div>
+    </div>
+
  
   </body>
-  <!-- The following script is responsible for removing pop-up messages from
-    the view by pressing the X button -->
   <script>
+    // Skrypt dla przycisków zamknięcia
     var closeButtons = document.querySelectorAll(".close");
     closeButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        button.parentElement.parentElement.remove();
-      });
+        button.addEventListener("click", function () {
+                button.parentElement.parentElement.remove();
+        });
     });
-  </script>
-  <script>
+
+    // Skrypt dla tmdbModal
+    document.addEventListener("DOMContentLoaded", function() {
+        var tmdbModal = document.getElementById('tmdbModal');
+        var aboutLink = document.getElementById('aboutLink');
+        var closeTmdb = tmdbModal.querySelector('.close-tmdb');
+
+        aboutLink.onclick = function() {
+            tmdbModal.style.display = "block";
+        };
+
+        closeTmdb.onclick = function() {
+            tmdbModal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == tmdbModal) {
+                tmdbModal.style.display = "none";
+            }
+        };
+    });
+
+    // Skrypt dla karty
     $(document).ready(function () {
-      var activeCard = 0;
-      var direction = 1; // 1 means forward, -1 means backward
-  
-      $(".card").eq(activeCard).addClass("active");
-  
-      function showNextCard() {
-          $(".card").eq(activeCard).removeClass("active"); // Hide the current card
-          
-          // Check if reached the end or the beginning
-          if (activeCard === $(".card").length - 1) {
-              direction = -1; // Switch to going backward
-          } else if (activeCard === 0) {
-              direction = 1; // Switch to going forward
-          }
-          
-          activeCard += direction; // Set the new active card based on the direction
-  
-          $(".card").eq(activeCard).addClass("active"); // Display the new card
-      }
-  
-      function showPreviousCard() {
-          $(".card").eq(activeCard).removeClass("active");
-          activeCard = Math.max(0, activeCard - 1);
-          $(".card").eq(activeCard).addClass("active");
-      }
-  
-      $(".prev-card").click(showPreviousCard);
-      $(".next-card").click(showNextCard);
-  
-      setInterval(showNextCard, 8000);
-    });  
-  </script>
+        var activeCard = 0;
+        var direction = 1;
+
+        $(".card").eq(activeCard).addClass("active");
+
+        function showNextCard() {
+            $(".card").eq(activeCard).removeClass("active");
+
+            if (activeCard === $(".card").length - 1) {
+                direction = -1;
+            } else if (activeCard === 0) {
+                direction = 1;
+            }
+
+            activeCard += direction;
+            $(".card").eq(activeCard).addClass("active");
+        }
+
+        function showPreviousCard() {
+            $(".card").eq(activeCard).removeClass("active");
+            activeCard = Math.max(0, activeCard - 1);
+            $(".card").eq(activeCard).addClass("active");
+        }
+
+        $(".prev-card").click(showPreviousCard);
+        $(".next-card").click(showNextCard);
+
+        setInterval(showNextCard, 30000);
+    });
+
+    // Skrypt dla ratingModal
+    function showRatingModal(title, year) {
+        var modal = document.getElementById('ratingModal');
+        modal.style.display = "block";
+
+        var stars = document.querySelectorAll('.star');
+        stars.forEach(function(star) {
+            var rating = star.dataset.rating;
+            star.href = "/rate_movie/" + title + "/" + year + "/" + rating;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = document.getElementById('ratingModal');
+        var close = modal.querySelector('.close-rating');
+
+        close.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    });
+
+    // Skrypt dla przycisków "Toggle Comments"
+    document.addEventListener("DOMContentLoaded", function() {
+        var toggleButtons = document.querySelectorAll(".toggle-comments");
+
+        toggleButtons.forEach(function(button) {
+            button.addEventListener("click", function() {
+                var parent = button.parentElement;
+                var commentsContainer = parent.nextElementSibling;
+
+                if (commentsContainer.style.display === "none") {
+                    commentsContainer.style.display = "block";
+                } else {
+                    commentsContainer.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
 </html>

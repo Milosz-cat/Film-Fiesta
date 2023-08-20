@@ -1,19 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
 from list_management.models import MovieList, PersonList
 from django.contrib import messages
 from base import scraper
-from django.http import Http404
 import environ
-import requests
-import json
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.db import transaction
 
 env = environ.Env()
@@ -21,6 +14,7 @@ environ.Env.read_env()
 
 
 def ranking(request, name):
+
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
@@ -37,15 +31,23 @@ def ranking(request, name):
             "list_title": list_title,
             "description": description,
         }
-    else:
-        # TODO obsluga bledu brak listy
+    else: 
         pass
 
     return render(request, "list_management/ranking.html", context)
 
+def best_picture(request):
 
-# @csrf_exempt
-# @require_POST
+    list_title = "Best picture"
+    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present."       
+    context = {
+        "winners": scraper.scrape_oscar_best_picture(),
+        "list_title": list_title,
+        "description": description,
+    }
+
+    return render(request, "list_management/best_picture.html", context)
+
 @login_required
 def rate_movie(request, title, year, rating):
     user = request.user
@@ -126,16 +128,25 @@ def choose_list(request):
     return render(request, "list_management/choose_list.html", context)
 
 
+
+
 @login_required
-def add_list(request):
+def add_list(request, type):
     if request.method == "POST":
         user = request.user
         name = request.POST.get("name")
         description = request.POST.get("description")
-        new_list = MovieList(user=user, name=name, description=description)
+
+        if type == "Movie":
+            new_list = MovieList(user=user, name=name, description=description)
+        else:
+            new_list = PersonList(user=user, name=name, description=description)
+
         new_list.save()
 
-    return redirect("choose_list")
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
 
 
 @login_required
@@ -207,27 +218,18 @@ def person_list(request, name):
 def add_person_to_list(request, name, id):
     user = request.user
 
+    known_for_department = name
+
+    if name == 'Acting':
+        known_for_department = 'Favourite Actors' 
+    elif name == 'Directing':
+        known_for_department = 'Favourite Directors'     
+
     # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
-    user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
+    user_list, _ = PersonList.objects.get_or_create(user=user, name=known_for_department)
 
     tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
     person = tmdb_client.search_person_by_id(id)
-
-    if person["known_for_department"] == "Directing" and name == "Favourite Actors":
-        messages.error(
-            request,
-            "This person is more recognizable as a director add him/her to list of favorite directors",
-        )
-        referer = request.META.get("HTTP_REFERER")
-        return redirect(referer)
-
-    if person["known_for_department"] == "Acting" and name == "Favourite Directors":
-        messages.error(
-            request,
-            "This person is more recognizable as an actor add him/her to list of favorite actors",
-        )
-        referer = request.META.get("HTTP_REFERER")
-        return redirect(referer)
 
     # Pobierz film z bazy danych lub utwórz go, jeśli nie istnieje
     person, _ = Person.objects.get_or_create(
@@ -239,6 +241,58 @@ def add_person_to_list(request, name, id):
 
     # Dodaj film do watchlisty użytkownika
     user_list.persons.add(person)
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+
+# Create your views here.
+@login_required
+def person_choose_list(request):
+    user = request.user
+    user_lists = PersonList.objects.filter(user=user)
+
+    context = {"user_lists": user_lists}
+    return render(request, "list_management/person_choose_list.html", context)
+
+@login_required
+def remove_list(request, name, type):
+    user = request.user
+
+    if type == "Movie":
+        list_to_remove = MovieList.objects.filter(user=user, name=name).first()
+    else:
+        list_to_remove = PersonList.objects.filter(user=user, name=name).first()
+
+    if list_to_remove:
+        if name==("Watchlist" or "My Films" or "Favourite Actors" or "Favourite Directors"):
+            messages.error(
+                request,
+                "You cannot delete this list because it is the primary list that every user has!",
+            )
+        else:
+            list_to_remove.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+@login_required
+def remove_from_list(request, name, type, id):
+
+    user = request.user
+
+    if type == "Movie":
+        list_to_remove_from = MovieList.objects.filter(user=user, name=name).first()
+        if list_to_remove_from:
+            movie_to_remove = Movie.objects.filter(custom_id=id).first()
+            if movie_to_remove:
+                list_to_remove_from.movies.remove(movie_to_remove)
+    else:
+        list_to_remove_from = PersonList.objects.filter(user=user, name=name).first()
+        if list_to_remove_from:
+            person_to_remove = Person.objects.filter(custom_id=id).first()
+            if person_to_remove:
+                list_to_remove_from.persons.remove(person_to_remove)
 
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)

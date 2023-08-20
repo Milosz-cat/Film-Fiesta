@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from base.tmdb_helpers import TMDBClient
 from django.contrib.auth.decorators import login_required
 from list_management.models import MovieList
-from base.models import Movie
+from base.models import Movie, Review, Comment
+from django.contrib import messages
 
 @login_required
 def home(request):
@@ -58,9 +59,11 @@ def home(request):
 
     popular_persons = [
         {
+            'id': person['id'],
             'name': person['name'],
             'popularity': person.get('popularity', ''),
-            'profile_path': person['profile_path']
+            'profile_path': person['profile_path'],
+            'known_for_department': person['known_for_department']
         }
         for person in tmdb_client.get_popular_people()
     ]
@@ -81,9 +84,15 @@ def movie(request, title, year):
 
     tmdb_client = TMDBClient()
     movie = tmdb_client.get_single_movie(title, year)
+    
+    try:
+        movie_reviews = Movie.objects.get(custom_id=movie['movie']['id'])
+        reviews = Review.objects.filter(movie=movie_reviews)
+        movie['reviews'] = reviews
+    except Movie.DoesNotExist:
+        movie_reviews = None
 
     return render(request, "base/movie.html", movie)
-
 
 def person(request, name):
 
@@ -115,6 +124,19 @@ def person(request, name):
         for movie in director_movies if movie['release_date'] and '/' not in movie['title']
     ]
     
+    user = request.user
+    my_films_list = MovieList.objects.get(user=user, name="My Films")
+    # retrieve the titles of movies in the user's "My Films" list
+    my_films_titles = set(my_films_list.movies.values_list('title', flat=True))
+
+    # Check how many movies from person_movies_as_actor are in the user's list
+    if person_movies_as_actor:
+        wachted_actor_movies = [movie for movie in person_movies_as_actor if movie['title'] in my_films_titles]
+        percentage_watched_actor = round((len(wachted_actor_movies) / len(person_movies_as_actor))*100)
+    if person_movies_as_director:
+        wachted_director_movies = [movie for movie in person_movies_as_director if movie['title'] in my_films_titles]
+        percentage_watched_director = round((len(wachted_director_movies) / len(person_movies_as_director))*100)
+
     # Get biography
     biography = tmdb_client.search_person_by_id(person_id)['biography']
     
@@ -123,8 +145,16 @@ def person(request, name):
         'person': person[0],
         'movies': person_movies_as_actor,
         'movies_director': person_movies_as_director,
-        'biography': biography
+        'biography': biography,
+        'id': person_id,
     }
+
+    if person_movies_as_actor:
+        context['actor_movies_count'] = len(wachted_actor_movies)
+        context['percentage_watched_actor'] = percentage_watched_actor
+    if person_movies_as_director:
+        context['director_movies_count'] = len(wachted_director_movies)
+        context['percentage_watched_director'] = percentage_watched_director
     
     return render(request, "base/person.html", context)
 
@@ -149,10 +179,70 @@ def search(request):
             for movie in movies
         ]
         context = {"movies": movies}
-        print(movies)
         return render(request, "base/search.html", context)
 
     return render(request, "base/search.html")
 
+@login_required
+def add_review(request, movie_id):
 
+    movie = get_object_or_404(Movie, custom_id=movie_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+
+        # Create and save the review
+        review = Review(movie=movie, user=request.user, content=content)
+        review.save()
+        messages.success(request, "Your review has been successfully created.")
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+@login_required
+def add_comment(request, review_id):
+
+    review = get_object_or_404(Review, pk=review_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('comment_content')
+
+        # Create and save the review
+        comment = Comment(review=review, user=request.user, content=content)
+        comment.save()
+        messages.success(request, "Your comment has been successfully created.")
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+
+@login_required
+def profile_reviews(request):
+
+    user = request.user
+    reviews = Review.objects.filter(user=user)
+    comments = Comment.objects.filter(user=user)
+
+    context={'reviews': reviews, 'comments': comments}
+    return render(request, "base/reviews.html", context)
+
+
+@login_required
+def remove_review(request, pk):
+
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
+
+
+@login_required
+def remove_comment(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+
+    referer = request.META.get("HTTP_REFERER")
+    return redirect(referer)
 
