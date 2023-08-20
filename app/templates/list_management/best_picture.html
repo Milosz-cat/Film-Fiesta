@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Ranking{% endblock title %}
+
+{% block content %}
+
+<ul class="list-group list-group-light">
+    <div class="row"> 
+        <div class="col text-center"> 
+            <h2 style="padding-bottom: 10px;">{{ list_title }}</h2>
+            {% if description %}
+                <p style="max-width: 750px;">{{ description }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <div style="margin-top: 20px; margin-bottom: 60px;">
+        <div class="row" style="border-bottom: 1px solid white;">
+    </div>
+    {% for winner in winners %}
+        <div class="row">
+            <div class="col-2">
+                <a href="{% url 'movie' title=winner.title year=winner.release_year %}" class="movie-link">
+                    <div class="poster-item">
+                        {% if winner.poster_path %}
+                        <div class="poster-item">
+                            <img src="https://image.tmdb.org/t/p/w500{{ winner.poster_path }}" alt="Movie Poster"
+                            class="poster-list-scroll">
+                            <a href="/add_to_list/{{ winner.title|urlencode }}/{{ winner.release_year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ winner.title }}" data-release_year="{{ winner.release_year }}">+</a>
+                            <a href="#" class="rating-label" onclick="showRatingModal('{{ winner.title|urlencode }}', '{{ winner.release_year }}')">★</a>
+                        </div>        
+                        {% else %}
+                            <p class="poster-list-scroll"></p>
+                        {% endif %}
+
+                    </div>
+                </a>
+            </div>
+            <div class="col">
+                <div class="delete-item" style="border-bottom: 1px solid rgba(255, 255, 255, 0.5); margin: 25px;">
+                        <h5>{{ winner.year }}</h5>
+                        <h4><strong>★ {{ winner.title }}</strong></h4>
+                </div>
+
+                <h6 style="margin-left: 80px; margin-bottom: 5px;">
+                    <button class="btn btn-dark btn-outline-light toggle-comments">Toggle Nominations</button>
+                </h6>                   
+                <div class="comments-container" style="display: none;">
+                    <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
+                    </div>
+                    <div style="margin-left: 80px;">
+                        {% for nomination in winner.nominations %}
+                        <a href="{% url 'movie' title=nomination.title year=nomination.release_year %}">
+                            <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
+                                <strong>{{ nomination.title }}</strong> - {{ nomination.studio }}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

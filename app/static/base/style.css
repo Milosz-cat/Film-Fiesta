@@ -62,12 +62,15 @@ a:hover {
     width: 65vw;
     height: 70vh;
     margin-bottom: 20px;
+    background-color: rgba(173, 172, 173, 0.8);
+    
     
 }
 .card.active {
     display: block; /* Wyświetl aktywną kartę */
     justify-content: center;
     align-items: center;
+    background-color: rgba(173, 172, 173, 0.8);
 }
 
 .card-movie {
@@ -160,12 +163,12 @@ a:hover {
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #888;
+    background: #555;
     border-radius: 10px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #333;
 }
 
 .actor {
@@ -356,33 +359,38 @@ a:hover {
 .star-container:hover ~ .star-container .star {
     color: black;
 }
-
-.modal {
+/* Styl dla tła modala */
+#tmdbModal, #ratingModal {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.7);
+    z-index: 1000; /* Upewnij się, że modal jest na wierzchu */
 }
 
+/* Styl dla zawartości modala */
 .modal-content {
-    max-width: 400px; /* maksymalna szerokość karty */
+    max-width: 410px;
     border-radius: 8px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 20px;
-    background-color: #f4f4f4;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    z-index: 1; /* Upewnij się, że zawartość modala jest na wierzchu */
 }
 
 .close {
     float: right;
     font-size: 24px;
     cursor: pointer;
+}
+
+.close:hover {
+    color: #555; /* Kolor ikony "x" po najechaniu */
 }
 
 .movie-row {

@@ -19,7 +19,14 @@ class TMDBClient:
         url = "https://api.themoviedb.org/3/search/movie"
         params = {'query': search_term, 'year': year}
         response = requests.get(url, headers=self.headers, params=params).json()
+
+        # Jeśli nie ma wyników, spróbuj z rokiem o jeden większym
+        if not response['results']:
+            params['year'] = str(int(year) + 1)
+            response = requests.get(url, headers=self.headers, params=params).json()
+
         return response['results'][0]
+
 
     def get_movie_persons(self, movie_id):
         url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={self.api_key}"
@@ -101,6 +108,7 @@ class TMDBClient:
 
     def get_single_movie_core(self, search_term, year):
         movie_result = self.search_movie(search_term, year)
+
         movie = {
             'id': movie_result['id'],
             'title': movie_result['title'],

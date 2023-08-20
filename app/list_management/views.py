@@ -1,19 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
 from list_management.models import MovieList, PersonList
 from django.contrib import messages
 from base import scraper
-from django.http import Http404
 import environ
-import requests
-import json
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.db import transaction
 
 env = environ.Env()
@@ -21,6 +14,7 @@ environ.Env.read_env()
 
 
 def ranking(request, name):
+
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
@@ -37,15 +31,23 @@ def ranking(request, name):
             "list_title": list_title,
             "description": description,
         }
-    else:
-        # TODO obsluga bledu brak listy
+    else: 
         pass
 
     return render(request, "list_management/ranking.html", context)
 
+def best_picture(request):
 
-# @csrf_exempt
-# @require_POST
+    list_title = "Best picture"
+    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present."       
+    context = {
+        "winners": scraper.scrape_oscar_best_picture(),
+        "list_title": list_title,
+        "description": description,
+    }
+
+    return render(request, "list_management/best_picture.html", context)
+
 @login_required
 def rate_movie(request, title, year, rating):
     user = request.user

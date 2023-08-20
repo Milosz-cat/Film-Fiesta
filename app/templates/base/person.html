@@ -91,21 +91,6 @@
                                 {% else %}
                                     <p class="poster-list-scroll"></p>
                                 {% endif %}
-                                <div id="ratingModal" class="modal">
-                                    <div class="modal-content">
-                                        <span class="close">&times;</span>
-                                        <p style="text-align: center;">Rate the movie:</p> 
-                                        <div class="stars">
-                                            <div class="stars">
-                                                {% for i in "0123456789"|make_list %}
-                                                    <div class="star-container">
-                                                        <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <p style="text-align: center; max-width: 150px;">{{ movie.title }}</p>
                                 <p style="text-align: center; max-width: 150px;">{{ movie.character }}</p>
                             </div>
@@ -121,8 +106,7 @@
   
     </div>
 </div>
-
-  
+ 
 {% endblock content %}
 
 

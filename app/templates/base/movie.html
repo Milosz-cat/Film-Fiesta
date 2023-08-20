@@ -3,21 +3,6 @@
 {% block title %}{{ movie.title }}{% endblock title %}
 
 {% block content %}
-    <div id="ratingModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p style="text-align: center;">Rate the movie:</p> 
-            <div class="stars">
-                <div class="stars">
-                    {% for i in "0123456789"|make_list %}
-                        <div class="star-container">
-                            <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="image-blurred-edge" style="background-image: url('https://image.tmdb.org/t/p/w500{{ movie.backdrop_path }}');"></div>
     <div class="card-movie">
         <div class="flex-container">
@@ -164,5 +149,6 @@
             </div>
         </div>
     </div>
+
 {% endblock content %}
 

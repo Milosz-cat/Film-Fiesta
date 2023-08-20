@@ -84,10 +84,13 @@ def movie(request, title, year):
 
     tmdb_client = TMDBClient()
     movie = tmdb_client.get_single_movie(title, year)
-
-    movie_reviews = get_object_or_404(Movie, custom_id=movie['movie']['id'])
-    reviews = Review.objects.filter(movie=movie_reviews)
-    movie['reviews'] = reviews
+    
+    try:
+        movie_reviews = Movie.objects.get(custom_id=movie['movie']['id'])
+        reviews = Review.objects.filter(movie=movie_reviews)
+        movie['reviews'] = reviews
+    except Movie.DoesNotExist:
+        movie_reviews = None
 
     return render(request, "base/movie.html", movie)
 
@@ -242,3 +245,4 @@ def remove_comment(request, pk):
 
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
+

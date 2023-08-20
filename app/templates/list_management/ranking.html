@@ -32,21 +32,6 @@
                         <a href="/add_to_list/{{ movie.title|urlencode }}/{{ movie.year }}/{{'Watchlist'}}" class="watchlist-label" data-title="{{ movie.title }}" data-year="{{ movie.year }}">+</a>
                         <a href="#" class="rating-label" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">★</a>
                     </div>
-                    <div id="ratingModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close">&times;</span>
-                            <p style="text-align: center;">Rate the movie:</p> 
-                            <div class="stars">
-                                <div class="stars">
-                                    {% for i in "0123456789"|make_list %}
-                                        <div class="star-container">
-                                            <a href="/rate_movie/{{ movie.title|urlencode }}/{{ movie.year }}/{{ i }}" class="star" data-rating="{{ i }}">★</a>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                         <p style="text-align: center;">{{forloop.counter}}</p>                      
                     
                     </a>
@@ -57,4 +42,5 @@
         {% endfor %}
     </div>
 </ul>
+
 {% endblock content %}
