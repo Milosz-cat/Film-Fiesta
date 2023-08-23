@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from base.models import Movie
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
+from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
 import time
 import environ
 import re
@@ -23,48 +25,58 @@ def scrape_imdb_top_250():
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    titles = [t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")][1:251]
+    try:
+        titles = [t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")][1:251]
+    except:
+        titles = None
+    
     meta_containers = soup.find_all("div", class_="sc-b85248f1-5 kZGNjY cli-title-metadata")
     year = []
-    duration = []
 
     for container in meta_containers:
         meta_items = container.find_all("span", class_="sc-b85248f1-6 bnDqKN cli-title-metadata-item")
         if len(meta_items) >= 2:
-            year.append(meta_items[0].get_text())
-            duration.append(meta_items[1].get_text())
+            try:
+                year.append(meta_items[0].get_text())
+            except:
+                year.append(None)
         else:
             year.append(None)
-            duration.append(None)
-
-    rankings = [r.get_text() for r in soup.find_all("span", class_="ipc-rating-star ipc-rating-star--base ipc-rating-star--imdb ratingGroup--imdb-rating")]
-    poster_paths = [p['src'] for p in soup.find_all("img", class_="ipc-image")]
+    try:
+        poster_paths = [p['src'] for p in soup.find_all("img", class_="ipc-image")]
+    except:
+        poster_paths = None
 
     movies = [{
         "title": t,
         "year": y, 
-        "duration": d,
-        "ranking": r,
-        "poster_path": p} for t, y, d, r, p in zip(titles, year, duration, rankings, poster_paths)]
+        "poster_path": p} for t, y, p in zip(titles, year, poster_paths)]
+    
+    for rank, movie_data in enumerate(movies, start=1):
+        movie, _ = IMDBTop250.objects.get_or_create(rank=rank, title=movie_data["title"], year=movie_data["year"])
+        movie.poster_path = movie_data["poster_path"]
+        movie.save()
      
-    return movies
+    #return movies
 
 
 
 def scrape_fimlweb_top_250():
     url = "https://www.filmweb.pl/ranking/film"
 
+    # Your original Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    driver = webdriver.Chrome(options=chrome_options)
+    # Use webdriver_manager to get the correct ChromeDriver version and apply the options
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+    
     driver.get(url)
 
-
-
-    # Scrolling the page by 1000 pixels each time
+    # Scrolling the page by 750 pixels each time
     for _ in range(45):  # Increase the number of iterations if needed
         driver.execute_script("window.scrollBy(0, 750);")
         time.sleep(0.2)  # Wait for the page to load
@@ -84,10 +96,6 @@ def scrape_fimlweb_top_250():
     except:
         years = None
     try:
-        rankings = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span.rankingType__rate--value')]
-    except:
-        rankings = None
-    try:
         poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
     except:
         poster_paths = None
@@ -97,13 +105,18 @@ def scrape_fimlweb_top_250():
         "title": t,
         'original_title': o,
         "year": y,
-        "ranking": r,
         "poster_path": p
-    } for t, o, y, r, p in zip(titles, original_titles, years, rankings, poster_paths)]
+    } for t, o, y, p in zip(titles, original_titles, years, poster_paths)]
 
     driver.quit()
 
-    return movies
+    for rank, movie_data in enumerate(movies, start=1):
+        movie, _ = FilmwebTop250.objects.get_or_create(rank=rank, title=movie_data["title"], year=movie_data["year"])
+        movie.original_title = movie_data["original_title"]
+        movie.poster_path = movie_data["poster_path"]
+        movie.save()
+        
+    #return movies
 
 
 
@@ -134,7 +147,10 @@ def scrape_oscar_best_picture():
                     winners.append(winner_movie)
                     nominations = []
                     winner_movie = None
-                current_year = re.sub(r'\[\w\]', '', row.select('td')[0].get_text(strip=True)).split()[0]
+                try:
+                    current_year = re.sub(r'\[\w\]', '', row.select('td')[0].get_text(strip=True)).split()[0]
+                except:
+                    current_year = None
             else:
                 try:
                     # Jeśli wiersz ma więcej niż jedną komórkę, to są to dane o filmie
@@ -155,14 +171,35 @@ def scrape_oscar_best_picture():
                             'release_year': current_year[:4],
                             'studio': studio
                         })
-                except IndexError:
+                except:
                     continue
+
         # Dodajemy ostatniego zwycięzcę z tabeli do listy
         if current_year and winner_movie:
             winner_movie['nominations'] = nominations
             winners.append(winner_movie)
 
-    return winners
+
+    for winner_data in winners:
+        winner, _ = OscarWinner.objects.get_or_create(title=winner_data["title"], release_year=winner_data["release_year"])
+        winner.year = winner_data["year"]
+        winner.poster_path = winner_data["poster_path"]
+        winner.studio = winner_data["studio"]
+        winner.save()
+
+        for nomination_data in winner_data["nominations"]:
+            nomination, _ = OscarNomination.objects.get_or_create(
+                title=nomination_data["title"], 
+                release_year=nomination_data["release_year"], 
+                studio=nomination_data["studio"],
+                defaults={'winner': winner}  # Set the winner during creation
+            )
+            nomination.winner = winner  # Ensure the winner is set during updates as well
+            nomination.save()
+
+    #return winners
+
+
 
 
 # def scrape_movie_wallpaper(title, year):

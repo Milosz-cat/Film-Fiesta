@@ -48,7 +48,7 @@
                     <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
                     </div>
                     <div style="margin-left: 80px;">
-                        {% for nomination in winner.nominations %}
+                        {% for nomination in winner.nominations.all %}
                         <a href="{% url 'movie' title=nomination.title year=nomination.release_year %}">
                             <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
                                 <strong>{{ nomination.title }}</strong> - {{ nomination.studio }}

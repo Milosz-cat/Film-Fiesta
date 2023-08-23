@@ -42,3 +42,44 @@ def create_watchlist(sender, instance, created, **kwargs):
         PersonList.objects.create(
             user=instance, name="Favourite Directors"
         )
+
+
+class IMDBTop250(models.Model):
+    rank = models.PositiveIntegerField(unique=True)
+    title = models.CharField(max_length=255)
+    year = models.IntegerField()
+    poster_path = models.URLField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.rank}. {self.title} ({self.year})"
+
+
+class FilmwebTop250(models.Model):
+    rank = models.PositiveIntegerField(unique=True)
+    title = models.CharField(max_length=255)
+    original_title = models.CharField(max_length=255, blank=True, null=True)
+    year = models.IntegerField()
+    poster_path = models.URLField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.rank}. {self.title} ({self.year})"
+
+    
+class OscarWinner(models.Model):
+    year = models.CharField(max_length=20)
+    release_year = models.IntegerField()
+    title = models.CharField(max_length=255)
+    poster_path = models.URLField(max_length=500, blank=True, null=True)
+    studio = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title} ({self.release_year})"
+
+class OscarNomination(models.Model):
+    winner = models.ForeignKey(OscarWinner, related_name="nominations", on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    release_year = models.IntegerField()
+    studio = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title

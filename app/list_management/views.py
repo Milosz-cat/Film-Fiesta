@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
-from list_management.models import MovieList, PersonList
+from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner
+import list_management.scraper as scraper
 from django.contrib import messages
-from base import scraper
 import environ
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -14,39 +14,73 @@ environ.Env.read_env()
 
 
 def ranking(request, name):
-
+    user = request.user
+    my_films_list = MovieList.objects.get(user=user, name="My Films")
+    my_films_titles = set(my_films_list.movies.values_list('title', flat=True))
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
+        
+        # Sprawdź czy rekordy istnieją w bazie danych
+        if not IMDBTop250.objects.exists():
+            # Uruchom skraper jeśli nie istnieją
+            scraper.scrape_imdb_top_250()
+
+        movies = IMDBTop250.objects.all().order_by('rank')
+        wachted_movies = [movie for movie in movies if movie.title[3:] in my_films_titles]
+        percentage_watched = round((len(wachted_movies) / len(movies))*100)
         context = {
-            "user_list": scraper.scrape_imdb_top_250(),
+            "user_list": movies,
             "list_title": list_title,
             "description": description,
+            "movies_count": len(wachted_movies),
+            "percentage_watched": percentage_watched,
         }
+
     elif name == "filmweb":
         list_title = "Filmweb Top 250 Movies"
         description = "Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings."
+        
+        # Sprawdź czy rekordy istnieją w bazie danych
+        if not FilmwebTop250.objects.exists():
+            # Uruchom skraper jeśli nie istnieją
+            scraper.scrape_fimlweb_top_250()
+
+        movies = FilmwebTop250.objects.all().order_by('rank')
+        wachted_movies = [movie for movie in movies if movie.original_title in my_films_titles]
+        percentage_watched = round((len(wachted_movies) / len(movies))*100)
         context = {
-            "user_list": scraper.scrape_fimlweb_top_250(),
+            "user_list": movies,
             "list_title": list_title,
             "description": description,
+            "movies_count": len(wachted_movies),
+            "percentage_watched": percentage_watched,
         }
+        
     else: 
         pass
 
     return render(request, "list_management/ranking.html", context)
 
-def best_picture(request):
 
+def best_picture(request):
     list_title = "Best picture"
-    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present."       
+    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present." 
+
+    # Sprawdź czy rekordy istnieją w bazie danych
+    if not OscarWinner.objects.exists():
+        # Uruchom skraper jeśli nie istnieją
+        scraper.scrape_oscar_best_picture()
+
+    winners = OscarWinner.objects.all().order_by('year')
     context = {
-        "winners": scraper.scrape_oscar_best_picture(),
+        "winners": winners,
         "list_title": list_title,
         "description": description,
     }
 
     return render(request, "list_management/best_picture.html", context)
+
 
 @login_required
 def rate_movie(request, title, year, rating):

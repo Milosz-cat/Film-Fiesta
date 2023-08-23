@@ -1,4 +1,4 @@
-FROM python:3.12.0b4-bookworm
+FROM python:3.10-slim
 
 WORKDIR /app/app
 
@@ -6,7 +6,6 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWEITEBYTECIDE 1
 
 COPY requirements.txt requirements.txt
-
 
 # Install dependencies
 RUN apt-get update \
@@ -26,3 +25,5 @@ RUN CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_R
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
+
+RUN echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
