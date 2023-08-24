@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -7,9 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
 from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
-import time
-import re
-
+import time, re, requests
 
 class IMDBTop250Scraper:
     def __init__(self):
@@ -77,21 +74,31 @@ class IMDBTop250Scraper:
 class FilmwebTop250Scraper:
     def __init__(self):
         self.url = "https://www.filmweb.pl/ranking/film"
-        self.chrome_options = Options()
-        self.chrome_options.add_argument("--headless")
-        self.chrome_options.add_argument("--no-sandbox")
-        self.chrome_options.add_argument("--disable-dev-shm-usage")
+        self.options = Options()
+        self.options.add_argument("--headless")
+        self.options.add_argument("--no-sandbox")
+        self.options.add_argument("--disable-dev-shm-usage")
 
     def fetch_data(self):
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.chrome_options)
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         driver.get(self.url)
 
-        # Scrolling the page by 750 pixels each time
-        for _ in range(45):  # Increase the number of iterations if needed
+        current_num_of_titles = 0
+
+        while True:
+            # Scroll the page
             driver.execute_script("window.scrollBy(0, 750);")
-            time.sleep(0.2)  # Wait for the page to load
+            time.sleep(0.5)  # Wait for the page to load
+
+            # Check the number of titles scraped so far
+            current_num_of_titles = len(driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'))
+
+            # If the number of titles reaches 250, break out of the loop
+            if current_num_of_titles >= 250:
+                break
 
         return driver
+
 
     def parse_data(self, driver):
         try:
@@ -149,8 +156,6 @@ class FilmwebTop250Scraper:
         driver = self.fetch_data()
         movies = self.parse_data(driver)
         self.save_to_db(movies)
-
-
 
 
 class OscarBestPictureScraper:

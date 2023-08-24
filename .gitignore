@@ -8,6 +8,10 @@ __pycache__/
 
 .vscode
 
+# migrations
+*/migrations/*
+!*/migrations/__init__.py
+
 # Distribution / packaging
 .Python
 build/

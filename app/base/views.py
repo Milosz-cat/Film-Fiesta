@@ -4,9 +4,12 @@ from django.contrib.auth.decorators import login_required
 from list_management.models import MovieList
 from base.models import Movie, Review, Comment
 from django.contrib import messages
+from list_management.signals import home_visited
 
 @login_required
 def home(request):
+
+    home_visited.send(sender=home)
 
     context = {}
     tmdb_client = TMDBClient()

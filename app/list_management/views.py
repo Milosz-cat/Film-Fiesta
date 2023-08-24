@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
-from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner
-from list_management.scraper import IMDBTop250Scraper, FilmwebTop250Scraper, OscarBestPictureScraper
+from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+
+
 
 
 def ranking(request, name):
@@ -16,12 +17,12 @@ def ranking(request, name):
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
-        
+
         # Sprawdź czy rekordy istnieją w bazie danych
         if not IMDBTop250.objects.exists():
-            # Uruchom skraper jeśli nie istnieją
-            scraper = IMDBTop250Scraper()
-            scraper.scrape()
+            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            context = {"list_title": list_title}
+            return render(request, "list_management/ranking.html", context)
 
         movies = IMDBTop250.objects.all().order_by('rank')
         wachted_movies = [movie for movie in movies if movie.title[3:] in my_films_titles]
@@ -37,12 +38,12 @@ def ranking(request, name):
     elif name == "filmweb":
         list_title = "Filmweb Top 250 Movies"
         description = "Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings."
-        
+
         # Sprawdź czy rekordy istnieją w bazie danych
         if not FilmwebTop250.objects.exists():
-            # Uruchom skraper jeśli nie istnieją
-            scraper = FilmwebTop250Scraper()
-            scraper.scrape()
+            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            context = {"list_title": list_title}
+            return render(request, "list_management/ranking.html", context)
 
         movies = FilmwebTop250.objects.all().order_by('rank')
         wachted_movies = [movie for movie in movies if movie.original_title in my_films_titles]
@@ -54,8 +55,8 @@ def ranking(request, name):
             "movies_count": len(wachted_movies),
             "percentage_watched": percentage_watched,
         }
-        
-    else: 
+
+    else:
         pass
 
     return render(request, "list_management/ranking.html", context)
@@ -63,13 +64,13 @@ def ranking(request, name):
 
 def best_picture(request):
     list_title = "Best picture"
-    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present." 
+    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present."
 
     # Sprawdź czy rekordy istnieją w bazie danych
     if not OscarWinner.objects.exists():
-        # Uruchom skraper jeśli nie istnieją
-        scraper = OscarBestPictureScraper()
-        scraper.scrape()
+            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            context = {"list_title": list_title}
+            return render(request, "list_management/best_picture.html", context)
 
     winners = OscarWinner.objects.all().order_by('year')
     context = {
@@ -83,6 +84,7 @@ def best_picture(request):
 
 @login_required
 def rate_movie(request, title, year, rating):
+
     user = request.user
     user_ranking, _ = MovieList.objects.get_or_create(user=user, name="My Films")
 
@@ -203,7 +205,7 @@ def add_to_list(request, movie_title, movie_year, name):
             custom_id=movie_data["id"],
             defaults={"on_watchlist": "yes" if name == "Watchlist" else "no"}
         )
-        
+
         if not created:
             # If the movie was not created (i.e., it already existed), update the on_watchlist field
             movie_obj.on_watchlist = "yes" if name == "Watchlist" else "no"
@@ -254,9 +256,9 @@ def add_person_to_list(request, name, id):
     known_for_department = name
 
     if name == 'Acting':
-        known_for_department = 'Favourite Actors' 
+        known_for_department = 'Favourite Actors'
     elif name == 'Directing':
-        known_for_department = 'Favourite Directors'     
+        known_for_department = 'Favourite Directors'
 
     # Pobierz listę użytkownika lub utwórz ją, jeśli nie istnieje
     user_list, _ = PersonList.objects.get_or_create(user=user, name=known_for_department)

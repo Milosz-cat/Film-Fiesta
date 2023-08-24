@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",
     "user_management.apps.UserManagementConfig",
     "list_management.apps.ListManagementConfig",
-    "drf_spectacular",
     'django_celery_beat',
+    'celery',
 ]
 
 MIDDLEWARE = [
@@ -168,3 +168,24 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Warsaw'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'ERROR',  # Suppress logs from other parts of the application
+    },
+    'loggers': {
+        'list_management.tasks': {  # This targets your tasks.py specifically
+            'handlers': ['console'],
+            'level': 'INFO',  # This will show logs with level INFO and above
+            'propagate': False,  # This ensures logs from this logger don't propagate to other loggers
+        },
+    },
+}

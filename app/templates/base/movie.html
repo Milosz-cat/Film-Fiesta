@@ -10,7 +10,7 @@
                 <h1 style="padding: 0px; margin-top: 10px;"> {{ movie.title }} </h1>
                 <h6 style="padding: 0px; margin-bottom: 20px;"> {{ movie.release_date }} ● {{movie.duration}}</h6>
             </div>
-            <a href="#" style="display: flex; justify-content: center; align-items: center; height: 100px;" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.year }}')">
+            <a href="#" style="display: flex; justify-content: center; align-items: center; height: 100px;" onclick="showRatingModal('{{ movie.title|urlencode }}', '{{ movie.release_date }}')">
                 <h3> ★ {{ movie.vote_average|floatformat:1 }} </h3>
             </a>
         </div>
