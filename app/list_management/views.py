@@ -3,14 +3,10 @@ from django.contrib.auth.decorators import login_required
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
 from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner
-import list_management.scraper as scraper
+from list_management.scraper import IMDBTop250Scraper, FilmwebTop250Scraper, OscarBestPictureScraper
 from django.contrib import messages
-import environ
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-
-env = environ.Env()
-environ.Env.read_env()
 
 
 def ranking(request, name):
@@ -24,7 +20,8 @@ def ranking(request, name):
         # Sprawdź czy rekordy istnieją w bazie danych
         if not IMDBTop250.objects.exists():
             # Uruchom skraper jeśli nie istnieją
-            scraper.scrape_imdb_top_250()
+            scraper = IMDBTop250Scraper()
+            scraper.scrape()
 
         movies = IMDBTop250.objects.all().order_by('rank')
         wachted_movies = [movie for movie in movies if movie.title[3:] in my_films_titles]
@@ -44,7 +41,8 @@ def ranking(request, name):
         # Sprawdź czy rekordy istnieją w bazie danych
         if not FilmwebTop250.objects.exists():
             # Uruchom skraper jeśli nie istnieją
-            scraper.scrape_fimlweb_top_250()
+            scraper = FilmwebTop250Scraper()
+            scraper.scrape()
 
         movies = FilmwebTop250.objects.all().order_by('rank')
         wachted_movies = [movie for movie in movies if movie.original_title in my_films_titles]
@@ -70,7 +68,8 @@ def best_picture(request):
     # Sprawdź czy rekordy istnieją w bazie danych
     if not OscarWinner.objects.exists():
         # Uruchom skraper jeśli nie istnieją
-        scraper.scrape_oscar_best_picture()
+        scraper = OscarBestPictureScraper()
+        scraper.scrape()
 
     winners = OscarWinner.objects.all().order_by('year')
     context = {
