@@ -55,8 +55,8 @@
             <h4 style="padding-bottom: 10px;"> Want to add some movie to your list ?</h4>
         </div>
     </div>
-    <form method="post"> <!-- Dodajemy atrybut method="post" do formularza -->
-        {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
+    <form method="post"> 
+        {% csrf_token %} 
         <div class="input-group mb-3">
             <input type="search" class="form-control" placeholder="Search your movie and add it by clicking on poster" aria-label="Search" name="search">
             <button type="submit" class="btn btn-primary">Search</button>

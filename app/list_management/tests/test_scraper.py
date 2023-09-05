@@ -3,14 +3,27 @@ from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, Oscar
 from list_management.scraper import IMDBTop250Scraper, FilmwebTop250Scraper, OscarBestPictureScraper
 
 class IMDBTop250ScraperTest(TestCase):
-    
+    """
+    Test case for the IMDBTop250Scraper class.
+
+    This test case focuses on verifying the functionality of the IMDBTop250Scraper class.
+    The scraper is designed to fetch movie data from the IMDB Top 250 list and populate
+    the database with the scraped data.
+
+    Methods:
+    - setUp: Initializes the scraper instance for testing.
+    - test_scrape_with_limit: Tests the scraper's ability to fetch a limited number of movies
+      (in this case, just one movie) and ensures that the database reflects the correct count
+      of scraped movies.
+    """
     def setUp(self):
         self.scraper = IMDBTop250Scraper()
+
 
     def test_scrape_with_limit(self):
         self.scraper.scrape(limit=1)
         
-        # Sprawdź, czy w bazie danych jest dokładnie 1 film
+        # Check if there's exactly 1 movie in the database
         self.assertEqual(IMDBTop250.objects.count(), 1)
 
 class FilmwebTop250ScraperTest(TestCase):
@@ -18,10 +31,10 @@ class FilmwebTop250ScraperTest(TestCase):
     def setUp(self):
         self.scraper = FilmwebTop250Scraper()
 
+
     def test_scrape_with_limit_and_scroll(self):
         self.scraper.scrape(limit=1, scrolls=1)
 
-        # Sprawdź, czy w bazie danych jest dokładnie 1 film
         self.assertEqual(FilmwebTop250.objects.count(), 1)
 
 class OscarBestPictureScraperTest(TestCase):

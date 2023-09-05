@@ -10,12 +10,28 @@ import time, re, requests
 
 
 class IMDBTop250Scraper:
+    """
+    A BeautifulSoup scraper for fetching and parsing the top 250 movies from IMDB.
+
+    The limit of scrapped movies is set for testing purposes.
+
+    Attributes:
+    - url (str): The URL of the IMDB top 250 movies page.
+    - headers (dict): Headers for the HTTP request.
+
+    Methods:
+    - fetch_data(): Retrieves the HTML content of the IMDB top 250 movies page.
+    - parse_data(soup, limit=None): Parses the HTML content to extract movie details.
+    - save_to_db(movies): Saves the parsed movie details to the database.
+    - scrape(limit=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://www.imdb.com/chart/top/"
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
             "Accept-Language": "en-US,en;q=0.8"
         }
+
 
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
@@ -56,6 +72,7 @@ class IMDBTop250Scraper:
 
         return movies
 
+
     def save_to_db(self, movies):
         # Delete all existing movies
         IMDBTop250.objects.all().delete()
@@ -77,6 +94,24 @@ class IMDBTop250Scraper:
 
 
 class FilmwebTop250Scraper:
+    """
+    A Selenium Webdriver scraper for fetching and parsing the top 250 movies from Filmweb.
+    We use Selenium instead of BeautifulSoup because we need a scroll down mechanism.
+    This is due to the fact that the Filmweb site uses a lazy loading mechanism to load data
+
+    The limit of scrapped movies is set for testing purposes.
+
+
+    Attributes:
+    - url (str): The URL of the Filmweb top 250 movies page.
+    - options (Options): Selenium webdriver options.
+
+    Methods:
+    - fetch_data(scrolls=None): Retrieves the HTML content of the Filmweb top 250 movies page using Selenium.
+    - parse_data(driver, limit=None): Parses the HTML content to extract movie details.
+    - save_to_db(movies): Saves the parsed movie details to the database.
+    - scrape(limit=None, scrolls=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://www.filmweb.pl/ranking/film"
         self.options = Options()
@@ -89,7 +124,7 @@ class FilmwebTop250Scraper:
         driver.get(self.url)
 
         current_num_of_titles = 0
-        scroll_count = 0  # nowy licznik przewijania
+        scroll_count = 0
 
         while True:
             # Scroll the page
@@ -166,6 +201,22 @@ class FilmwebTop250Scraper:
         self.save_to_db(movies)
 
 class OscarBestPictureScraper:
+    """
+    A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and their nominations from Wikipedia.
+    
+    The limit of scrapped movies is set for testing purposes.
+
+    Attributes:
+    - url (str): The URL of the Wikipedia page for the Academy Award for Best Picture.
+    - headers (dict): Headers for the HTTP request.
+    - tmdb_client (TMDBClient): An instance of the TMDBClient to fetch movie posters.
+
+    Methods:
+    - fetch_data(): Retrieves the HTML content of the Wikipedia page.
+    - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar winners and their nominations.
+    - save_to_db(winners): Saves the parsed details to the database.
+    - scrape(limit=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture"
         self.headers = {
@@ -173,6 +224,7 @@ class OscarBestPictureScraper:
             "Accept-Language": "en-US,en;q=0.8"
         }
         self.tmdb_client = TMDBClient()
+
 
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
@@ -229,9 +281,10 @@ class OscarBestPictureScraper:
 
         return winners
 
+
     def save_to_db(self, winners):
         for winner_data in winners:
-            # Sprawdź, czy film zwycięzca już istnieje w bazie danych
+            # Check if the winner already exists in the database
             winner_exists = OscarWinner.objects.filter(title=winner_data["title"], release_year=winner_data["release_year"]).exists()
 
             if not winner_exists:
@@ -259,20 +312,11 @@ class OscarBestPictureScraper:
 
 
 # def scrape_movie_wallpaper(title, year):
-    
-#     #klucz API
 #     api_key = env("GOOGLE_API_KEY")
-
-#     #identyfikator silnika wyszukiwania
 #     cx = env("CX")
-
-#     # Zapytanie wyszukiwania
 #     query = f"movie wallpaper {title} {year}"
-
-#     # URL API
 #     url = f"https://www.googleapis.com/customsearch/v1"
 
-#     # Parametry zapytania
 #     params = {
 #         'key': api_key,
 #         'cx': cx,
@@ -281,9 +325,7 @@ class OscarBestPictureScraper:
 #         'num': 1
 #     }
 
-#     # Wykonaj zapytanie do API
 #     response = requests.get(url, params=params)
-#     # Przetwórz odpowiedź
 #     data = response.json()
 #     image_url = data['items'][0]['link']
 

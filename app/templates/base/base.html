@@ -70,7 +70,7 @@
               </li>      
               <li class="nav-item active">
                   <form method="post" action="{% url 'search' %}" style="width: 200px; margin-top: 8px;">
-                      {% csrf_token %} <!-- Ważne dla zabezpieczeń Django -->
+                      {% csrf_token %}
                       <div class="input-group mb-3">
                           <input type="search" class="form-control" placeholder="Find Movie" aria-label="Search" name="search">
                           <button type="submit" class="btn btn-primary">Search</button>
@@ -141,15 +141,23 @@
  
   </body>
   <script>
-    // Skrypt dla przycisków zamknięcia
+    /**
+    Script for handling close button functionality.
+    This script finds all elements with the class "close" and adds a click event listener to them.
+    When clicked, the parent element of the clicked button is removed from the DOM.
+    */
     var closeButtons = document.querySelectorAll(".close");
     closeButtons.forEach(function (button) {
         button.addEventListener("click", function () {
                 button.parentElement.parentElement.remove();
         });
     });
-
-    // Skrypt dla tmdbModal
+    /**
+    Script for handling modal display and hide functionality for 'tmdbModal'.
+    This script listens for the DOMContentLoaded event and then:
+    - Displays the 'tmdbModal' when the 'aboutLink' is clicked.
+    - Hides the 'tmdbModal' when the 'closeTmdb' button is clicked or when clicking outside the modal.
+    */
     document.addEventListener("DOMContentLoaded", function() {
         var tmdbModal = document.getElementById('tmdbModal');
         var aboutLink = document.getElementById('aboutLink');
@@ -169,8 +177,13 @@
             }
         };
     });
-
-    // Skrypt dla karty
+    /**
+    Script for handling card navigation functionality.
+    This script uses jQuery to:
+    - Set the initial active card.
+    - Navigate to the next or previous card when the respective buttons are clicked.
+    - Automatically navigate to the next card every 30 seconds.
+    */
     $(document).ready(function () {
         var activeCard = 0;
         var direction = 1;
@@ -201,8 +214,11 @@
 
         setInterval(showNextCard, 30000);
     });
-
-    // Skrypt dla ratingModal
+    /**
+    Script for displaying a rating modal.
+    This script:
+    - Displays the 'ratingModal' and sets the rating links based on the provided title and year.
+    */
     function showRatingModal(title, year) {
         var modal = document.getElementById('ratingModal');
         modal.style.display = "block";
@@ -213,7 +229,11 @@
             star.href = "/rate_movie/" + title + "/" + year + "/" + rating;
         });
     }
-
+    /**
+    Script for handling close functionality for the 'ratingModal'.
+    This script listens for the DOMContentLoaded event and then:
+    - Hides the 'ratingModal' when the 'close-rating' button is clicked or when clicking outside the modal.
+    */
     document.addEventListener("DOMContentLoaded", function() {
         var modal = document.getElementById('ratingModal');
         var close = modal.querySelector('.close-rating');
@@ -228,8 +248,11 @@
             }
         };
     });
-
-    // Skrypt dla przycisków "Toggle Comments"
+    /**
+    Script for toggling the display of comments.
+    This script listens for the DOMContentLoaded event and then:
+    - Toggles the display of the comments container when the 'toggle-comments' button is clicked.
+    */
     document.addEventListener("DOMContentLoaded", function() {
         var toggleButtons = document.querySelectorAll(".toggle-comments");
 

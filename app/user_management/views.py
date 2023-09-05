@@ -4,12 +4,7 @@ from django.contrib import messages
 
 
 def sign_up(request):
-    """The function checks if a user with similar data does not already exist,
-    if not creating a new user.
-
-    Args:
-        request: user data directory
-    """
+    """The function checks if a user with similar data does not already exist, if not creating a new user. """
 
     if request.method == "POST":
         username = request.POST["username"]
