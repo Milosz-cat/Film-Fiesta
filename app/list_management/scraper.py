@@ -138,8 +138,12 @@ class FilmwebTop250Scraper:
             scroll_count += 1
 
             # Break the loop if the number of titles reaches 250 or the number of scrolls reaches the limit
-            if current_num_of_titles >= 250 or scroll_count >= scrolls:
-                break
+            if scrolls:
+                if scroll_count >= scrolls:
+                    break
+            else:
+                if current_num_of_titles >= 250:
+                    break
 
         return driver
 
