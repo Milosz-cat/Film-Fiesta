@@ -13,11 +13,11 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 app.conf.beat_schedule = {
     'scrape_imdb_top_250': {
         'task': 'list_management.tasks.scrape_imdb_top_250',
-        'schedule': crontab(minute=0, hour=0),  # This specifies midnight every day
+        'schedule': crontab(minute=0, hour=00),  # This specifies midnight every day
     },
     'scrape_filmweb_top_250': {
         'task': 'list_management.tasks.scrape_filmweb_top_250',
-        'schedule': crontab(minute=5, hour=0),
+        'schedule': crontab(minute=2, hour=00),
     },
     'scrape_oscar_best_picture': {
         'task': 'list_management.tasks.scrape_oscar_best_picture',

@@ -20,7 +20,7 @@ def ranking(request, name):
 
         # Sprawdź czy rekordy istnieją w bazie danych
         if not IMDBTop250.objects.exists():
-            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scrapers are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 
@@ -41,7 +41,7 @@ def ranking(request, name):
 
         # Sprawdź czy rekordy istnieją w bazie danych
         if not FilmwebTop250.objects.exists():
-            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scrapers are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 

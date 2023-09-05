@@ -79,7 +79,7 @@ def home(request):
     
     return render(request, "base/home.html", context)
 
-
+@login_required
 def movie(request, title, year):
     # wallpaper = scraper.scrape_movie_wallpaper(title, year)
     if "." in title:
@@ -97,6 +97,7 @@ def movie(request, title, year):
 
     return render(request, "base/movie.html", movie)
 
+@login_required
 def person(request, name):
 
     tmdb_client = TMDBClient()
@@ -161,7 +162,7 @@ def person(request, name):
     
     return render(request, "base/person.html", context)
 
-
+@login_required
 def search(request):
     
     if request.method == "POST":

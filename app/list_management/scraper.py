@@ -7,6 +7,8 @@ from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
 from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
 import time, re, requests
+from django.db import transaction
+
 
 class IMDBTop250Scraper:
     def __init__(self):
@@ -53,17 +55,18 @@ class IMDBTop250Scraper:
         return movies
 
     def save_to_db(self, movies):
-        for rank, movie_data in enumerate(movies, start=1):
-            movie = IMDBTop250.objects.filter(title=movie_data["title"], year=movie_data["year"]).first()
-            if movie:
-                movie.rank = rank
-                movie.poster_path = movie_data["poster_path"]
-                movie.save()
-            else:
-                IMDBTop250.objects.create(rank=rank, title=movie_data["title"], year=movie_data["year"], poster_path=movie_data["poster_path"])
+        # Delete all existing movies
+        IMDBTop250.objects.all().delete()
 
-        current_movie_titles = [movie_data["title"] for movie_data in movies]
-        IMDBTop250.objects.exclude(title__in=current_movie_titles).delete()
+        # Iterate through the scraped movies and save them to the database
+        for rank, movie_data in enumerate(movies, start=1):
+            movie = IMDBTop250(
+                rank=rank,
+                title=movie_data["title"],
+                year=movie_data["year"],
+                poster_path=movie_data["poster_path"]
+            )
+            movie.save()
 
     def scrape(self):
         soup = self.fetch_data()
@@ -131,26 +134,22 @@ class FilmwebTop250Scraper:
         } for t, o, y, p in zip(titles, original_titles, years, poster_paths)]
 
         return movies
-
+    
     def save_to_db(self, movies):
-        for rank, movie_data in enumerate(movies, start=1):
-            movie = FilmwebTop250.objects.filter(title=movie_data["title"], year=movie_data["year"]).first()
-            if movie:
-                movie.rank = rank
-                movie.original_title = movie_data["original_title"]
-                movie.poster_path = movie_data["poster_path"]
-                movie.save()
-            else:
-                FilmwebTop250.objects.create(
-                    rank=rank, 
-                    title=movie_data["title"], 
-                    original_title=movie_data["original_title"], 
-                    year=movie_data["year"], 
-                    poster_path=movie_data["poster_path"]
-                )
+        # Delete all existing movies
+        FilmwebTop250.objects.all().delete()
 
-        current_movie_titles = [movie_data["title"] for movie_data in movies]
-        FilmwebTop250.objects.exclude(title__in=current_movie_titles).delete()
+        # Iterate through the scraped movies and save them to the database
+        for rank, movie_data in enumerate(movies, start=1):
+            movie = FilmwebTop250(
+                rank=rank,
+                title=movie_data["title"],
+                original_title=movie_data["original_title"],
+                year=movie_data["year"],
+                poster_path=movie_data["poster_path"]
+            )
+            movie.save()
+
 
     def scrape(self):
         driver = self.fetch_data()
