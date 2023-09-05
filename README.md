@@ -63,7 +63,7 @@ After this go again to API page and you will be able to copy API KEY and API Rea
 
 For sending e-mails to work properly on your gamil, you need to go to settings and enable two-step verification and then set a password for the application. Here is helpful  [link.](https://dev.to/abderrahmanemustapha/how-to-send-email-with-django-and-gmail-in-production-the-right-way-24ab)
 
-If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my data with you.  
+If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my data with you. [![email badge](https://img.shields.io/badge/miloszbochenek20@gmail.com-red?style=flat&logo=gmail&logoColor=white&labelColor=red)](mailto:miloszbochenek20@gmail.com)  
 
 Example:
 ```env
