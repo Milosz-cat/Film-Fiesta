@@ -1,17 +1,47 @@
 # Movie-App
-# Preview
-    ![Preview image](screenshots/1.png)
-    ![Preview image](screenshots/2.png)
-    ![Preview image](screenshots/3.png)
-    ![Preview image](screenshots/4.png)
-    ![Preview image](screenshots/5.png)
-    ![Preview image](screenshots/6.png)
-    ![Preview image](screenshots/7.png)
-    ![Preview image](screenshots/8.png)
-    ![Preview image](screenshots/9.png)
-    ![Preview image](screenshots/10.png)
-    ![Preview image](screenshots/11.png)
-    ![Preview image](screenshots/12.png)
+FilmFIesta is a film-themed project, the appearance and some functionalities have been created in the likeness of internet sites such as [IMDB](https://www.imdb.com/), [Filmweb](https://www.filmweb.pl/) or [Letterboxd](https://letterboxd.com/).
+
+## Features
+- data scraping with BeautifulSoup and Selenium
+- using the TMDB API to retrieve the most important information about movies and people of cinema
+- Redis&Celery for refreshing rankings every 24 hours
+- using Postgres DB
+- using signals and transactions from Django 
+- CRUD functionality with list of movies/people
+- rating and adding to watchlist funtionality
+- CRUD functionality with reviews/comments
+- user authentication system
+- password reset by sending an email with a link
+- template-based interface styled with bootstrap
+
+
+## 🛠 Skills
+<p align="left">  
+    <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python"             width="40" height="40"/> </a>
+    <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> <img src="https://cdn.worldvectorlogo.com/logos/django.svg" alt="django" width="40" height="40"/> </a> 
+    <a href="https://www.docker.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg"         alt="docker" width="40" height="40"/> </a>  
+    <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> 
+    <a href="https://redis.io" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redis/redis-original-wordmark.svg" alt="redis" width="40" height="40"/> </a>
+    <a href="https://www.selenium.dev" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/detain/svg-logos/780f25886640cef088af994181646db2f6b1a3f8/svg/selenium-logo.svg" alt="selenium" width="40" height="40"/> </a>
+    <a href="https://getbootstrap.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg"         alt="bootstrap" width="40" height="40"/> </a>
+    <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg"              alt="html5" width="40" height="40"/> </a>
+    <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg"         alt="css3" width="40" height="40"/> </a>
+    <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/gnu_bash/gnu_bash-icon.svg" alt="bash" width="40" height="40"/>    </a>
+</p>
+
+## Preview
+![Preview image](screenshots/1.png)
+![Preview image](screenshots/2.png)
+![Preview image](screenshots/3.png)
+![Preview image](screenshots/4.png)
+![Preview image](screenshots/5.png)
+![Preview image](screenshots/6.png)
+![Preview image](screenshots/7.png)
+![Preview image](screenshots/8.png)
+![Preview image](screenshots/9.png)
+![Preview image](screenshots/10.png)
+![Preview image](screenshots/11.png)
+![Preview image](screenshots/12.png)
     
 ## Requirements
 * docker and docker compose
@@ -22,16 +52,15 @@ Firstly, clone the repository from the github to your local folder with the foll
 git clone https://github.com/Milosz-cat/Movie-App.git
 ```
 
-Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file. 
+Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file.   
 
-To get access to the TMDB API, you need to create an account on the TMDB website and verify your email.
+To get access to the TMDB API, you need to create an account on the [TMDB website](https://www.themoviedb.org/) and verify your email.
 Then go to Profile Icon > Settings > API > Create > DeveloperExample, Accept Terms of Use, Submit Form. 
-After this go again to API page and you will be able to copy API KEY and API Read Access Token (BEARER).
+After this go again to API page and you will be able to copy API KEY and API Read Access Token (BEARER).  
 
-To get email functionality you need to create new gmail account and follow steps in this tutorial:
-https://dev.to/abderrahmanemustapha/how-to-send-email-with-django-and-gmail-in-production-the-right-way-24ab
+For sending e-mails to work properly on your gamil, you need to go to settings and enable two-step verification and then set a password for the application. Here is helpful  [link.](https://dev.to/abderrahmanemustapha/how-to-send-email-with-django-and-gmail-in-production-the-right-way-24ab)
 
-If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my data with you.
+If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my data with you.  
 
 Example:
 ```env
