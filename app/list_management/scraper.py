@@ -7,7 +7,6 @@ from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
 from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
 import time, re, requests
-from django.db import transaction
 
 
 class IMDBTop250Scraper:

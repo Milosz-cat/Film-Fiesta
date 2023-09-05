@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner
 from .tasks import scrape_imdb_top_250, scrape_filmweb_top_250, scrape_oscar_best_picture
 from django.dispatch import Signal
+import sys
+
 
 # Define a new signal
 home_visited = Signal()
@@ -28,6 +30,10 @@ def create_watchlist(sender, instance, created, **kwargs):
 
 @receiver(home_visited)
 def on_home_visited(sender, **kwargs):
+
+    if 'test' in sys.argv:
+        return
+    
     if not IMDBTop250.objects.exists():
         scrape_imdb_top_250.delay()
 
