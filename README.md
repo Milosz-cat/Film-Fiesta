@@ -32,6 +32,9 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 ## Preview
 ![Preview image](screenshots/1.png)
 ![Preview image](screenshots/2.png)
+![Preview image](screenshots/13.png)
+![Preview image](screenshots/14.png)
+![Preview image](screenshots/10.png)
 ![Preview image](screenshots/3.png)
 ![Preview image](screenshots/4.png)
 ![Preview image](screenshots/5.png)
@@ -39,10 +42,8 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 ![Preview image](screenshots/7.png)
 ![Preview image](screenshots/8.png)
 ![Preview image](screenshots/9.png)
-![Preview image](screenshots/10.png)
-![Preview image](screenshots/11.png)
 ![Preview image](screenshots/12.png)
-![Preview image](screenshots/13.png)
+
     
 ## Requirements
 * docker and docker compose
