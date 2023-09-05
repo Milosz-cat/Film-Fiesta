@@ -42,6 +42,7 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 ![Preview image](screenshots/7.png)
 ![Preview image](screenshots/8.png)
 ![Preview image](screenshots/9.png)
+![Preview image](screenshots/11.png)
 ![Preview image](screenshots/12.png)
 
     
