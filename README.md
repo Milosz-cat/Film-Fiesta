@@ -1,15 +1,18 @@
 # Movie-App
-API for cataloging and retrieving lego sets by price per element ratio.
-
-## Features
-* retrieving lego sets ordered by price per element ratio
-* pagination
-* flitering, ordering and searching system
-* selenium bot scraping data from lego store
-* refreshing database with celery task scheduled every 3 hours
-* documentation made with drf_spectacular
-* customized admin panel
-
+# Preview
+    ![Preview image](screenshots/1.png)
+    ![Preview image](screenshots/2.png)
+    ![Preview image](screenshots/3.png)
+    ![Preview image](screenshots/4.png)
+    ![Preview image](screenshots/5.png)
+    ![Preview image](screenshots/6.png)
+    ![Preview image](screenshots/7.png)
+    ![Preview image](screenshots/8.png)
+    ![Preview image](screenshots/9.png)
+    ![Preview image](screenshots/10.png)
+    ![Preview image](screenshots/11.png)
+    ![Preview image](screenshots/12.png)
+    
 ## Requirements
 * docker and docker compose
 

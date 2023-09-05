@@ -14,9 +14,14 @@
             {% endif %}
         </div>
     </div>
-    
-    <div class="actor-container">
+    <div class="movie-row">
         {% for actor in user_list %}
+            {% if forloop.counter0|divisibleby:5 %}
+                {% if not forloop.first %}
+                    </div>
+                {% endif %}
+                <div class="movie-row">
+            {% endif %}
             <a href="{% url 'person' actor.name %}">
                 <div class="actor">
                     {% if actor.profile_path != None %}
@@ -27,12 +32,14 @@
                     {% else %}
                         <img src="{% static 'profile.jpg'%}" class="face">
                     {% endif %}
-                    <p>{{ actor.name }}</p>
+                    <p class="truncate">{{ actor.name }}</p>
                 </div>
             </a>
+            {% if forloop.last %}
+                </div>
+            {% endif %}
         {% endfor %}
-    </div>   
-
+    </div>
 
     <div class="row" style="margin-top: 50px; margin-bottom: 20px;"> 
         <div class="col text-center"> 
