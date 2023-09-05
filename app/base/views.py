@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from base.tmdb_helpers import TMDBClient
 from django.contrib.auth.decorators import login_required
+from base.tmdb_helpers import TMDBClient
 from list_management.models import MovieList
 from base.models import Movie, Review, Comment
 from django.contrib import messages
@@ -8,6 +8,20 @@ from list_management.signals import home_visited
 
 @login_required
 def home(request):
+    """
+    Render the home page of the application.
+
+    All views use @login_required decorator that redirects to login if the user
+    is not authenticated.
+
+    After entering this view, a home visited signal is sent automatically, the purpose
+    of which is to scrape the rankings and Oscars when you first visit the application
+    
+    This view fetches (from TMDB API), process and send to template trending movies, 
+    movies that are currently playing, popular persons and movies from the user's watchlist.
+    It also provides movie recommendations based on the last movie added to the user's
+    "My Films" list.
+    """
 
     home_visited.send(sender=home)
 
@@ -39,9 +53,7 @@ def home(request):
 
     # Get the user's watchlist movies
     user_watchlist = MovieList.objects.get(user=user, name="Watchlist")
-    watchlist_movies = user_watchlist.movies.all() if user_watchlist else None  # If MovieList has a many-to-many field called movies
-
-
+    watchlist_movies = user_watchlist.movies.all() if user_watchlist else None
 
     user_watched_films = MovieList.objects.get(user=user, name="My Films")
     if user_watched_films.movies.exists():
@@ -80,8 +92,17 @@ def home(request):
     return render(request, "base/home.html", context)
 
 
+@login_required
 def movie(request, title, year):
-    # wallpaper = scraper.scrape_movie_wallpaper(title, year)
+    """
+    Display detailed information about a specific movie.
+    
+    This view fetches detailed information about a movie based on its
+    title and release year. It displays the movie's details, cast, crew,
+    and user reviews.
+
+    If movie title contains number (24. Title), it will be removed.
+    """
     if "." in title:
         title = title.split(".", 1)[1].strip()
 
@@ -97,13 +118,21 @@ def movie(request, title, year):
 
     return render(request, "base/movie.html", movie)
 
+
+@login_required
 def person(request, name):
+    """
+    Display detailed information about a specific person in the film industry.
+    
+    This view fetches and displays a person's profile, including their filmography as an actor 
+    and director. It also calculates the percentage of the person's (as actor and director) 
+    movies that the user has watched.
+    """
 
     tmdb_client = TMDBClient()
     person = tmdb_client.search_person(name)
     person_id = person[0]['id']
     
-    # Get movies by person
     cast_movies, director_movies = tmdb_client.get_movies_by_person(person_id)
     
     # Filter and structure movies where the person is an actor
@@ -140,10 +169,8 @@ def person(request, name):
         wachted_director_movies = len([movie for movie in person_movies_as_director if movie['title'] in my_films_titles])
         percentage_watched_director = round((wachted_director_movies / len(person_movies_as_director))*100)
 
-    # Get biography
     biography = tmdb_client.search_person_by_id(person_id)['biography']
     
-    # Create the context for rendering
     context = {
         'person': person[0],
         'movies': person_movies_as_actor,
@@ -162,16 +189,22 @@ def person(request, name):
     return render(request, "base/person.html", context)
 
 
+@login_required
 def search(request):
+    """
+    Handle movie search functionality.
+    
+    This view allows users to search for movies by title. The results are fetched from the TMDB API 
+    and displayed in a paginated format.
+    """
     
     if request.method == "POST":
-        search_term = request.POST.get("search")  # Get the search term from the POST data
+        search_term = request.POST.get("search")
 
-        tmdb_client = TMDBClient()  # Create an instance of the TMDBClient class
-        movies = tmdb_client.search_movies(search_term)  # Call the search_movie method on the instance
+        tmdb_client = TMDBClient()
+        movies = tmdb_client.search_movies(search_term)
 
 
-        # Create a new list of movies, each represented as a dictionary with only the desired fields
         movies = [
             {
                 "id": movie["id"],
@@ -186,15 +219,21 @@ def search(request):
 
     return render(request, "base/search.html")
 
+
 @login_required
 def add_review(request, movie_id):
+    """
+    Allow users to add a review for a specific movie.
+    
+    Users can submit their reviews for a movie. Once submitted, the review is saved to the database, 
+    and the user is redirected back to the movie's detail page with a success message.
+    """
 
     movie = get_object_or_404(Movie, custom_id=movie_id)
 
     if request.method == 'POST':
         content = request.POST.get('content')
 
-        # Create and save the review
         review = Review(movie=movie, user=request.user, content=content)
         review.save()
         messages.success(request, "Your review has been successfully created.")
@@ -202,15 +241,16 @@ def add_review(request, movie_id):
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
 
+
 @login_required
 def add_comment(request, review_id):
+    """Allow the user to add a comment to a specific review and redirect back to the movie's page."""
 
     review = get_object_or_404(Review, pk=review_id)
 
     if request.method == 'POST':
         content = request.POST.get('comment_content')
 
-        # Create and save the review
         comment = Comment(review=review, user=request.user, content=content)
         comment.save()
         messages.success(request, "Your comment has been successfully created.")
@@ -221,6 +261,7 @@ def add_comment(request, review_id):
 
 @login_required
 def profile_reviews(request):
+    """Render the user's profile page showing all their reviews and comments."""
 
     user = request.user
     reviews = Review.objects.filter(user=user)
@@ -232,6 +273,7 @@ def profile_reviews(request):
 
 @login_required
 def remove_review(request, pk):
+    """Allow the user to delete a specific review and redirect back to the referring page."""
 
     review = get_object_or_404(Review, pk=pk)
     review.delete()
@@ -242,6 +284,7 @@ def remove_review(request, pk):
 
 @login_required
 def remove_comment(request, pk):
+    """Allow the user to delete a specific comment and redirect back to the referring page."""
 
     comment = get_object_or_404(Comment, pk=pk)
     comment.delete()

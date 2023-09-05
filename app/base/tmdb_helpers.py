@@ -1,6 +1,17 @@
 import requests, environ
 
 class TMDBClient:
+    """
+    A client for interacting with The Movie Database (TMDb) API.
+
+    This client provides methods to fetch movie, person, and other related data from TMDb.
+    It uses the requests library to make HTTP requests and retrieves and process data in JSON format.
+
+    Attributes:
+        bearer (str): The bearer token for authentication with the TMDb API.
+        api_key (str): The API key for accessing TMDb.
+        headers (dict): The headers used in the HTTP requests, including authorization.
+    """
     def __init__(self):
         self.bearer = environ.Env()("BEARER")
         self.api_key = environ.Env()("TMDB_API_KEY")
@@ -9,18 +20,22 @@ class TMDBClient:
             "Authorization": f"Bearer {self.bearer}"
         }
 
+
     def search_movies(self, search_term):
+        """Search for movies based on a given term."""
         url = "https://api.themoviedb.org/3/search/movie"
         params = {'query': search_term}
         response = requests.get(url, headers=self.headers, params=params).json()
         return response['results']
-    
+ 
+
     def search_movie(self, search_term, year):
+        """Search for a specific movie by its title and release year."""
         url = "https://api.themoviedb.org/3/search/movie"
         params = {'query': search_term, 'year': year}
         response = requests.get(url, headers=self.headers, params=params).json()
 
-        # Jeśli nie ma wyników, spróbuj z rokiem o jeden większym
+        # If no results, try with one more year
         if not response['results']:
             params['year'] = str(int(year) + 1)
             response = requests.get(url, headers=self.headers, params=params).json()
@@ -29,16 +44,21 @@ class TMDBClient:
 
 
     def get_movie_persons(self, movie_id):
+        """Retrieve cast and crew details for a given movie ID."""
         url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
         return response
-    
+
+
     def get_movie_detalis(self, movie_id):
+        """Fetch detailed information for a specific movie by its ID."""
         url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
         return response
 
+
     def process_cast(self, cast_data):
+        """Format and return the provided cast data."""
         return [
             {
                 'id': person['id'],
@@ -51,7 +71,9 @@ class TMDBClient:
             for person in cast_data
         ]
 
+
     def process_crew(self, crew_data):
+        """Format, sort and return the provided crew data, removing duplicates."""
         seen_names = set()
         crew = []
         for person in crew_data:
@@ -66,7 +88,9 @@ class TMDBClient:
                 seen_names.add(person['name'])
         return sorted(crew, key=lambda x: x['popularity'], reverse=True)
 
+
     def format_number(self, number):
+        """Convert a number into a human-readable string format."""
         if number >= 1_000_000_000:  # billions
             return f"{number // 1_000_000_000} mld $ "
         elif number >= 1_000_000:  # millions
@@ -76,7 +100,12 @@ class TMDBClient:
         else:
             return str(number)
 
+
     def get_single_movie(self, search_term, year):
+        """
+        Retrieve comprehensive details by combining other methods.
+        It is directly used for a page about a specific movie.
+        """
         movie_result = self.search_movie(search_term, year)
         movie_persons = self.get_movie_persons(movie_result['id'])
         movie_detalis = self.get_movie_detalis(movie_result['id'])
@@ -106,7 +135,12 @@ class TMDBClient:
 
         return {'movie': movie, 'cast': cast, 'crew': crew, 'directors': directors , 'writers': writers}
 
+
     def get_single_movie_core(self, search_term, year):
+        """
+        Fetch core details (ID, title, poster, release date) of a specific movie.
+        It is directly used for rating movie or adding it to list. 
+        """
         movie_result = self.search_movie(search_term, year)
 
         movie = {
@@ -116,18 +150,24 @@ class TMDBClient:
             'release_date': movie_result['release_date'][0:4],
         }
         return movie
-    
+
+
     def search_person_by_id(self, person_id):
+        """Search for a person's details using their unique ID."""
         url = f"https://api.themoviedb.org/3/person/{person_id}?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
         return response
 
+
     def search_person(self, name):
+        """Search for a person based on their name."""
         url = f"https://api.themoviedb.org/3/search/person?api_key={self.api_key}&query={name}"
         response = requests.get(url, headers=self.headers).json()
         return response['results']
-    
+
+
     def get_movies_by_person(self, person_id):
+        """Retrieve movies associated with a specific person, categorized by their role."""
         url = f"https://api.themoviedb.org/3/person/{person_id}/movie_credits?api_key={self.api_key}"
         response = requests.get(url, headers=self.headers).json()
         cast_movies, crew_movies = response['cast'], response['crew']
@@ -146,25 +186,31 @@ class TMDBClient:
         director_movies = sorted(director_movies, key=lambda x: x.get('popularity', 0), reverse=True)
         return actor_movies, director_movies
 
+
     def get_trending_movies(self):
         """Retrieve a list of trending movies from TMDb."""
         url = "https://api.themoviedb.org/3/trending/movie/day?language=en-US"
         response = requests.get(url, headers=self.headers).json()
         return response['results']
-    
+
+
     def get_now_playing_movies(self):
-        """Retrieve a list of popular movies from TMDb."""
+        """Retrieve the list of movies that are currently playing in theaters."""
         url = "https://api.themoviedb.org/3/movie/now_playing"
         response = requests.get(url, headers=self.headers).json()
         return response['results']
-    
+
+
     def get_movie_recommendations(self, movie_id):
-        """Retrieve a list of recommended movies for a given movie ID from TMDb."""
+        """Fetch movie recommendations based on a specific movie ID."""
         url = f"https://api.themoviedb.org/3/movie/{movie_id}/recommendations"
         response = requests.get(url, headers=self.headers).json()
         return response['results']
 
+
+
     def get_popular_people(self):
+        """Retrieve a list of popular personalities in the movie industry."""
         url = "https://api.themoviedb.org/3/person/popular"
         response = requests.get(url, headers=self.headers).json()
         return response['results']

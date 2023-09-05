@@ -8,7 +8,23 @@ from base.tmdb_helpers import TMDBClient
 from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
 import time, re, requests
 
+
 class IMDBTop250Scraper:
+    """
+    A BeautifulSoup scraper for fetching and parsing the top 250 movies from IMDB.
+
+    The limit of scrapped movies is set for testing purposes.
+
+    Attributes:
+    - url (str): The URL of the IMDB top 250 movies page.
+    - headers (dict): Headers for the HTTP request.
+
+    Methods:
+    - fetch_data(): Retrieves the HTML content of the IMDB top 250 movies page.
+    - parse_data(soup, limit=None): Parses the HTML content to extract movie details.
+    - save_to_db(movies): Saves the parsed movie details to the database.
+    - scrape(limit=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://www.imdb.com/chart/top/"
         self.headers = {
@@ -16,11 +32,12 @@ class IMDBTop250Scraper:
             "Accept-Language": "en-US,en;q=0.8"
         }
 
+
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
 
-    def parse_data(self, soup):
+    def parse_data(self, soup, limit=None):
         try:
             titles = [t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")][1:251]
         except:
@@ -50,28 +67,51 @@ class IMDBTop250Scraper:
             "poster_path": p
         } for t, y, p in zip(titles, year, poster_paths)]
 
+        if limit:
+            movies = movies[:limit]
+
         return movies
 
+
     def save_to_db(self, movies):
+        # Delete all existing movies
+        IMDBTop250.objects.all().delete()
+
+        # Iterate through the scraped movies and save them to the database
         for rank, movie_data in enumerate(movies, start=1):
-            movie = IMDBTop250.objects.filter(title=movie_data["title"], year=movie_data["year"]).first()
-            if movie:
-                movie.rank = rank
-                movie.poster_path = movie_data["poster_path"]
-                movie.save()
-            else:
-                IMDBTop250.objects.create(rank=rank, title=movie_data["title"], year=movie_data["year"], poster_path=movie_data["poster_path"])
+            movie = IMDBTop250(
+                rank=rank,
+                title=movie_data["title"],
+                year=movie_data["year"],
+                poster_path=movie_data["poster_path"]
+            )
+            movie.save()
 
-        current_movie_titles = [movie_data["title"] for movie_data in movies]
-        IMDBTop250.objects.exclude(title__in=current_movie_titles).delete()
-
-    def scrape(self):
+    def scrape(self, limit=None):
         soup = self.fetch_data()
-        movies = self.parse_data(soup)
+        movies = self.parse_data(soup, limit)
         self.save_to_db(movies)
 
 
 class FilmwebTop250Scraper:
+    """
+    A Selenium Webdriver scraper for fetching and parsing the top 250 movies from Filmweb.
+    We use Selenium instead of BeautifulSoup because we need a scroll down mechanism.
+    This is due to the fact that the Filmweb site uses a lazy loading mechanism to load data
+
+    The limit of scrapped movies is set for testing purposes.
+
+
+    Attributes:
+    - url (str): The URL of the Filmweb top 250 movies page.
+    - options (Options): Selenium webdriver options.
+
+    Methods:
+    - fetch_data(scrolls=None): Retrieves the HTML content of the Filmweb top 250 movies page using Selenium.
+    - parse_data(driver, limit=None): Parses the HTML content to extract movie details.
+    - save_to_db(movies): Saves the parsed movie details to the database.
+    - scrape(limit=None, scrolls=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://www.filmweb.pl/ranking/film"
         self.options = Options()
@@ -79,11 +119,12 @@ class FilmwebTop250Scraper:
         self.options.add_argument("--no-sandbox")
         self.options.add_argument("--disable-dev-shm-usage")
 
-    def fetch_data(self):
+    def fetch_data(self, scrolls=None):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         driver.get(self.url)
 
         current_num_of_titles = 0
+        scroll_count = 0
 
         while True:
             # Scroll the page
@@ -93,14 +134,17 @@ class FilmwebTop250Scraper:
             # Check the number of titles scraped so far
             current_num_of_titles = len(driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'))
 
-            # If the number of titles reaches 250, break out of the loop
-            if current_num_of_titles >= 250:
+            # Increase the scroll count
+            scroll_count += 1
+
+            # Break the loop if the number of titles reaches 250 or the number of scrolls reaches the limit
+            if current_num_of_titles >= 250 or scroll_count >= scrolls:
                 break
 
         return driver
 
 
-    def parse_data(self, driver):
+    def parse_data(self, driver, limit=None):
         try:
             titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
         except:
@@ -130,35 +174,49 @@ class FilmwebTop250Scraper:
             "poster_path": p
         } for t, o, y, p in zip(titles, original_titles, years, poster_paths)]
 
+        if limit:
+            movies = movies[:limit]
+
         return movies
-
+    
     def save_to_db(self, movies):
+        # Delete all existing movies
+        FilmwebTop250.objects.all().delete()
+
+        # Iterate through the scraped movies and save them to the database
         for rank, movie_data in enumerate(movies, start=1):
-            movie = FilmwebTop250.objects.filter(title=movie_data["title"], year=movie_data["year"]).first()
-            if movie:
-                movie.rank = rank
-                movie.original_title = movie_data["original_title"]
-                movie.poster_path = movie_data["poster_path"]
-                movie.save()
-            else:
-                FilmwebTop250.objects.create(
-                    rank=rank, 
-                    title=movie_data["title"], 
-                    original_title=movie_data["original_title"], 
-                    year=movie_data["year"], 
-                    poster_path=movie_data["poster_path"]
-                )
+            movie = FilmwebTop250(
+                rank=rank,
+                title=movie_data["title"],
+                original_title=movie_data["original_title"],
+                year=movie_data["year"],
+                poster_path=movie_data["poster_path"]
+            )
+            movie.save()
 
-        current_movie_titles = [movie_data["title"] for movie_data in movies]
-        FilmwebTop250.objects.exclude(title__in=current_movie_titles).delete()
 
-    def scrape(self):
-        driver = self.fetch_data()
-        movies = self.parse_data(driver)
+    def scrape(self, limit=None, scrolls=None):
+        driver = self.fetch_data(scrolls)
+        movies = self.parse_data(driver, limit)
         self.save_to_db(movies)
 
-
 class OscarBestPictureScraper:
+    """
+    A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and their nominations from Wikipedia.
+    
+    The limit of scrapped movies is set for testing purposes.
+
+    Attributes:
+    - url (str): The URL of the Wikipedia page for the Academy Award for Best Picture.
+    - headers (dict): Headers for the HTTP request.
+    - tmdb_client (TMDBClient): An instance of the TMDBClient to fetch movie posters.
+
+    Methods:
+    - fetch_data(): Retrieves the HTML content of the Wikipedia page.
+    - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar winners and their nominations.
+    - save_to_db(winners): Saves the parsed details to the database.
+    - scrape(limit=None): Orchestrates the scraping process.
+    """
     def __init__(self):
         self.url = "https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture"
         self.headers = {
@@ -167,11 +225,12 @@ class OscarBestPictureScraper:
         }
         self.tmdb_client = TMDBClient()
 
+
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
 
-    def parse_data(self, soup):
+    def parse_data(self, soup, limit=None):
         tables = soup.find_all("table", class_="wikitable")[:-1]
         winners = []
 
@@ -217,11 +276,15 @@ class OscarBestPictureScraper:
                 winner_movie['nominations'] = nominations
                 winners.append(winner_movie)
 
+        if limit:
+            winners = winners[:limit]
+
         return winners
+
 
     def save_to_db(self, winners):
         for winner_data in winners:
-            # Sprawdź, czy film zwycięzca już istnieje w bazie danych
+            # Check if the winner already exists in the database
             winner_exists = OscarWinner.objects.filter(title=winner_data["title"], release_year=winner_data["release_year"]).exists()
 
             if not winner_exists:
@@ -241,29 +304,19 @@ class OscarBestPictureScraper:
                     nomination.winner = winner
                     nomination.save()
 
-    def scrape(self):
+    def scrape(self, limit=None):
         soup = self.fetch_data()
-        winners = self.parse_data(soup)
+        winners = self.parse_data(soup, limit)
         self.save_to_db(winners)
 
 
 
-
 # def scrape_movie_wallpaper(title, year):
-    
-#     #klucz API
 #     api_key = env("GOOGLE_API_KEY")
-
-#     #identyfikator silnika wyszukiwania
 #     cx = env("CX")
-
-#     # Zapytanie wyszukiwania
 #     query = f"movie wallpaper {title} {year}"
-
-#     # URL API
 #     url = f"https://www.googleapis.com/customsearch/v1"
 
-#     # Parametry zapytania
 #     params = {
 #         'key': api_key,
 #         'cx': cx,
@@ -272,9 +325,7 @@ class OscarBestPictureScraper:
 #         'num': 1
 #     }
 
-#     # Wykonaj zapytanie do API
 #     response = requests.get(url, params=params)
-#     # Przetwórz odpowiedź
 #     data = response.json()
 #     image_url = data['items'][0]['link']
 
