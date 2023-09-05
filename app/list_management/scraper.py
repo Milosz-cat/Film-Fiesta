@@ -21,7 +21,7 @@ class IMDBTop250Scraper:
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
 
-    def parse_data(self, soup):
+    def parse_data(self, soup, limit=None):
         try:
             titles = [t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")][1:251]
         except:
@@ -51,6 +51,9 @@ class IMDBTop250Scraper:
             "poster_path": p
         } for t, y, p in zip(titles, year, poster_paths)]
 
+        if limit:
+            movies = movies[:limit]
+
         return movies
 
     def save_to_db(self, movies):
@@ -67,9 +70,9 @@ class IMDBTop250Scraper:
             )
             movie.save()
 
-    def scrape(self):
+    def scrape(self, limit=None):
         soup = self.fetch_data()
-        movies = self.parse_data(soup)
+        movies = self.parse_data(soup, limit)
         self.save_to_db(movies)
 
 
@@ -81,11 +84,12 @@ class FilmwebTop250Scraper:
         self.options.add_argument("--no-sandbox")
         self.options.add_argument("--disable-dev-shm-usage")
 
-    def fetch_data(self):
+    def fetch_data(self, scrolls=None):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         driver.get(self.url)
 
         current_num_of_titles = 0
+        scroll_count = 0  # nowy licznik przewijania
 
         while True:
             # Scroll the page
@@ -95,14 +99,17 @@ class FilmwebTop250Scraper:
             # Check the number of titles scraped so far
             current_num_of_titles = len(driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'))
 
-            # If the number of titles reaches 250, break out of the loop
-            if current_num_of_titles >= 250:
+            # Increase the scroll count
+            scroll_count += 1
+
+            # Break the loop if the number of titles reaches 250 or the number of scrolls reaches the limit
+            if current_num_of_titles >= 250 or scroll_count >= scrolls:
                 break
 
         return driver
 
 
-    def parse_data(self, driver):
+    def parse_data(self, driver, limit=None):
         try:
             titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
         except:
@@ -132,6 +139,9 @@ class FilmwebTop250Scraper:
             "poster_path": p
         } for t, o, y, p in zip(titles, original_titles, years, poster_paths)]
 
+        if limit:
+            movies = movies[:limit]
+
         return movies
     
     def save_to_db(self, movies):
@@ -150,11 +160,10 @@ class FilmwebTop250Scraper:
             movie.save()
 
 
-    def scrape(self):
-        driver = self.fetch_data()
-        movies = self.parse_data(driver)
+    def scrape(self, limit=None, scrolls=None):
+        driver = self.fetch_data(scrolls)
+        movies = self.parse_data(driver, limit)
         self.save_to_db(movies)
-
 
 class OscarBestPictureScraper:
     def __init__(self):
@@ -169,7 +178,7 @@ class OscarBestPictureScraper:
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
 
-    def parse_data(self, soup):
+    def parse_data(self, soup, limit=None):
         tables = soup.find_all("table", class_="wikitable")[:-1]
         winners = []
 
@@ -215,6 +224,9 @@ class OscarBestPictureScraper:
                 winner_movie['nominations'] = nominations
                 winners.append(winner_movie)
 
+        if limit:
+            winners = winners[:limit]
+
         return winners
 
     def save_to_db(self, winners):
@@ -239,11 +251,10 @@ class OscarBestPictureScraper:
                     nomination.winner = winner
                     nomination.save()
 
-    def scrape(self):
+    def scrape(self, limit=None):
         soup = self.fetch_data()
-        winners = self.parse_data(soup)
+        winners = self.parse_data(soup, limit)
         self.save_to_db(winners)
-
 
 
 
