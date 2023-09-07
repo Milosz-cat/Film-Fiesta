@@ -9,33 +9,48 @@ from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, Oscar
 import time, re, requests
 
 
-class IMDBTop250Scraper:
+class BaseScraper:
     """
-    A BeautifulSoup scraper for fetching and parsing the top 250 movies from IMDB.
-
-    The limit of scrapped movies is set for testing purposes.
+    Abstract base class for BeautifulSoup scrapers.
 
     Attributes:
-    - url (str): The URL of the IMDB top 250 movies page.
+    - url (str): The URL of the page to scrape.
     - headers (dict): Headers for the HTTP request.
 
     Methods:
-    - fetch_data(): Retrieves the HTML content of the IMDB top 250 movies page.
-    - parse_data(soup, limit=None): Parses the HTML content to extract movie details.
-    - save_to_db(movies): Saves the parsed movie details to the database.
+    - fetch_data(): Retrieves the HTML content of the page.
     - scrape(limit=None): Orchestrates the scraping process.
     """
-    def __init__(self):
-        self.url = "https://www.imdb.com/chart/top/"
+    def __init__(self, url):
+        self.url = url
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
             "Accept-Language": "en-US,en;q=0.8"
         }
 
-
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
+
+    def scrape(self, limit=None):
+        soup = self.fetch_data()
+        movies = self.parse_data(soup, limit)
+        self.save_to_db(movies)
+
+
+class IMDBTop250Scraper(BaseScraper):
+    """
+    A BeautifulSoup scraper for fetching and parsing the top 250 movies from IMDB.
+
+    The limit of scrapped movies is set for testing purposes.
+
+    Methods:
+    - parse_data(soup, limit=None): Parses the HTML content to extract movie details.
+    - save_to_db(movies): Saves the parsed movie details to the database.
+    """
+    def __init__(self):
+        super().__init__("https://www.imdb.com/chart/top/")
+
 
     def parse_data(self, soup, limit=None):
         try:
@@ -87,10 +102,6 @@ class IMDBTop250Scraper:
             )
             movie.save()
 
-    def scrape(self, limit=None):
-        soup = self.fetch_data()
-        movies = self.parse_data(soup, limit)
-        self.save_to_db(movies)
 
 
 class FilmwebTop250Scraper:
@@ -204,35 +215,24 @@ class FilmwebTop250Scraper:
         movies = self.parse_data(driver, limit)
         self.save_to_db(movies)
 
-class OscarBestPictureScraper:
+
+class OscarBestPictureScraper(BaseScraper):
     """
     A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and their nominations from Wikipedia.
     
     The limit of scrapped movies is set for testing purposes.
 
     Attributes:
-    - url (str): The URL of the Wikipedia page for the Academy Award for Best Picture.
-    - headers (dict): Headers for the HTTP request.
     - tmdb_client (TMDBClient): An instance of the TMDBClient to fetch movie posters.
 
     Methods:
-    - fetch_data(): Retrieves the HTML content of the Wikipedia page.
     - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar winners and their nominations.
     - save_to_db(winners): Saves the parsed details to the database.
-    - scrape(limit=None): Orchestrates the scraping process.
     """
     def __init__(self):
-        self.url = "https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture"
-        self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
-            "Accept-Language": "en-US,en;q=0.8"
-        }
+        super().__init__("https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture")
         self.tmdb_client = TMDBClient()
 
-
-    def fetch_data(self):
-        response = requests.get(self.url, headers=self.headers)
-        return BeautifulSoup(response.text, "html.parser")
 
     def parse_data(self, soup, limit=None):
         tables = soup.find_all("table", class_="wikitable")[:-1]
@@ -307,11 +307,6 @@ class OscarBestPictureScraper:
                     )
                     nomination.winner = winner
                     nomination.save()
-
-    def scrape(self, limit=None):
-        soup = self.fetch_data()
-        winners = self.parse_data(soup, limit)
-        self.save_to_db(winners)
 
 
 

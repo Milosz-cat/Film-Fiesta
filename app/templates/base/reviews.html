@@ -5,93 +5,103 @@
 {% block content %}
 
 <div class="card-movie" style="margin-top: 20px !important;">
-    <div class="flex-container" style="justify-content: center; align-items: center;">
-        <div class="row">
-            <h1 style="padding: 0px; margin-top: 10px;"> My Reviews </h1>
-        </div>
-    </div>
-    <div style="margin-top: 50px; margin-bottom: 60px;">
-        <div class="row" style="border-bottom: 1px solid white;">
-    </div>
-
-        {% for review in reviews %}
-        <div class="row">
-            <div class="col-2">
-                <a href="{% url 'movie' title=review.movie.title year=review.movie.year %}" class="movie-link">
-                    <div class="poster-item">
-                        <img src="https://image.tmdb.org/t/p/w500{{ review.movie.poster_path }}" alt="Movie Poster"
-                            class="poster-list-scroll">
-                    </div>
-                </a>
+    {% if reviews %}
+        <div class="flex-container" style="justify-content: center; align-items: center;">
+            <div class="row">
+                <h1 style="padding: 0px; margin-top: 10px;"> My Reviews </h1>
             </div>
-            <div class="col">
-                <div class="delete-item" style="border-bottom: 1px solid rgba(255, 255, 255, 0.5); margin: 25px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <h5>Review about
-                            <strong>{{ review.movie.title }}</strong>
-                        </h5>
-                        <a href="{% url 'remove_review' review.pk %}">
-                            <button type="button" class="btn btn-danger" style="display: block;">Remove review</button>
-                        </a>
-                    </div>
-                    <p>{{ review.content }}</p>
-                </div>
+        </div>
+        <div style="margin-top: 50px; margin-bottom: 60px;">
+            <div class="row" style="border-bottom: 1px solid white;">
+        </div>
 
-                <h6 style="margin-left: 80px; margin-bottom: 5px;">
-                    <button class="btn btn-dark btn-outline-light toggle-comments">Toggle Comments</button>
-                </h6>                   
-                <div class="comments-container" style="display: none;">
-                    <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
-                    </div>
-                    <div style="margin-left: 80px;">
-                        {% for comment in review.comment_set.all %}
-                        <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
-                            <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+            {% for review in reviews %}
+            <div class="row">
+                <div class="col-2">
+                    <a href="{% url 'movie' title=review.movie.title year=review.movie.year %}" class="movie-link">
+                        <div class="poster-item">
+                            <img src="https://image.tmdb.org/t/p/w500{{ review.movie.poster_path }}" alt="Movie Poster"
+                                class="poster-list-scroll">
                         </div>
-                        {% endfor %}
+                    </a>
+                </div>
+                <div class="col">
+                    <div class="delete-item" style="border-bottom: 1px solid rgba(255, 255, 255, 0.5); margin: 25px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h5>Review about
+                                <strong>{{ review.movie.title }}</strong>
+                            </h5>
+                            <a href="{% url 'remove_review' review.pk %}">
+                                <button type="button" class="btn btn-danger" style="display: block;">Remove review</button>
+                            </a>
+                        </div>
+                        <p>{{ review.content }}</p>
                     </div>
 
-                    <!-- Form to add a comment for the review -->
-                    <div style="margin-top: 20px; margin-left: 80px;">
-                        <form method="post" action="{% url 'add_comment' review.pk %}">
-                            {% csrf_token %}
-                            <div class="form-outline"
-                                style="width: 300px; display: flex; justify-content: space-between; align-items: center;">
-                                <textarea type="text" id="comment_content" name="comment_content"
-                                    placeholder="Add a comment..." class="form-control form-control-lg"
-                                    style="font-size: 15px; height: 50px" required></textarea>
-                                <button type="submit"
-                                    class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body"
-                                    style="width: 200px; height: 50px; font-size: 15px; margin-left:10px;">Comment</button>
+                    <h6 style="margin-left: 80px; margin-bottom: 5px;">
+                        <button class="btn btn-dark btn-outline-light toggle-comments">Toggle Comments</button>
+                    </h6>                   
+                    <div class="comments-container" style="display: none;">
+                        <div style="border-top: 1px dashed rgba(255, 255, 255, 0.8); margin-left: 80px">
+                        </div>
+                        <div style="margin-left: 80px;">
+                            {% for comment in review.comment_set.all %}
+                            <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
+                                <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
                             </div>
-                        </form>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Form to add a comment for the review -->
+                        <div style="margin-top: 20px; margin-left: 80px;">
+                            <form method="post" action="{% url 'add_comment' review.pk %}">
+                                {% csrf_token %}
+                                <div class="form-outline"
+                                    style="width: 300px; display: flex; justify-content: space-between; align-items: center;">
+                                    <textarea type="text" id="comment_content" name="comment_content"
+                                        placeholder="Add a comment..." class="form-control form-control-lg"
+                                        style="font-size: 15px; height: 50px" required></textarea>
+                                    <button type="submit"
+                                        class="btn btn-dark btn-outline-light btn-block btn-lg gradient-custom-4 text-body"
+                                        style="width: 200px; height: 50px; font-size: 15px; margin-left:10px;">Comment</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
-        <div class="row" style="margin-left: 210px;">
+            {% endfor %}
+        {% else %}
             <div class="flex-container" style="justify-content: center; align-items: center;">
                 <div class="row">
-                    <h3 style="padding: 0px; margin-top: 10px;"> My All Comments </h3>
+                    <h2 style="padding: 0px; margin-top: 10px;"> You haven't added any reviews yet, to add one,go to<br/>  the specific movie's page (click on the movie's poster)<br/>  and scroll down to write a review. </h2>
                 </div>
             </div>
-            <div>
-                {% for comment in comments %}
-                <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            From  <strong>{{ comment.review.movie.title }}</strong> movie about <strong>{{ comment.user.username }}</strong> Review: {{ comment.content }}
-                        </div>
-                        <a href="{% url 'remove_comment' comment.pk %}">
-                            <button type="button" class="btn btn-danger" style="display: block; font-size:15px; margin:3px;">Remove comment</button>
-                        </a>
-    
+        {% endif %}
+        {% if comments %}
+            <div class="row" style="margin-left: 210px;">
+                <div class="flex-container" style="justify-content: center; align-items: center;">
+                    <div class="row">
+                        <h3 style="padding: 0px; margin-top: 10px;"> My All Comments </h3>
                     </div>
                 </div>
-                {% endfor %}
+                <div>
+                    {% for comment in comments %}
+                    <div style="border-bottom: 1px dashed rgba(255, 255, 255, 0.5); margin: 25px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                From  <strong>{{ comment.review.movie.title }}</strong> movie about <strong>{{ comment.user.username }}</strong> Review: {{ comment.content }}
+                            </div>
+                            <a href="{% url 'remove_comment' comment.pk %}">
+                                <button type="button" class="btn btn-danger" style="display: block; font-size:15px; margin:3px;">Remove comment</button>
+                            </a>
+        
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        {% endif %}
 
     </div>
 </div>

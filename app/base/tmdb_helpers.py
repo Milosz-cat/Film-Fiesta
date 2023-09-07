@@ -208,7 +208,6 @@ class TMDBClient:
         return response['results']
 
 
-
     def get_popular_people(self):
         """Retrieve a list of popular personalities in the movie industry."""
         url = "https://api.themoviedb.org/3/person/popular"

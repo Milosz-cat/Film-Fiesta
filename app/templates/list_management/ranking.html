@@ -13,17 +13,15 @@
             {% endif %}
         </div>
     </div>
-    {% if movies_count %}
-        <div class="row" style="justify-content: center; align-items: center;"> 
-            <div style="border: 1px solid #ccc; padding: 12px; margin: 5px; width: 300px; text-align: center; border-radius: 5px; height: 120px;">
-                <p>You’ve watched</p>
-                <h5>{{ movies_count }} of {{ user_list|length }} </h5>
-                <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
-                    <div style="width: {{ percentage_watched }}%; background-color: #2ecc71; height: 100%;"></div>
-                </div>
+    <div class="row" style="justify-content: center; align-items: center;"> 
+        <div style="border: 1px solid #ccc; padding: 12px; margin: 5px; width: 300px; text-align: center; border-radius: 5px; height: 120px;">
+            <p>You’ve watched</p>
+            <h5>{{ movies_count }} of {{ user_list|length }} </h5>
+            <div style="background-color: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden;">
+                <div style="width: {{ percentage_watched }}%; background-color: #2ecc71; height: 100%;"></div>
             </div>
         </div>
-    {% endif %}
+    </div>
     <div class="movie-row">
         {% for movie in user_list %}
             {% if forloop.counter0|divisibleby:5 %}

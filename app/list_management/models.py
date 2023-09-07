@@ -2,70 +2,74 @@ from django.db import models
 from django.contrib.auth.models import User
 from base.models import Movie, Person
 
-class MovieList(models.Model):
-    """Model representing a user's list of movies."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
-    name = models.CharField(max_length=100, default="")
-    description = models.CharField(max_length=500, default="")
-    movies = models.ManyToManyField(Movie)
-
-    def __str__(self):
-        return self.user.username + "'s Movie List: " + self.name
-
-
-class PersonList(models.Model):
-    """Model representing a user's list of film industry persons."""
+class BaseList(models.Model):
+    """Abstract model for user's lists."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500, default="")
+
+    class Meta: # This ensures that this model won't be used to create any database table
+        abstract = True
+
+    def __str__(self):
+        return f"{self.user.username}'s {self.__class__.__name__}: {self.name}"
+
+
+class MovieList(BaseList):
+    """Model representing a user's list of movies."""
+    movies = models.ManyToManyField(Movie)
+
+
+class PersonList(BaseList):
+    """Model representing a user's list of film industry persons."""
     persons = models.ManyToManyField(Person)
 
-    def __str__(self):
-        return self.user.username + "'s Person List: " + self.name
 
-
-class IMDBTop250(models.Model):
-    """Model representing a movie ranked in the IMDB Top 250. Designed for effective scrapping"""
-    rank = models.PositiveIntegerField(unique=True)
+class BaseTopMovie(models.Model):
+    """Abstract model for IMDB and Filmweb rankings."""
     title = models.CharField(max_length=255)
     year = models.IntegerField()
-    poster_path = models.URLField(max_length=500, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.rank}. {self.title} ({self.year})"
-
-
-class FilmwebTop250(models.Model):
-    """Model representing a movie ranked in the Filmweb Top 250. Designed for effective scrapping"""
     rank = models.PositiveIntegerField(unique=True)
-    title = models.CharField(max_length=255)
-    original_title = models.CharField(max_length=255, blank=True, null=True)
-    year = models.IntegerField()
     poster_path = models.URLField(max_length=500, blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.rank}. {self.title} ({self.year})"
+    class Meta:
+        abstract = True
 
+    def __str__(self):
+        return f"{self.title} ({self.year})"
+
+
+class IMDBTop250(BaseTopMovie):
+    """Model representing a movie ranked in the IMDB Top 250."""
     
-class OscarWinner(models.Model):
-    """Model representing a movie that won an Oscar. Designed for effective scrapping"""
-    year = models.CharField(max_length=20)
-    release_year = models.IntegerField()
+
+class FilmwebTop250(BaseTopMovie):
+    """Model representing a movie ranked in the Filmweb Top 250."""
+    original_title = models.CharField(max_length=255, blank=True, null=True)
+
+
+class BaseTopMovie(models.Model):
+    """Abstract model for Oscars and Nominations."""
+    release_year = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=255)
-    poster_path = models.URLField(max_length=500, blank=True, null=True)
     studio = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return f"{self.title} ({self.release_year})"
 
-class OscarNomination(models.Model):
+    
+class OscarWinner(BaseTopMovie):
+    """Model representing a movie that won an Oscar. Designed for effective scrapping"""
+    year = models.CharField(max_length=20)
+    poster_path = models.URLField(max_length=500, blank=True, null=True)
+    
+
+class OscarNomination(BaseTopMovie):
     """Model representing a movie nominated for an Oscar.  Designed for effective scrapping"""
     winner = models.ForeignKey(OscarWinner, related_name="nominations", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    release_year = models.IntegerField()
-    studio = models.CharField(max_length=255)
 
-    def __str__(self):
-        return self.title
     
     

@@ -20,6 +20,7 @@ def ranking(request, name):
     user = request.user
     my_films_list = MovieList.objects.get(user=user, name="My Films")
     my_films_titles = set(my_films_list.movies.values_list('title', flat=True))
+    
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
@@ -349,7 +350,7 @@ def remove_list(request, name, type):
         list_to_remove = PersonList.objects.filter(user=user, name=name).first()
 
     if list_to_remove:
-        if name==("Watchlist" or "My Films" or "Favourite Actors" or "Favourite Directors"):
+        if name in ["Watchlist", "My Films", "Favourite Actors", "Favourite Directors"]:
             messages.error(
                 request,
                 "You cannot delete this list because it is the primary list that every user has!",
