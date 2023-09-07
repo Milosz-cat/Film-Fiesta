@@ -6,7 +6,7 @@ def main():
     system = platform.system()
 
     if system == "Windows":
-        script_path = "scripts/update_env.bat"
+        script_path = "scripts\\update_env.bat"
     elif system == "Linux" or system == "Darwin":  # Darwin is for macOS
         script_path = "scripts/update_env.sh"
     else:
