@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "list_management.apps.ListManagementConfig",
     'django_celery_beat',
     'celery',
+    'django_probes',
 ]
 
 MIDDLEWARE = [
