@@ -48,6 +48,7 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
     
 ## Requirements
 * docker and docker compose
+* python>=3.10
 
 ## Installation
 Firstly, clone the repository from the github to your local folder with the following command:
@@ -55,7 +56,10 @@ Firstly, clone the repository from the github to your local folder with the foll
 git clone https://github.com/Milosz-cat/Movie-App.git
 ```
 
-Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file.
+Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file:
+```
+cp .env.sample .env
+```
 
 If you want to run the application on a different host than localhost run:
 ```
@@ -68,13 +72,13 @@ After this go again to API page and you will be able to copy API KEY and API Rea
 
 For sending e-mails to work properly on your gamil, you need to go to settings and enable two-step verification and then set a password for the application. Here is helpful  [link.](https://dev.to/abderrahmanemustapha/how-to-send-email-with-django-and-gmail-in-production-the-right-way-24ab)
 
-If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my data with you. [![email badge](https://img.shields.io/badge/miloszbochenek20@gmail.com-red?style=flat&logo=gmail&logoColor=white&labelColor=red)](mailto:miloszbochenek20@gmail.com)  
+If you encounter any problem while trying to key access to tmdb API or functionality to send e-mails write to me and I will share my personal data with you. [![email badge](https://img.shields.io/badge/miloszbochenek20@gmail.com-red?style=flat&logo=gmail&logoColor=white&labelColor=red)](mailto:miloszbochenek20@gmail.com)  
 
 Example:
 ```env
 SECRET_KEY=ENTER_YOUR_SECRET_KEY_HERE
 DEBUG=True
-ALLOWED_HOSTS=127.0.0.1 0.0.0.0 localhost
+ALLOWED_HOSTS=127.0.0.1 0.0.0.0
 
 TMDB_API_KEY=ENTER_YOUR_TMDB_API_KEY_HERE
 BEARER=ENTER_YOUR_BEARER_HERE
