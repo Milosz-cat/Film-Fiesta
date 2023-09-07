@@ -55,7 +55,12 @@ Firstly, clone the repository from the github to your local folder with the foll
 git clone https://github.com/Milosz-cat/Movie-App.git
 ```
 
-Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file.   
+Next, create an `.env` file where the `docker-compose.yml` is and copy the content from the `.env.sample` file.
+
+If you want to run the application on a different host than localhost run:
+```
+python scripts/run_update_env.py
+```
 
 To get access to the TMDB API, you need to create an account on the [TMDB website](https://www.themoviedb.org/) and verify your email.
 Then go to Profile Icon > Settings > API > Create > DeveloperExample, Accept Terms of Use, Submit Form. 
@@ -89,21 +94,25 @@ docker compose build
 ```
 ## Usage
 
-Before starting docker you can create admin account:
-```
-docker-compose run --rm -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_PASSWORD=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com app python manage.py createsuperuser --no-input
-```
-
 To start the container and test the api run the following command:
 ```
 docker compose up
 ```
 
-Now you can head over to http://127.0.0.1:8000 to test the api
+Now you can head over to http://127.0.0.1:8000 to test the app.
+
 
 To stop the container run:
 ```
 docker compose down
 ```
 
+You can create admin account (LOGIN=admin, PASSWORD=admin):
+```
+docker-compose run --rm -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_PASSWORD=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com app python manage.py createsuperuser --no-input
+```
 
+Or if you want create your own admin:
+```
+docker compose run --rm app python manage.py createsuperuser
+```
