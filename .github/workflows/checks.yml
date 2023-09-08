@@ -8,24 +8,29 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      BEARER: ${{ secrets.BEARER }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Generate .env file
-      run: |
-        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-        echo "DEBUG=True" >> .env
-        echo "ALLOWED_HOSTS=127.0.0.1 0.0.0.0" >> .env
-        echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> .env
-        echo "BEARER=${{ secrets.BEARER }}" >> .env
-        echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
-        echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
-        echo "DB_NAME=postgres" >> .env
-        echo "DB_USER=postgres" >> .env
-        echo "DB_PASSWORD=postgres" >> .env
-        echo "DB_HOST=db" >> .env
+      - name: Generate .env file
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "DEBUG=True" >> .env
+          echo "ALLOWED_HOSTS=127.0.0.1 0.0.0.0" >> .env
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> .env
+          echo "BEARER=${{ secrets.BEARER }}" >> .env
+          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+          echo "DB_NAME=postgres" >> .env
+          echo "DB_USER=postgres" >> .env
+          echo "DB_PASSWORD=postgres" >> .env
+          echo "DB_HOST=db" >> .env
 
-    - name: Run docker-compose
-      run: docker-compose run --rm app sh -c "python manage.py test base list_management user_management"
-
+      - name: Run docker-compose
+        run: docker-compose run --rm app sh -c "python manage.py test base list_management user_management"
