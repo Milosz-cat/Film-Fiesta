@@ -17,12 +17,10 @@ body {
 }
 
 .navbar {
-    color: var(--color4) !important;
-    position: sticky;
-    top: 0;
     width: 100%;
     z-index: 1000;
 }
+
 
 .navbar-brand {
     color: var(--color4) !important;

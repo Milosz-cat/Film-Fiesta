@@ -24,6 +24,9 @@
     <!-- head content goes here -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
+    <!-- To prevent Not Found: /favicon.ico bug -->
+    <link rel="shortcut icon" href="#">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -182,7 +185,7 @@
     This script uses jQuery to:
     - Set the initial active card.
     - Navigate to the next or previous card when the respective buttons are clicked.
-    - Automatically navigate to the next card every 30 seconds.
+    - Automatically navigate to the next card every 7 seconds.
     */
     $(document).ready(function () {
         var activeCard = 0;
@@ -212,7 +215,7 @@
         $(".prev-card").click(showPreviousCard);
         $(".next-card").click(showNextCard);
 
-        setInterval(showNextCard, 30000);
+        setInterval(showNextCard, 7000);
     });
     /**
     Script for displaying a rating modal.
