@@ -20,8 +20,8 @@ services:
       - ./app/data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_USER=milosz
-      - POSTGRES_PASSWORD=milosz
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     container_name: postgres_db
 
   redis:
