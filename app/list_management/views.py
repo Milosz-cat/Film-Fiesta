@@ -2,7 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
-from list_management.models import MovieList, PersonList, IMDBTop250, FilmwebTop250, OscarWinner
+from list_management.models import (
+    MovieList,
+    PersonList,
+    IMDBTop250,
+    FilmwebTop250,
+    OscarWinner,
+)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -12,15 +18,15 @@ from django.db import transaction
 def ranking(request, name):
     """
     Handles the display of movie rankings based on the source provided.
-    
-    The function fetches movie rankings from either IMDb or Filmweb. If the rankings are not available in the database, 
-    a message is displayed to the user indicating that the data is being fetched. The user's watched movies are also 
+
+    The function fetches movie rankings from either IMDb or Filmweb. If the rankings are not available in the database,
+    a message is displayed to the user indicating that the data is being fetched. The user's watched movies are also
     compared against the rankings to calculate the percentage of movies watched from the list.
     """
     user = request.user
     my_films_list = MovieList.objects.get(user=user, name="My Films")
-    my_films_titles = set(my_films_list.movies.values_list('title', flat=True))
-    
+    my_films_titles = set(my_films_list.movies.values_list("title", flat=True))
+
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
         description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
@@ -31,9 +37,11 @@ def ranking(request, name):
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 
-        movies = IMDBTop250.objects.all().order_by('rank')
-        wachted_movies = [movie for movie in movies if movie.title[3:] in my_films_titles]
-        percentage_watched = round((len(wachted_movies) / len(movies))*100)
+        movies = IMDBTop250.objects.all().order_by("rank")
+        wachted_movies = [
+            movie for movie in movies if movie.title[3:] in my_films_titles
+        ]
+        percentage_watched = round((len(wachted_movies) / len(movies)) * 100)
         context = {
             "user_list": movies,
             "list_title": list_title,
@@ -52,9 +60,11 @@ def ranking(request, name):
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 
-        movies = FilmwebTop250.objects.all().order_by('rank')
-        wachted_movies = [movie for movie in movies if movie.original_title in my_films_titles]
-        percentage_watched = round((len(wachted_movies) / len(movies))*100)
+        movies = FilmwebTop250.objects.all().order_by("rank")
+        wachted_movies = [
+            movie for movie in movies if movie.original_title in my_films_titles
+        ]
+        percentage_watched = round((len(wachted_movies) / len(movies)) * 100)
         context = {
             "user_list": movies,
             "list_title": list_title,
@@ -73,8 +83,8 @@ def ranking(request, name):
 def best_picture(request):
     """
     Displays a list of movies that have won the Oscar for Best Picture.
-    
-    The function fetches the list of Oscar-winning movies from the database. If the data is not available, 
+
+    The function fetches the list of Oscar-winning movies from the database. If the data is not available,
     a message is displayed to the user indicating that the data is being fetched.
     """
     list_title = "Best picture"
@@ -82,11 +92,11 @@ def best_picture(request):
 
     # Check if records exist in the database
     if not OscarWinner.objects.exists():
-            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
-            context = {"list_title": list_title}
-            return render(request, "list_management/best_picture.html", context)
+        list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+        context = {"list_title": list_title}
+        return render(request, "list_management/best_picture.html", context)
 
-    winners = OscarWinner.objects.all().order_by('year')
+    winners = OscarWinner.objects.all().order_by("year")
     context = {
         "winners": winners,
         "list_title": list_title,
@@ -98,8 +108,8 @@ def best_picture(request):
 
 @login_required
 def rate_movie(request, title, year, rating):
-    """    
-    The function first checks if the movie exists in the database. If it does, the rating is updated. 
+    """
+    The function first checks if the movie exists in the database. If it does, the rating is updated.
     If not, a new movie entry is created with the provided rating. The movie is then added to the user's rated list.
     The field for entering the ranking is displayed after pressing the star on any poster using Javascript
     """
@@ -243,7 +253,7 @@ def add_to_list(request, movie_title, movie_year, name):
             year=movie_data["release_date"],
             poster_path=movie_data["poster_path"],
             custom_id=movie_data["id"],
-            defaults={"on_watchlist": "yes" if name == "Watchlist" else "no"}
+            defaults={"on_watchlist": "yes" if name == "Watchlist" else "no"},
         )
 
         if not created:
@@ -261,7 +271,7 @@ def add_to_list(request, movie_title, movie_year, name):
 @login_required
 def person_list(request, name):
     """
-    This function displays a list of persons, which can be actors or directors, based on the 
+    This function displays a list of persons, which can be actors or directors, based on the
     user's search or a predefined list. The user can also view persons they've added to their personal lists.
     """
     user = request.user
@@ -300,12 +310,14 @@ def add_person_to_list(request, name, id):
 
     known_for_department = name
 
-    if name == 'Acting':
-        known_for_department = 'Favourite Actors'
-    elif name == 'Directing':
-        known_for_department = 'Favourite Directors'
+    if name == "Acting":
+        known_for_department = "Favourite Actors"
+    elif name == "Directing":
+        known_for_department = "Favourite Directors"
 
-    user_list, _ = PersonList.objects.get_or_create(user=user, name=known_for_department)
+    user_list, _ = PersonList.objects.get_or_create(
+        user=user, name=known_for_department
+    )
 
     tmdb_client = TMDBClient()
     person = tmdb_client.search_person_by_id(id)
@@ -326,7 +338,7 @@ def add_person_to_list(request, name, id):
 @login_required
 def person_choose_list(request):
     """
-    This function provides an interface for the user to select from their available person lists. 
+    This function provides an interface for the user to select from their available person lists.
     It presents all the person lists (like favorite actors or directors) associated with the user.
     """
     user = request.user

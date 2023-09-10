@@ -87,7 +87,7 @@
       <h2 style="margin-top: 25px; margin-bottom: 0px; padding: 0px; color: #333;">Recommendations</h2>
       <p style="margin: 0px; padding: 0px; color: #333;">Based on movies you've seen recently.</p>
       <div style=" display: flex; flex-wrap: nowrap; overflow: hidden; overflow-x: auto; max-width: 943px;">
-        {% if watchlist_movies %}
+        {% if recommendations %}
           {% for movie in recommendations %}
               {% if '/' not in movie.title and movie.poster_path%}
               <a href="{% url 'movie' title=movie.title year=movie.year%}" class="movie-link">
@@ -100,7 +100,7 @@
             {% endif %}
           {% endfor %}
           {% else %}
-          <h4 style="height: 150px; margin-top: 50px; color: #333;">You haven't watched any movies yet, you can do so by clicking ★ in the top left corner of the poster after hovering over it.</h4>
+          <h4 style="height: 150px; margin-top: 50px; color: #333;">You haven't watched any movies yet, you can do so by clicking ★ in the top left corner of the poster after hovering over it. Some new or little-known films may also not have recommendations, please add other films.</h4>
         {% endif %}
       </div>
   </div>

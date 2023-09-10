@@ -5,7 +5,12 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
-from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
+from list_management.models import (
+    IMDBTop250,
+    FilmwebTop250,
+    OscarWinner,
+    OscarNomination,
+)
 import time, re, requests
 
 
@@ -21,11 +26,12 @@ class BaseScraper:
     - fetch_data(): Retrieves the HTML content of the page.
     - scrape(limit=None): Orchestrates the scraping process.
     """
+
     def __init__(self, url):
         self.url = url
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
-            "Accept-Language": "en-US,en;q=0.8"
+            "Accept-Language": "en-US,en;q=0.8",
         }
 
     def fetch_data(self):
@@ -48,21 +54,27 @@ class IMDBTop250Scraper(BaseScraper):
     - parse_data(soup, limit=None): Parses the HTML content to extract movie details.
     - save_to_db(movies): Saves the parsed movie details to the database.
     """
+
     def __init__(self):
         super().__init__("https://www.imdb.com/chart/top/")
 
-
     def parse_data(self, soup, limit=None):
         try:
-            titles = [t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")][1:251]
+            titles = [
+                t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")
+            ][1:251]
         except:
             titles = None
 
-        meta_containers = soup.find_all("div", class_="sc-b85248f1-5 kZGNjY cli-title-metadata")
+        meta_containers = soup.find_all(
+            "div", class_="sc-b85248f1-5 kZGNjY cli-title-metadata"
+        )
         year = []
 
         for container in meta_containers:
-            meta_items = container.find_all("span", class_="sc-b85248f1-6 bnDqKN cli-title-metadata-item")
+            meta_items = container.find_all(
+                "span", class_="sc-b85248f1-6 bnDqKN cli-title-metadata-item"
+            )
             if len(meta_items) >= 2:
                 try:
                     year.append(meta_items[0].get_text())
@@ -72,21 +84,19 @@ class IMDBTop250Scraper(BaseScraper):
                 year.append(None)
 
         try:
-            poster_paths = [p['src'] for p in soup.find_all("img", class_="ipc-image")]
+            poster_paths = [p["src"] for p in soup.find_all("img", class_="ipc-image")]
         except:
             poster_paths = None
 
-        movies = [{
-            "title": t,
-            "year": y,
-            "poster_path": p
-        } for t, y, p in zip(titles, year, poster_paths)]
+        movies = [
+            {"title": t, "year": y, "poster_path": p}
+            for t, y, p in zip(titles, year, poster_paths)
+        ]
 
         if limit:
             movies = movies[:limit]
 
         return movies
-
 
     def save_to_db(self, movies):
         # Delete all existing movies
@@ -98,10 +108,9 @@ class IMDBTop250Scraper(BaseScraper):
                 rank=rank,
                 title=movie_data["title"],
                 year=movie_data["year"],
-                poster_path=movie_data["poster_path"]
+                poster_path=movie_data["poster_path"],
             )
             movie.save()
-
 
 
 class FilmwebTop250Scraper:
@@ -123,6 +132,7 @@ class FilmwebTop250Scraper:
     - save_to_db(movies): Saves the parsed movie details to the database.
     - scrape(limit=None, scrolls=None): Orchestrates the scraping process.
     """
+
     def __init__(self):
         self.url = "https://www.filmweb.pl/ranking/film"
         self.options = Options()
@@ -131,7 +141,9 @@ class FilmwebTop250Scraper:
         self.options.add_argument("--disable-dev-shm-usage")
 
     def fetch_data(self, scrolls=None):
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
+        driver = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()), options=self.options
+        )
         driver.get(self.url)
 
         current_num_of_titles = 0
@@ -143,7 +155,11 @@ class FilmwebTop250Scraper:
             time.sleep(0.5)  # Wait for the page to load
 
             # Check the number of titles scraped so far
-            current_num_of_titles = len(driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'))
+            current_num_of_titles = len(
+                driver.find_elements(
+                    By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'
+                )
+            )
 
             # Increase the scroll count
             scroll_count += 1
@@ -158,42 +174,59 @@ class FilmwebTop250Scraper:
 
         return driver
 
-
     def parse_data(self, driver, limit=None):
         try:
-            titles = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]')]
+            titles = [
+                element.get_attribute("textContent")
+                for element in driver.find_elements(
+                    By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'
+                )
+            ]
         except:
             titles = None
 
         try:
-            original_titles = [element.get_attribute('textContent')[:-5] for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
+            original_titles = [
+                element.get_attribute("textContent")[:-5]
+                for element in driver.find_elements(
+                    By.CSS_SELECTOR, "p.rankingType__originalTitle"
+                )
+            ]
         except:
             original_titles = None
 
         try:
-            years = [element.get_attribute('textContent')[-4:] for element in driver.find_elements(By.CSS_SELECTOR, 'p.rankingType__originalTitle')]
+            years = [
+                element.get_attribute("textContent")[-4:]
+                for element in driver.find_elements(
+                    By.CSS_SELECTOR, "p.rankingType__originalTitle"
+                )
+            ]
         except:
             years = None
 
         try:
-            poster_paths = [element.get_attribute('textContent') for element in driver.find_elements(By.CSS_SELECTOR, 'span[itemprop="image"]')]
+            poster_paths = [
+                element.get_attribute("textContent")
+                for element in driver.find_elements(
+                    By.CSS_SELECTOR, 'span[itemprop="image"]'
+                )
+            ]
         except:
             poster_paths = None
 
         driver.quit()
 
-        movies = [{
-            "title": t,
-            'original_title': o,
-            "year": y,
-            "poster_path": p
-        } for t, o, y, p in zip(titles, original_titles, years, poster_paths)]
+        movies = [
+            {"title": t, "original_title": o, "year": y, "poster_path": p}
+            for t, o, y, p in zip(titles, original_titles, years, poster_paths)
+        ]
 
         if limit:
             movies = movies[:limit]
 
         return movies
-    
+
     def save_to_db(self, movies):
         # Delete all existing movies
         FilmwebTop250.objects.all().delete()
@@ -205,10 +238,9 @@ class FilmwebTop250Scraper:
                 title=movie_data["title"],
                 original_title=movie_data["original_title"],
                 year=movie_data["year"],
-                poster_path=movie_data["poster_path"]
+                poster_path=movie_data["poster_path"],
             )
             movie.save()
-
 
     def scrape(self, limit=None, scrolls=None):
         driver = self.fetch_data(scrolls)
@@ -219,7 +251,7 @@ class FilmwebTop250Scraper:
 class OscarBestPictureScraper(BaseScraper):
     """
     A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and their nominations from Wikipedia.
-    
+
     The limit of scrapped movies is set for testing purposes.
 
     Attributes:
@@ -229,10 +261,10 @@ class OscarBestPictureScraper(BaseScraper):
     - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar winners and their nominations.
     - save_to_db(winners): Saves the parsed details to the database.
     """
+
     def __init__(self):
         super().__init__("https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture")
         self.tmdb_client = TMDBClient()
-
 
     def parse_data(self, soup, limit=None):
         tables = soup.find_all("table", class_="wikitable")[:-1]
@@ -244,40 +276,51 @@ class OscarBestPictureScraper(BaseScraper):
             winner_movie = None
             current_year = None
             for row in rows:
-                if len(row.select('td')) == 1:
+                if len(row.select("td")) == 1:
                     if current_year and winner_movie:
-                        winner_movie['nominations'] = nominations
+                        winner_movie["nominations"] = nominations
                         winners.append(winner_movie)
                         nominations = []
                         winner_movie = None
                     try:
-                        current_year = re.sub(r'\[\w\]', '', row.select('td')[0].get_text(strip=True)).split()[0]
+                        current_year = re.sub(
+                            r"\[\w\]", "", row.select("td")[0].get_text(strip=True)
+                        ).split()[0]
                     except:
                         current_year = None
                 else:
                     try:
-                        film = row.select('td')[0].get_text(strip=True).replace('/', ' ')
-                        studio = row.select('td')[1].get_text(strip=True)
-                        is_winner = 'style' in row.attrs and 'background:#FAEB86' in row['style']
+                        film = (
+                            row.select("td")[0].get_text(strip=True).replace("/", " ")
+                        )
+                        studio = row.select("td")[1].get_text(strip=True)
+                        is_winner = (
+                            "style" in row.attrs
+                            and "background:#FAEB86" in row["style"]
+                        )
                         if is_winner:
                             winner_movie = {
-                                'year': current_year,
-                                'release_year': current_year[:4],
-                                'title': film,
-                                'poster_path': self.tmdb_client.get_single_movie_core(film, current_year[:4])['poster_path'],
-                                'studio': studio
+                                "year": current_year,
+                                "release_year": current_year[:4],
+                                "title": film,
+                                "poster_path": self.tmdb_client.get_single_movie_core(
+                                    film, current_year[:4]
+                                )["poster_path"],
+                                "studio": studio,
                             }
                         else:
-                            nominations.append({
-                                'title': film,
-                                'release_year': current_year[:4],
-                                'studio': studio
-                            })
+                            nominations.append(
+                                {
+                                    "title": film,
+                                    "release_year": current_year[:4],
+                                    "studio": studio,
+                                }
+                            )
                     except:
                         continue
 
             if current_year and winner_movie:
-                winner_movie['nominations'] = nominations
+                winner_movie["nominations"] = nominations
                 winners.append(winner_movie)
 
         if limit:
@@ -285,14 +328,17 @@ class OscarBestPictureScraper(BaseScraper):
 
         return winners
 
-
     def save_to_db(self, winners):
         for winner_data in winners:
             # Check if the winner already exists in the database
-            winner_exists = OscarWinner.objects.filter(title=winner_data["title"], release_year=winner_data["release_year"]).exists()
+            winner_exists = OscarWinner.objects.filter(
+                title=winner_data["title"], release_year=winner_data["release_year"]
+            ).exists()
 
             if not winner_exists:
-                winner, _ = OscarWinner.objects.get_or_create(title=winner_data["title"], release_year=winner_data["release_year"])
+                winner, _ = OscarWinner.objects.get_or_create(
+                    title=winner_data["title"], release_year=winner_data["release_year"]
+                )
                 winner.year = winner_data["year"]
                 winner.poster_path = winner_data["poster_path"]
                 winner.studio = winner_data["studio"]
@@ -300,14 +346,13 @@ class OscarBestPictureScraper(BaseScraper):
 
                 for nomination_data in winner_data["nominations"]:
                     nomination, _ = OscarNomination.objects.get_or_create(
-                        title=nomination_data["title"], 
-                        release_year=nomination_data["release_year"], 
+                        title=nomination_data["title"],
+                        release_year=nomination_data["release_year"],
                         studio=nomination_data["studio"],
-                        defaults={'winner': winner}
+                        defaults={"winner": winner},
                     )
                     nomination.winner = winner
                     nomination.save()
-
 
 
 # def scrape_movie_wallpaper(title, year):
@@ -329,5 +374,3 @@ class OscarBestPictureScraper(BaseScraper):
 #     image_url = data['items'][0]['link']
 
 #     return image_url
-
-
