@@ -5,6 +5,7 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 - data scraping with BeautifulSoup and Selenium
 - using the TMDB API to retrieve the most important information about movies and people of cinema
 - Redis&Celery for refreshing rankings every 24 hours
+- CI : running test on push
 - using Postgres DB
 - using signals and transactions from Django 
 - CRUD functionality with list of movies/people
