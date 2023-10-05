@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",
     "user_management.apps.UserManagementConfig",
     "list_management.apps.ListManagementConfig",
-    'django_celery_beat',
-    'celery',
-    'django_probes',
+    "django_celery_beat",
+    "celery",
+    "django_probes",
 ]
 
 MIDDLEWARE = [
@@ -163,30 +163,30 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 # Celery configurations
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Europe/Warsaw'
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Warsaw"
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'ERROR',  # Suppress logs from other parts of the application
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",  # Suppress logs from other parts of the application
     },
-    'loggers': {
-        'list_management.tasks': {  # This targets your tasks.py specifically
-            'handlers': ['console'],
-            'level': 'INFO',  # This will show logs with level INFO and above
-            'propagate': False,  # This ensures logs from this logger don't propagate to other loggers
+    "loggers": {
+        "list_management.tasks": {  # This targets your tasks.py specifically
+            "handlers": ["console"],
+            "level": "INFO",  # Change this to INFO to show INFO and above logs
+            "propagate": False,  # This ensures logs from this logger don't propagate to other loggers
         },
     },
 }

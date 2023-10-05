@@ -11,10 +11,10 @@
             <a href="{% url 'person_list' name=user_list.name %}" class="movie-link">
                 {% if not user_list.persons.all %}
                     <div class="poster-container" style="min-height: 210px;">
-                        <p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p>
-                        <p class="face-list" style="padding: 10px;">
+                        <p class="face-list" style="padding: 15px;">
                             <br/> Add at least one person.
                         </p>
+                        <p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p><p class="face-list"></p>
                     </div>
                 {% else %}
                     <div class="poster-container">

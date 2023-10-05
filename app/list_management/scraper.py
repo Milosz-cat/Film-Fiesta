@@ -11,7 +11,9 @@ from list_management.models import (
     OscarWinner,
     OscarNomination,
 )
-import time, re, requests
+import time, re, requests, logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseScraper:
@@ -67,13 +69,13 @@ class IMDBTop250Scraper(BaseScraper):
             titles = None
 
         meta_containers = soup.find_all(
-            "div", class_="sc-b85248f1-5 kZGNjY cli-title-metadata"
+            "div", class_="sc-6fa21551-7 jLjTzn cli-title-metadata"
         )
         year = []
 
         for container in meta_containers:
             meta_items = container.find_all(
-                "span", class_="sc-b85248f1-6 bnDqKN cli-title-metadata-item"
+                "span", class_="sc-6fa21551-8 bnyjtW cli-title-metadata-item"
             )
             if len(meta_items) >= 2:
                 try:
@@ -92,6 +94,11 @@ class IMDBTop250Scraper(BaseScraper):
             {"title": t, "year": y, "poster_path": p}
             for t, y, p in zip(titles, year, poster_paths)
         ]
+
+        if not movies:
+            logger.info(
+                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed. "
+            )
 
         if limit:
             movies = movies[:limit]
@@ -221,6 +228,11 @@ class FilmwebTop250Scraper:
             {"title": t, "original_title": o, "year": y, "poster_path": p}
             for t, o, y, p in zip(titles, original_titles, years, poster_paths)
         ]
+
+        if not movies:
+            logger.info(
+                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed. "
+            )
 
         if limit:
             movies = movies[:limit]
