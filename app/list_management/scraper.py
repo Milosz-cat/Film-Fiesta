@@ -97,7 +97,7 @@ class IMDBTop250Scraper(BaseScraper):
 
         if not movies:
             logger.info(
-                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed. "
+                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed."
             )
 
         if limit:
@@ -231,7 +231,7 @@ class FilmwebTop250Scraper:
 
         if not movies:
             logger.info(
-                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed. "
+                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed."
             )
 
         if limit:
