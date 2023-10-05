@@ -109,7 +109,7 @@ Now you can head over to http://127.0.0.1:8000 to test the app.
 
 To stop the container run:
 ```
-docker compose down
+docker compose down # or CTRL+C
 ```
 
 You can create admin account (LOGIN=admin, PASSWORD=admin):
