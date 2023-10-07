@@ -48,7 +48,7 @@ class FilmwebTop250(BaseTopMovie):
     original_title = models.CharField(max_length=255, blank=True, null=True)
 
 
-class BaseTopMovie(models.Model):
+    class BaseOscarMovie(models.Model):
     """Abstract model for Oscars and Nominations."""
     release_year = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=255)
@@ -61,13 +61,13 @@ class BaseTopMovie(models.Model):
         return f"{self.title} ({self.release_year})"
 
     
-class OscarWinner(BaseTopMovie):
+class OscarWinner(BaseOscarMovie):
     """Model representing a movie that won an Oscar. Designed for effective scrapping"""
     year = models.CharField(max_length=20)
     poster_path = models.URLField(max_length=500, blank=True, null=True)
     
 
-class OscarNomination(BaseTopMovie):
+class OscarNomination(BaseOscarMovie):
     """Model representing a movie nominated for an Oscar.  Designed for effective scrapping"""
     winner = models.ForeignKey(OscarWinner, related_name="nominations", on_delete=models.CASCADE)
 
