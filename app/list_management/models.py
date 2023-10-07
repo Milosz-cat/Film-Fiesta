@@ -67,13 +67,11 @@ class BaseOscarMovie(models.Model):
     def __str__(self):
         return f"{self.title} ({self.release_year})"
 
-
 class OscarWinner(BaseOscarMovie):
     """Model representing a movie that won an Oscar. Designed for effective scrapping"""
 
     year = models.CharField(max_length=20)
     poster_path = models.URLField(max_length=500, blank=True, null=True)
-
 
 class OscarNomination(BaseOscarMovie):
     """Model representing a movie nominated for an Oscar.  Designed for effective scrapping"""
