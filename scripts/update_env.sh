@@ -15,7 +15,7 @@ The purpose of this procedure is to ensure that by starting the application in t
 IP_ADDRESSES=$(hostname -I)
 
 # Construct the value for ALLOWED_HOSTS
-ALLOWED_HOSTS_VALUE="ALLOWED_HOSTS=127.0.0.1 0.0.0.0 $IP_ADDRESSES"
+ALLOWED_HOSTS_VALUE="ALLOWED_HOSTS=app 127.0.0.1 0.0.0.0 $IP_ADDRESSES"
 
 # Path to the .env file in the parent directory
 ENV_PATH="./.env"

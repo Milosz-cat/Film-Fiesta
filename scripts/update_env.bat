@@ -19,7 +19,7 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr "IPv4"') do (
 )
 
 REM Construct the value for ALLOWED_HOSTS
-set ALLOWED_HOSTS_VALUE=ALLOWED_HOSTS=127.0.0.1 0.0.0.0!IP_ADDRESSES!
+set ALLOWED_HOSTS_VALUE=ALLOWED_HOSTS=app 127.0.0.1 0.0.0.0!IP_ADDRESSES!
 
 REM Path to the .env file in the parent directory
 set ENV_PATH=.\.env
