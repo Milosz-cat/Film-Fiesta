@@ -69,13 +69,13 @@ class IMDBTop250Scraper(BaseScraper):
             titles = None
 
         meta_containers = soup.find_all(
-            "div", class_="sc-6fa21551-7 jLjTzn cli-title-metadata"
+            "div", class_="sc-c7e5f54-7 brlapf cli-title-metadata"
         )
         year = []
 
         for container in meta_containers:
             meta_items = container.find_all(
-                "span", class_="sc-6fa21551-8 bnyjtW cli-title-metadata-item"
+                "span", class_="sc-c7e5f54-8 hgjcbi cli-title-metadata-item"
             )
             if len(meta_items) >= 2:
                 try:
