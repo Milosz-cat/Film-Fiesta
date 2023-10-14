@@ -8,6 +8,7 @@ services:
       - 8000:8000
     image: app:movie_app
     container_name: app_container
+    restart: always
     command: >
       sh -c "python manage.py wait_for_database && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     env_file:
@@ -53,3 +54,31 @@ services:
       - .env
     depends_on:
       - celery-worker
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+    depends_on:
+      - celery-beat
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_storage:/prometheus
+    depends_on:
+      - grafana
+
+volumes:
+  grafana_storage:
+  prometheus_storage: 

@@ -6,6 +6,7 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 - using the TMDB API to retrieve the most important information about movies and people of cinema
 - Redis&Celery for refreshing rankings every 24 hours
 - CI : running test on push
+- Prometheus&Grafana for monitoring and visualization
 - using Postgres DB
 - using signals and transactions from Django 
 - CRUD functionality with list of movies/people
@@ -20,7 +21,9 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 <p align="left">  
     <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python"             width="40" height="40"/> </a>
     <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> <img src="https://cdn.worldvectorlogo.com/logos/django.svg" alt="django" width="40" height="40"/> </a> 
-    <a href="https://www.docker.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg"         alt="docker" width="40" height="40"/> </a>  
+    <a href="https://www.docker.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg"         alt="docker" width="40" height="40"/> </a> 
+    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" /> 
+    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" />
     <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> 
     <a href="https://redis.io" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redis/redis-original-wordmark.svg" alt="redis" width="40" height="40"/> </a>
     <a href="https://www.selenium.dev" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/detain/svg-logos/780f25886640cef088af994181646db2f6b1a3f8/svg/selenium-logo.svg" alt="selenium" width="40" height="40"/> </a>
@@ -46,6 +49,8 @@ FilmFIesta is a film-themed project, the appearance and some functionalities hav
 ![Preview image](screenshots/11.png)
 ![Preview image](screenshots/12.png)
 
+## Grafana
+![Grafana image](screenshots/grafana.png)
     
 ## Requirements
 * docker and docker compose

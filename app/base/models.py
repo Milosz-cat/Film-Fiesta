@@ -1,9 +1,10 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class Movie(models.Model):
+class Movie(ExportModelOperationsMixin("movie"), models.Model):
     """Represents a movie with its details such as title, year, poster, and rating."""
 
     title = models.CharField(max_length=100)
@@ -28,7 +29,7 @@ class Movie(models.Model):
         return self.title
 
 
-class Person(models.Model):
+class Person(ExportModelOperationsMixin("person"), models.Model):
     """Represents a person involved in movies, such as actors or directors, with their name and role."""
 
     name = models.CharField(max_length=100)
@@ -55,7 +56,7 @@ class TimestampedModel(models.Model):
         return f"{self.user.username}'s {self.__class__.__name__}"
 
 
-class Review(TimestampedModel):
+class Review(ExportModelOperationsMixin("review"), TimestampedModel):
     """Represents a user's review for a specific movie."""
 
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, default=None)
@@ -64,7 +65,7 @@ class Review(TimestampedModel):
         return f"Review by {self.user.username}"
 
 
-class Comment(TimestampedModel):
+class Comment(ExportModelOperationsMixin("comment"), TimestampedModel):
     """Represents a user's comment on a movie review."""
 
     review = models.ForeignKey(Review, on_delete=models.CASCADE, default=None)

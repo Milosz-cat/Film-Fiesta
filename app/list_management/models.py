@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from base.models import Movie, Person
+from django_prometheus.models import ExportModelOperationsMixin
 
 
 class BaseList(models.Model):
@@ -17,13 +18,13 @@ class BaseList(models.Model):
         return f"{self.user.username}'s {self.__class__.__name__}: {self.name}"
 
 
-class MovieList(BaseList):
+class MovieList(ExportModelOperationsMixin("movie_list"), BaseList):
     """Model representing a user's list of movies."""
 
     movies = models.ManyToManyField(Movie)
 
 
-class PersonList(BaseList):
+class PersonList(ExportModelOperationsMixin("person_list"), BaseList):
     """Model representing a user's list of film industry persons."""
 
     persons = models.ManyToManyField(Person)
@@ -44,11 +45,11 @@ class BaseTopMovie(models.Model):
         return f"{self.title} ({self.year})"
 
 
-class IMDBTop250(BaseTopMovie):
+class IMDBTop250(ExportModelOperationsMixin("imdb"), BaseTopMovie):
     """Model representing a movie ranked in the IMDB Top 250."""
 
 
-class FilmwebTop250(BaseTopMovie):
+class FilmwebTop250(ExportModelOperationsMixin("filmweb"), BaseTopMovie):
     """Model representing a movie ranked in the Filmweb Top 250."""
 
     original_title = models.CharField(max_length=255, blank=True, null=True)
@@ -67,13 +68,15 @@ class BaseOscarMovie(models.Model):
     def __str__(self):
         return f"{self.title} ({self.release_year})"
 
-class OscarWinner(BaseOscarMovie):
+
+class OscarWinner(ExportModelOperationsMixin("oscar_winner"), BaseOscarMovie):
     """Model representing a movie that won an Oscar. Designed for effective scrapping"""
 
     year = models.CharField(max_length=20)
     poster_path = models.URLField(max_length=500, blank=True, null=True)
 
-class OscarNomination(BaseOscarMovie):
+
+class OscarNomination(ExportModelOperationsMixin("oscar_nomination"), BaseOscarMovie):
     """Model representing a movie nominated for an Oscar.  Designed for effective scrapping"""
 
     winner = models.ForeignKey(
