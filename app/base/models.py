@@ -30,7 +30,8 @@ class Movie(ExportModelOperationsMixin("movie"), models.Model):
 
 
 class Person(ExportModelOperationsMixin("person"), models.Model):
-    """Represents a person involved in movies, such as actors or directors, with their name and role."""
+    """Represents a person involved in movies, such as actors or directors, with their
+    name and role."""
 
     name = models.CharField(max_length=100)
     custom_id = models.IntegerField(primary_key=True, default=None)
@@ -49,7 +50,7 @@ class TimestampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         abstract = True  # This ensures that this model won't be used to create any database table
 
     def __str__(self):

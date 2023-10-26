@@ -189,7 +189,7 @@ LOGGING = {
         "list_management.tasks": {  # This targets your tasks.py specifically
             "handlers": ["console"],
             "level": "INFO",  # Change this to INFO to show INFO and above logs
-            "propagate": False,  # This ensures logs from this logger don't propagate to other loggers
+            "propagate": False,  # Ensures logs from this logger don't propagate to other loggers
         },
     },
 }

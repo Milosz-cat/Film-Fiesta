@@ -1,4 +1,4 @@
-name: Run Checks
+name: CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate .env file
         run: |
@@ -34,3 +34,12 @@ jobs:
 
       - name: Run docker-compose
         run: docker-compose run --rm app sh -c "python manage.py wait_for_database && python manage.py makemigrations && python manage.py migrate && python manage.py test base list_management user_management"
+
+      - name: Install pylint and black
+        run: pip install pylint black
+      
+      - name: Run pylint
+        run: pylint app/
+
+      - name: Check code formatting with black
+        run: black app/ --check

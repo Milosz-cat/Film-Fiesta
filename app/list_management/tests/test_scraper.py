@@ -1,6 +1,16 @@
 from django.test import TestCase
-from list_management.models import IMDBTop250, FilmwebTop250, OscarWinner, OscarNomination
-from list_management.scraper import IMDBTop250Scraper, FilmwebTop250Scraper, OscarBestPictureScraper
+from list_management.models import (
+    IMDBTop250,
+    FilmwebTop250,
+    OscarWinner,
+    OscarNomination,
+)
+from list_management.scraper import (
+    IMDBTop250Scraper,
+    FilmwebTop250Scraper,
+    OscarBestPictureScraper,
+)
+
 
 class IMDBTop250ScraperTest(TestCase):
     """
@@ -16,35 +26,34 @@ class IMDBTop250ScraperTest(TestCase):
       (in this case, just one movie) and ensures that the database reflects the correct count
       of scraped movies.
     """
+
     def setUp(self):
         self.scraper = IMDBTop250Scraper()
 
-
     def test_scrape_with_limit(self):
         self.scraper.scrape(limit=1)
-        
+
         # Check if there's exactly 1 movie in the database
         self.assertEqual(IMDBTop250.objects.count(), 1)
 
-class FilmwebTop250ScraperTest(TestCase):
 
+class FilmwebTop250ScraperTest(TestCase):
     def setUp(self):
         self.scraper = FilmwebTop250Scraper()
-
 
     def test_scrape_with_limit_and_scroll(self):
         self.scraper.scrape(limit=1, scrolls=1)
 
         self.assertEqual(FilmwebTop250.objects.count(), 1)
 
-class OscarBestPictureScraperTest(TestCase):
 
+class OscarBestPictureScraperTest(TestCase):
     def setUp(self):
         self.scraper = OscarBestPictureScraper()
 
     def test_scrape_with_limit(self):
         self.scraper.scrape(limit=1)
-        
+
         # Check if there's exactly 1 winner in the database
         self.assertEqual(OscarWinner.objects.count(), 1)
 

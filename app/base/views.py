@@ -69,7 +69,9 @@ def home(request):
                 "custom_id": movie["id"],
                 "year": movie["release_date"][0:4] if movie["release_date"] else None,
             }
-            for movie in tmdb_client.get_movie_recommendations(last_added_movie.custom_id)
+            for movie in tmdb_client.get_movie_recommendations(
+                last_added_movie.custom_id
+            )
         ]
     else:
         recommendations = None
@@ -109,16 +111,16 @@ def movie(request, title, year):
         title = title.split(".", 1)[1].strip()
 
     tmdb_client = TMDBClient()
-    movie = tmdb_client.get_single_movie(title, year)
+    movie_info = tmdb_client.get_single_movie(title, year)
 
     try:
-        movie_reviews = Movie.objects.get(custom_id=movie["movie"]["id"])
+        movie_reviews = Movie.objects.get(custom_id=movie_info["movie"]["id"])
         reviews = Review.objects.filter(movie=movie_reviews)
-        movie["reviews"] = reviews
+        movie_info["reviews"] = reviews
     except Movie.DoesNotExist:
         movie_reviews = None
 
-    return render(request, "base/movie.html", movie)
+    return render(request, "base/movie.html", movie_info)
 
 
 @login_required
@@ -132,8 +134,8 @@ def person(request, name):
     """
 
     tmdb_client = TMDBClient()
-    person = tmdb_client.search_person(name)
-    person_id = person[0]["id"]
+    person_info = tmdb_client.search_person(name)
+    person_id = person_info[0]["id"]
 
     cast_movies, director_movies = tmdb_client.get_movies_by_person(person_id)
 
@@ -192,7 +194,7 @@ def person(request, name):
     biography = tmdb_client.search_person_by_id(person_id)["biography"]
 
     context = {
-        "person": person[0],
+        "person": person_info[0],
         "movies": person_movies_as_actor,
         "movies_director": person_movies_as_director,
         "biography": biography,
@@ -222,18 +224,18 @@ def search(request):
         search_term = request.POST.get("search")
 
         tmdb_client = TMDBClient()
-        movies = tmdb_client.search_movies(search_term)
+        results = tmdb_client.search_movies(search_term)
 
-        movies = [
+        results = [
             {
                 "id": movie["id"],
                 "title": movie["title"],
                 "poster_path": movie["poster_path"],
                 "release_date": movie["release_date"][:4],
             }
-            for movie in movies
+            for movie in results
         ]
-        context = {"movies": movies}
+        context = {"movies": results}
         return render(request, "base/search.html", context)
 
     return render(request, "base/search.html")
@@ -250,17 +252,17 @@ def add_review(request, movie_id):
     user = request.user
 
     # Try to get the movie from the database
-    movie = Movie.objects.filter(custom_id=movie_id).first()
+    movie_with_no_review = Movie.objects.filter(custom_id=movie_id).first()
 
     # If the movie doesn't exist in the database, fetch its details and create it
-    if not movie:
+    if not movie_with_no_review:
         tmdb_client = TMDBClient()
         movie_data = tmdb_client.get_movie_detalis(movie_id)
 
         user_list = MovieList.objects.get(user=user, name="My Films")
 
         with transaction.atomic():  # Start of transaction block
-            movie, created = Movie.objects.get_or_create(
+            movie_with_no_review, _ = Movie.objects.get_or_create(
                 title=movie_data["title"],
                 year=movie_data["release_date"][:4],
                 poster_path=movie_data["poster_path"],
@@ -269,12 +271,12 @@ def add_review(request, movie_id):
             )
 
             # Add the movie to the user's "My Films" list
-            user_list.movies.add(movie)
+            user_list.movies.add(movie_with_no_review)
 
     # Proceed to add the review
     if request.method == "POST":
         content = request.POST.get("content")
-        review = Review(movie=movie, user=user, content=content)
+        review = Review(movie=movie_with_no_review, user=user, content=content)
         review.save()
         messages.success(request, "Your review has been successfully created.")
 
@@ -284,7 +286,8 @@ def add_review(request, movie_id):
 
 @login_required
 def add_comment(request, review_id):
-    """Allow the user to add a comment to a specific review and redirect back to the movie's page."""
+    """Allow the user to add a comment to a specific review and redirect back
+    to the movie's page."""
 
     review = get_object_or_404(Review, pk=review_id)
 

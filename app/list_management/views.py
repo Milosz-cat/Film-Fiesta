@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import transaction
 from base.tmdb_helpers import TMDBClient
 from base.models import Movie, Person
 from list_management.models import (
@@ -9,9 +11,6 @@ from list_management.models import (
     FilmwebTop250,
     OscarWinner,
 )
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
 
 
 @login_required
@@ -19,9 +18,10 @@ def ranking(request, name):
     """
     Handles the display of movie rankings based on the source provided.
 
-    The function fetches movie rankings from either IMDb or Filmweb. If the rankings are not available in the database,
-    a message is displayed to the user indicating that the data is being fetched. The user's watched movies are also
-    compared against the rankings to calculate the percentage of movies watched from the list.
+    The function fetches movie rankings from either IMDb or Filmweb. If the rankings are not
+    available in the database, a message is displayed to the user indicating that the data is
+    being fetched. The user's watched movies are also compared against the rankings to calculate
+    the percentage of movies watched from the list.
     """
     user = request.user
     my_films_list = MovieList.objects.get(user=user, name="My Films")
@@ -29,11 +29,18 @@ def ranking(request, name):
 
     if name == "imdb":
         list_title = "IMDb Top 250 Movies"
-        description = "IMDb, short for Internet Movie Database, is a widely recognized online database dedicated to movies. The IMDb Top 250 represents a diverse collection of films from various genres, countries, and periods of cinema history. It's updated regularly to reflect changes in user ratings and includes both classic masterpieces and contemporary hits."
+        description = """IMDb, short for Internet Movie Database, is a widely recognized online
+        database dedicated to movies. The IMDb Top 250 represents a diverse collection of films
+        from various genres, countries, and periods of cinema history. It's updated regularly to
+        reflect changes in user ratings and includes both classic masterpieces and contemporary 
+        hits."""
 
         # Check if records exist in the database
         if not IMDBTop250.objects.exists():
-            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scrapers are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            list_title = """We apologize for the inconvenience. This is the first launch of the
+            application, and our scrapers are currently loading content or updating data. Please
+            bear with us for a moment. The entire process should not take more than 2 minutes.
+            Thank you for your understanding!"""
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 
@@ -52,11 +59,17 @@ def ranking(request, name):
 
     elif name == "filmweb":
         list_title = "Filmweb Top 250 Movies"
-        description = "Filmweb is a popular Polish website dedicated to movies, TV series, and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies on the platform, based on user ratings."
+        description = """Filmweb is a popular Polish website dedicated to movies, TV series,
+        and celebrities. Similar to IMDb, Filmweb also has a ranking system that allows users
+        to rate and review films. The Filmweb Top 250 is a list of the highest-rated movies
+        on the platform, based on user ratings."""
 
         # Check if records exist in the database
         if not FilmwebTop250.objects.exists():
-            list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scrapers are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+            list_title = """We apologize for the inconvenience. This is the first launch of
+            the application, and our scrapers are currently loading content or updating data.
+            Please bear with us for a moment. The entire process should not take more than
+            2 minutes. Thank you for your understanding!"""
             context = {"list_title": list_title}
             return render(request, "list_management/ranking.html", context)
 
@@ -84,15 +97,19 @@ def best_picture(request):
     """
     Displays a list of movies that have won the Oscar for Best Picture.
 
-    The function fetches the list of Oscar-winning movies from the database. If the data is not available,
-    a message is displayed to the user indicating that the data is being fetched.
+    The function fetches the list of Oscar-winning movies from the database. If the data is not
+    available, a message is displayed to the user indicating that the data is being fetched.
     """
     list_title = "Best picture"
-    description = "Winner in the best picture category awarded by the oscar awards academy from 1927/1928 to present."
+    description = """Winner in the best picture category awarded by the oscar awards academy from
+    1927/1928 to present."""
 
     # Check if records exist in the database
     if not OscarWinner.objects.exists():
-        list_title = "We apologize for the inconvenience. This is the first launch of the application, and our scanners are currently loading content or updating data. Please bear with us for a moment. The entire process should not take more than 2 minutes. Thank you for your understanding!"
+        list_title = """We apologize for the inconvenience. This is the first launch of the
+        application, and our scanners are currently loading content or updating data. Please
+        bear with us for a moment. The entire process should not take more than 2 minutes. 
+        Thank you for your understanding!"""
         context = {"list_title": list_title}
         return render(request, "list_management/best_picture.html", context)
 
@@ -109,9 +126,10 @@ def best_picture(request):
 @login_required
 def rate_movie(request, title, year, rating):
     """
-    The function first checks if the movie exists in the database. If it does, the rating is updated.
-    If not, a new movie entry is created with the provided rating. The movie is then added to the user's rated list.
-    The field for entering the ranking is displayed after pressing the star on any poster using Javascript
+    The function first checks if the movie exists in the database. If it does, the rating
+    is updated. If not, a new movie entry is created with the provided rating. The movie
+    is then added to the user's rated list. The field for entering the ranking is displayed
+    after pressing the star on any poster using Javascript
     """
 
     user = request.user
@@ -202,9 +220,9 @@ def choose_list(request):
 
 
 @login_required
-def add_list(request, type):
+def add_list(request, object_type):
     """
-    This function allows the user to create a new list. Depending on the type specified,
+    This function allows the user to create a new list. Depending on the object_type specified,
     the user can create a list for movies or persons (actors/directors).
     """
     if request.method == "POST":
@@ -212,7 +230,7 @@ def add_list(request, type):
         name = request.POST.get("name")
         description = request.POST.get("description")
 
-        if type == "Movie":
+        if object_type == "Movie":
             new_list = MovieList(user=user, name=name, description=description)
         else:
             new_list = PersonList(user=user, name=name, description=description)
@@ -227,14 +245,15 @@ def add_list(request, type):
 def add_to_list(request, movie_title, movie_year, name):
     """
     This function lets the user add a specific movie to one of their personal lists.
-    It fetches movie details from an external service (TMDB) and then adds it to the specified list.
+    It fetches movie details from an external service (TMDB) and then adds it to the
+    specified list.
 
-    The use of `transaction.atomic()` ensures that all the database operations within its block are
-    treated as a single unit. This means that if any operation fails, all changes made within the block
-    are rolled back, ensuring data integrity. In this context, it ensures that both the creation or
-    retrieval of the movie object and its addition to the user's list are successful. If there's an
-    issue with any of these operations, no partial data will be saved, preventing potential inconsistencies
-    in the database.
+    The use of `transaction.atomic()` ensures that all the database operations within
+    its block are treated as a single unit. This means that if any operation fails, all
+    changes made within the block are rolled back, ensuring data integrity. In this context,
+    it ensures that both the creation or retrieval of the movie object and its addition
+    to the user's list are successful. If there's an issue with any of these operations,
+    no partial data will be saved, preventing potential inconsistencies in the database.
     """
     user = request.user
 
@@ -272,7 +291,8 @@ def add_to_list(request, movie_title, movie_year, name):
 def person_list(request, name):
     """
     This function displays a list of persons, which can be actors or directors, based on the
-    user's search or a predefined list. The user can also view persons they've added to their personal lists.
+    user's search or a predefined list. The user can also view persons they've added to their
+    personal lists.
     """
     user = request.user
     user_list, _ = PersonList.objects.get_or_create(user=user, name=name)
@@ -301,10 +321,11 @@ def person_list(request, name):
 
 
 @login_required
-def add_person_to_list(request, name, id):
+def add_person_to_list(request, name, person_id):
     """
-    This function allows the user to add a specific person (actor or director) to one of their personal lists.
-    It fetches person details from an external service (TMDB) and then adds them to the specified list.
+    This function allows the user to add a specific person (actor or director) to one of their
+    personal lists. It fetches person details from an external service (TMDB) and then adds them
+    to the specified list.
     """
     user = request.user
 
@@ -320,13 +341,13 @@ def add_person_to_list(request, name, id):
     )
 
     tmdb_client = TMDBClient()
-    person = tmdb_client.search_person_by_id(id)
+    person = tmdb_client.search_person_by_id(person_id)
 
     person, _ = Person.objects.get_or_create(
         name=person["name"],
         role=person["known_for_department"],
         profile_path=person["profile_path"],
-        custom_id=person["id"],
+        custom_id=person["person_id"],
     )
 
     user_list.persons.add(person)
@@ -349,14 +370,14 @@ def person_choose_list(request):
 
 
 @login_required
-def remove_list(request, name, type):
+def remove_list(request, name, object_type):
     """
     This function allows the user to delete one of their personal lists. The user can remove either
-    a movie list or a person list, depending on the type specified.
+    a movie list or a person list, depending on the object_type specified.
     """
     user = request.user
 
-    if type == "Movie":
+    if object_type == "Movie":
         list_to_remove = MovieList.objects.filter(user=user, name=name).first()
     else:
         list_to_remove = PersonList.objects.filter(user=user, name=name).first()
@@ -375,23 +396,23 @@ def remove_list(request, name, type):
 
 
 @login_required
-def remove_from_list(request, name, type, id):
+def remove_from_list(request, name, object_type, object_id):
     """
-    This function lets the user remove a specific item (movie or person) from one of their personal lists.
-    The item is identified by its unique ID and is removed from the specified list.
+    This function lets the user remove a specific item (movie or person) from one of their
+    personal lists. The item is identified by its unique ID and is removed from the specified list.
     """
     user = request.user
 
-    if type == "Movie":
+    if object_type == "Movie":
         list_to_remove_from = MovieList.objects.filter(user=user, name=name).first()
         if list_to_remove_from:
-            movie_to_remove = Movie.objects.filter(custom_id=id).first()
+            movie_to_remove = Movie.objects.filter(custom_id=object_id).first()
             if movie_to_remove:
                 list_to_remove_from.movies.remove(movie_to_remove)
     else:
         list_to_remove_from = PersonList.objects.filter(user=user, name=name).first()
         if list_to_remove_from:
-            person_to_remove = Person.objects.filter(custom_id=id).first()
+            person_to_remove = Person.objects.filter(custom_id=object_id).first()
             if person_to_remove:
                 list_to_remove_from.persons.remove(person_to_remove)
 

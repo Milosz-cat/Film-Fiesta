@@ -17,55 +17,137 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Movie',
+            name="Movie",
             fields=[
-                ('title', models.CharField(max_length=100)),
-                ('year', models.IntegerField()),
-                ('custom_id', models.IntegerField(default=None, primary_key=True, serialize=False)),
-                ('poster_path', models.URLField(default=None)),
-                ('rating', models.IntegerField(default=0, validators=[django.core.validators.MaxValueValidator(10), django.core.validators.MinValueValidator(0)])),
-                ('on_watchlist', models.CharField(choices=[('yes', 'Yes'), ('no', 'No'), ('watched', 'Watched')], default='no', max_length=10)),
+                ("title", models.CharField(max_length=100)),
+                ("year", models.IntegerField()),
+                (
+                    "custom_id",
+                    models.IntegerField(
+                        default=None, primary_key=True, serialize=False
+                    ),
+                ),
+                ("poster_path", models.URLField(default=None)),
+                (
+                    "rating",
+                    models.IntegerField(
+                        default=0,
+                        validators=[
+                            django.core.validators.MaxValueValidator(10),
+                            django.core.validators.MinValueValidator(0),
+                        ],
+                    ),
+                ),
+                (
+                    "on_watchlist",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("watched", "Watched")],
+                        default="no",
+                        max_length=10,
+                    ),
+                ),
             ],
-            bases=(django_prometheus.models.ExportModelOperationsMixin('movie'), models.Model),
+            bases=(
+                django_prometheus.models.ExportModelOperationsMixin("movie"),
+                models.Model,
+            ),
         ),
         migrations.CreateModel(
-            name='Person',
+            name="Person",
             fields=[
-                ('name', models.CharField(max_length=100)),
-                ('custom_id', models.IntegerField(default=None, primary_key=True, serialize=False)),
-                ('role', models.CharField(max_length=30)),
-                ('profile_path', models.URLField(default=None)),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "custom_id",
+                    models.IntegerField(
+                        default=None, primary_key=True, serialize=False
+                    ),
+                ),
+                ("role", models.CharField(max_length=30)),
+                ("profile_path", models.URLField(default=None)),
             ],
-            bases=(django_prometheus.models.ExportModelOperationsMixin('person'), models.Model),
+            bases=(
+                django_prometheus.models.ExportModelOperationsMixin("person"),
+                models.Model,
+            ),
         ),
         migrations.CreateModel(
-            name='Review',
+            name="Review",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.CharField(max_length=4000)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('movie', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='base.movie')),
-                ('user', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("content", models.CharField(max_length=4000)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "movie",
+                    models.ForeignKey(
+                        default=None,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="base.movie",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        default=None,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=(django_prometheus.models.ExportModelOperationsMixin('review'), models.Model),
+            bases=(
+                django_prometheus.models.ExportModelOperationsMixin("review"),
+                models.Model,
+            ),
         ),
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.CharField(max_length=4000)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('review', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='base.review')),
-                ('user', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("content", models.CharField(max_length=4000)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "review",
+                    models.ForeignKey(
+                        default=None,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="base.review",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        default=None,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=(django_prometheus.models.ExportModelOperationsMixin('comment'), models.Model),
+            bases=(
+                django_prometheus.models.ExportModelOperationsMixin("comment"),
+                models.Model,
+            ),
         ),
     ]

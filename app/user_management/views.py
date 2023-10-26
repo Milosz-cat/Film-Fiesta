@@ -4,7 +4,8 @@ from django.contrib import messages
 
 
 def sign_up(request):
-    """The function checks if a user with similar data does not already exist, if not creating a new user. """
+    """The function checks if a user with similar data does not already exist,
+    if not creating a new user."""
 
     if request.method == "POST":
         username = request.POST["username"]
@@ -31,7 +32,8 @@ def sign_up(request):
         if password_1 != password_2:
             messages.error(
                 request,
-                "Verification of your passwords failed because the passwords are different. Try re-entering passwords.",
+                """Verification of your passwords failed because the passwords are different.
+                Try re-entering passwords.""",
             )
             return render(request, "registration/sign_up.html")
 

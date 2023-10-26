@@ -1,3 +1,6 @@
+import time, re, logger
+
+import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -5,15 +8,15 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from base.tmdb_helpers import TMDBClient
+
 from list_management.models import (
     IMDBTop250,
     FilmwebTop250,
     OscarWinner,
     OscarNomination,
 )
-import time, re, requests, logging
 
-logger = logging.getLogger(__name__)
+logger = logger.getLogger(__name__)
 
 
 class BaseScraper:
@@ -32,13 +35,22 @@ class BaseScraper:
     def __init__(self, url):
         self.url = url
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+            "User-Agent": """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+            (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36""",
             "Accept-Language": "en-US,en;q=0.8",
         }
 
     def fetch_data(self):
         response = requests.get(self.url, headers=self.headers)
         return BeautifulSoup(response.text, "html.parser")
+
+    def parse_data(self, soup, limit):
+        """Parse data from the soup object. To be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement this method.")
+
+    def save_to_db(self, _):
+        """Save movies to the database. To be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def scrape(self, limit=None):
         soup = self.fetch_data()
@@ -65,7 +77,8 @@ class IMDBTop250Scraper(BaseScraper):
             titles = [
                 t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")
             ][1:251]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             titles = None
 
         meta_containers = soup.find_all(
@@ -80,14 +93,16 @@ class IMDBTop250Scraper(BaseScraper):
             if len(meta_items) >= 2:
                 try:
                     year.append(meta_items[0].get_text())
-                except:
+                except Exception as e:
+                    logger.error(f"An error occurred: {e}")
                     year.append(None)
             else:
                 year.append(None)
 
         try:
             poster_paths = [p["src"] for p in soup.find_all("img", class_="ipc-image")]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             poster_paths = None
 
         movies = [
@@ -97,7 +112,8 @@ class IMDBTop250Scraper(BaseScraper):
 
         if not movies:
             logger.info(
-                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed."
+                "You can't scrape data."
+                "Check whether the names of the HTML elements on the page have not changed."
             )
 
         if limit:
@@ -134,7 +150,8 @@ class FilmwebTop250Scraper:
     - options (Options): Selenium webdriver options.
 
     Methods:
-    - fetch_data(scrolls=None): Retrieves the HTML content of the Filmweb top 250 movies page using Selenium.
+    - fetch_data(scrolls=None): Retrieves the HTML content of the Filmweb top 250 movies
+    page using Selenium.
     - parse_data(driver, limit=None): Parses the HTML content to extract movie details.
     - save_to_db(movies): Saves the parsed movie details to the database.
     - scrape(limit=None, scrolls=None): Orchestrates the scraping process.
@@ -171,7 +188,8 @@ class FilmwebTop250Scraper:
             # Increase the scroll count
             scroll_count += 1
 
-            # Break the loop if the number of titles reaches 250 or the number of scrolls reaches the limit
+            # Break the loop if the number of titles reaches 250 or the number of scrolls
+            # reaches the limit
             if scrolls:
                 if scroll_count >= scrolls:
                     break
@@ -189,7 +207,8 @@ class FilmwebTop250Scraper:
                     By.CSS_SELECTOR, 'h2.rankingType__title a[itemprop="url"]'
                 )
             ]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             titles = None
 
         try:
@@ -199,7 +218,8 @@ class FilmwebTop250Scraper:
                     By.CSS_SELECTOR, "p.rankingType__originalTitle"
                 )
             ]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             original_titles = None
 
         try:
@@ -209,7 +229,8 @@ class FilmwebTop250Scraper:
                     By.CSS_SELECTOR, "p.rankingType__originalTitle"
                 )
             ]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             years = None
 
         try:
@@ -219,7 +240,8 @@ class FilmwebTop250Scraper:
                     By.CSS_SELECTOR, 'span[itemprop="image"]'
                 )
             ]
-        except:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             poster_paths = None
 
         driver.quit()
@@ -231,7 +253,8 @@ class FilmwebTop250Scraper:
 
         if not movies:
             logger.info(
-                "You can't scrape data. Check whether the names of the HTML elements on the page have not changed."
+                "You can't scrape data."
+                "Check whether the names of the HTML elements on the page have not changed."
             )
 
         if limit:
@@ -262,7 +285,8 @@ class FilmwebTop250Scraper:
 
 class OscarBestPictureScraper(BaseScraper):
     """
-    A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and their nominations from Wikipedia.
+    A BeautifulSoup scraper for fetching and parsing Oscar Best Picture winners and
+    their nominations from Wikipedia.
 
     The limit of scrapped movies is set for testing purposes.
 
@@ -270,7 +294,8 @@ class OscarBestPictureScraper(BaseScraper):
     - tmdb_client (TMDBClient): An instance of the TMDBClient to fetch movie posters.
 
     Methods:
-    - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar winners and their nominations.
+    - parse_data(soup, limit=None): Parses the HTML content to extract details of Oscar
+    winners and their nominations.
     - save_to_db(winners): Saves the parsed details to the database.
     """
 
@@ -285,21 +310,25 @@ class OscarBestPictureScraper(BaseScraper):
         for table in tables:
             rows = table.find_all("tr")[1:]
             nominations = []
-            winner_movie = None
-            current_year = None
+            winner_movie = {}
+            current_year = ""
+
             for row in rows:
                 if len(row.select("td")) == 1:
                     if current_year and winner_movie:
                         winner_movie["nominations"] = nominations
                         winners.append(winner_movie)
                         nominations = []
-                        winner_movie = None
+                        winner_movie = {}
                     try:
-                        current_year = re.sub(
-                            r"\[\w\]", "", row.select("td")[0].get_text(strip=True)
-                        ).split()[0]
-                    except:
-                        current_year = None
+                        current_year_text = row.select("td")[0].get_text(strip=True)
+                        current_year = re.sub(r"\[\w\]", "", current_year_text).split()[
+                            0
+                        ]
+                    except Exception as e:
+                        logger.error(f"An error occurred: {e}")
+                        current_year = ""
+
                 else:
                     try:
                         film = (
@@ -313,10 +342,12 @@ class OscarBestPictureScraper(BaseScraper):
                         if is_winner:
                             winner_movie = {
                                 "year": current_year,
-                                "release_year": current_year[:4],
+                                "release_year": current_year[:4]
+                                if current_year
+                                else None,
                                 "title": film,
                                 "poster_path": self.tmdb_client.get_single_movie_core(
-                                    film, current_year[:4]
+                                    film, current_year[:4] if current_year else None
                                 )["poster_path"],
                                 "studio": studio,
                             }
@@ -324,21 +355,21 @@ class OscarBestPictureScraper(BaseScraper):
                             nominations.append(
                                 {
                                     "title": film,
-                                    "release_year": current_year[:4],
+                                    "release_year": current_year[:4]
+                                    if current_year
+                                    else None,
                                     "studio": studio,
                                 }
                             )
-                    except:
+                    except Exception as e:
+                        logger.error(f"An error occurred: {e}")
                         continue
 
             if current_year and winner_movie:
                 winner_movie["nominations"] = nominations
                 winners.append(winner_movie)
 
-        if limit:
-            winners = winners[:limit]
-
-        return winners
+        return winners[:limit] if limit else winners
 
     def save_to_db(self, winners):
         for winner_data in winners:
