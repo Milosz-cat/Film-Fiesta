@@ -24,7 +24,9 @@ home_visited = Signal()
 
 
 @receiver(post_save, sender=User)
-def create_watchlist(_sender, instance, created, **_kwargs):
+def create_watchlist(
+    sender, instance, created, **kwargs
+):  # pylint: disable=W0613, W0012
     """
     Automatically creates default movie and person lists for a new user upon registration.
 
@@ -73,7 +75,7 @@ def handle_scrape_task(task_name, model, scrape_function):
 
 
 @receiver(home_visited)
-def on_home_visited(_sender, **_kwargs):
+def on_home_visited(sender, **kwargs):  # pylint: disable=W0613, W0012
     """
     Triggers scraping tasks for IMDB Top 250, Filmweb Top 250, and Oscar Best Picture
     if the data doesn't already exist in the database.

@@ -57,7 +57,7 @@ class TestTMDBClient(TestCase):
         self.assertEqual(result["title"], "Inception")
 
     @mock.patch("base.tmdb_helpers.requests.get")
-    def test_process_cast(self):
+    def test_process_cast(self, mock_get):  # pylint: disable=W0613
         cast_data = [
             {
                 "id": 1,
@@ -73,7 +73,7 @@ class TestTMDBClient(TestCase):
         self.assertEqual(result[0]["character"], "Cobb")
 
     @mock.patch("base.tmdb_helpers.requests.get")
-    def test_process_crew(self):
+    def test_process_crew(self, mock_get):  # pylint: disable=W0613
         crew_data = [
             {
                 "id": 1,
@@ -90,7 +90,7 @@ class TestTMDBClient(TestCase):
         self.assertEqual(result[0]["known_for_department"], "Directing")
 
     @mock.patch("base.tmdb_helpers.requests.get")
-    def test_format_number(self):
+    def test_format_number(self, mock_get):  # pylint: disable=W0613
         self.assertEqual(self.client.format_number(1000), "1 k $ ")
         self.assertEqual(self.client.format_number(1000000), "1 mln $ ")
         self.assertEqual(self.client.format_number(1000000000), "1 mld $ ")
