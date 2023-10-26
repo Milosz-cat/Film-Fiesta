@@ -7,7 +7,7 @@ def main():
 
     if system == "Windows":
         script_path = "scripts\\update_env.bat"
-    elif system in ('Linux', 'Darwin'):  # Darwin is for macOS
+    elif system in ("Linux", "Darwin"):  # Darwin is for macOS
         script_path = "scripts/update_env.sh"
     else:
         print(f"Unsupported system: {system}")
