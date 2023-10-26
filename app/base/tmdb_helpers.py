@@ -28,19 +28,25 @@ class TMDBClient:
         """Search for movies based on a given term."""
         url = self.base_url + "search/movie"
         params = {"query": search_term}
-        response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
+        response = requests.get(
+            url, headers=self.headers, params=params, timeout=20
+        ).json()
         return response["results"]
 
     def search_movie(self, search_term, year):
         """Search for a specific movie by its title and release year."""
         url = self.base_url + "search/movie"
         params = {"query": search_term, "year": year}
-        response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
+        response = requests.get(
+            url, headers=self.headers, params=params, timeout=20
+        ).json()
 
         # If no results, try with one more year
         if not response["results"]:
             params["year"] = str(int(year) + 1)
-            response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
+            response = requests.get(
+                url, headers=self.headers, params=params, timeout=20
+            ).json()
 
         return response["results"][0]
 
