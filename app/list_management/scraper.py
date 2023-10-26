@@ -1,5 +1,4 @@
-import time, re, logger
-
+import time, re, logging
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -16,7 +15,7 @@ from list_management.models import (
     OscarNomination,
 )
 
-logger = logger.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class BaseScraper:
@@ -78,7 +77,7 @@ class IMDBTop250Scraper(BaseScraper):
                 t.get_text() for t in soup.find_all("h3", class_="ipc-title__text")
             ][1:251]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             titles = None
 
         meta_containers = soup.find_all(
@@ -94,7 +93,7 @@ class IMDBTop250Scraper(BaseScraper):
                 try:
                     year.append(meta_items[0].get_text())
                 except Exception as e:
-                    logger.error(f"An error occurred: {e}")
+                    logger.error("An error occurred: %s", e)
                     year.append(None)
             else:
                 year.append(None)
@@ -102,7 +101,7 @@ class IMDBTop250Scraper(BaseScraper):
         try:
             poster_paths = [p["src"] for p in soup.find_all("img", class_="ipc-image")]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             poster_paths = None
 
         movies = [
@@ -208,7 +207,7 @@ class FilmwebTop250Scraper:
                 )
             ]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             titles = None
 
         try:
@@ -219,7 +218,7 @@ class FilmwebTop250Scraper:
                 )
             ]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             original_titles = None
 
         try:
@@ -230,7 +229,7 @@ class FilmwebTop250Scraper:
                 )
             ]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             years = None
 
         try:
@@ -241,7 +240,7 @@ class FilmwebTop250Scraper:
                 )
             ]
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            logger.error("An error occurred: %s", e)
             poster_paths = None
 
         driver.quit()
@@ -326,7 +325,7 @@ class OscarBestPictureScraper(BaseScraper):
                             0
                         ]
                     except Exception as e:
-                        logger.error(f"An error occurred: {e}")
+                        logger.error("An error occurred: %s", e)
                         current_year = ""
 
                 else:
@@ -362,7 +361,7 @@ class OscarBestPictureScraper(BaseScraper):
                                 }
                             )
                     except Exception as e:
-                        logger.error(f"An error occurred: {e}")
+                        logger.error("An error occurred: %s", e)
                         continue
 
             if current_year and winner_movie:

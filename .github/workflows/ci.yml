@@ -8,12 +8,14 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       BEARER: ${{ secrets.BEARER }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,14 +34,20 @@ jobs:
           echo "DB_PASSWORD=postgres" >> .env
           echo "DB_HOST=db" >> .env
 
-      - name: Run docker-compose
-        run: docker-compose run --rm app sh -c "python manage.py wait_for_database && python manage.py makemigrations && python manage.py migrate && python manage.py test base list_management user_management"
-
       - name: Install pylint and black
         run: pip install pylint black
-      
-      - name: Run pylint
-        run: pylint app/
 
       - name: Check code formatting with black
-        run: black app/ --check
+          run: black app/ --check --verbose
+      
+      - name: Lint with pylint
+        run: pylint app/
+
+      - name: Setup with docker-compose
+        run: |
+          docker-compose run --rm app sh -c "python manage.py wait_for_database && python manage.py makemigrations && python manage.py migrate"
+
+      - name: Run tests
+        run: |
+          docker-compose run --rm app sh -c "python manage.py test base list_management user_management"
+
