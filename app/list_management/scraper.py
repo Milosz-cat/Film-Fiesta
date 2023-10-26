@@ -40,7 +40,7 @@ class BaseScraper:
         }
 
     def fetch_data(self):
-        response = requests.get(self.url, headers=self.headers)
+        response = requests.get(self.url, headers=self.headers, timeout=20)
         return BeautifulSoup(response.text, "html.parser")
 
     def parse_data(self, soup, limit):
@@ -411,7 +411,7 @@ class OscarBestPictureScraper(BaseScraper):
 #         'num': 1
 #     }
 
-#     response = requests.get(url, params=params)
+#     response = requests.get(url, params=params, timeout=20)
 #     data = response.json()
 #     image_url = data['items'][0]['link']
 

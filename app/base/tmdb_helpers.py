@@ -28,32 +28,32 @@ class TMDBClient:
         """Search for movies based on a given term."""
         url = self.base_url + "search/movie"
         params = {"query": search_term}
-        response = requests.get(url, headers=self.headers, params=params).json()
+        response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
         return response["results"]
 
     def search_movie(self, search_term, year):
         """Search for a specific movie by its title and release year."""
         url = self.base_url + "search/movie"
         params = {"query": search_term, "year": year}
-        response = requests.get(url, headers=self.headers, params=params).json()
+        response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
 
         # If no results, try with one more year
         if not response["results"]:
             params["year"] = str(int(year) + 1)
-            response = requests.get(url, headers=self.headers, params=params).json()
+            response = requests.get(url, headers=self.headers, params=params, timeout=20).json()
 
         return response["results"][0]
 
     def get_movie_persons(self, movie_id):
         """Retrieve cast and crew details for a given movie ID."""
         url = self.base_url + f"movie/{movie_id}/credits?api_key={self.api_key}"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response
 
     def get_movie_detalis(self, movie_id):
         """Fetch detailed information for a specific movie by its ID."""
         url = self.base_url + f"movie/{movie_id}?api_key={self.api_key}"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response
 
     def process_cast(self, cast_data):
@@ -164,19 +164,19 @@ class TMDBClient:
     def search_person_by_id(self, person_id):
         """Search for a person's details using their unique ID."""
         url = self.base_url + f"person/{person_id}?api_key={self.api_key}"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response
 
     def search_person(self, name):
         """Search for a person based on their name."""
         url = self.base_url + f"search/person?api_key={self.api_key}&query={name}"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response["results"]
 
     def get_movies_by_person(self, person_id):
         """Retrieve movies associated with a specific person, categorized by their role."""
         url = self.base_url + f"person/{person_id}/movie_credits?api_key={self.api_key}"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         cast_movies, crew_movies = response["cast"], response["crew"]
 
         actor_movies = [
@@ -202,23 +202,23 @@ class TMDBClient:
     def get_trending_movies(self):
         """Retrieve a list of trending movies from TMDb."""
         url = self.base_url + "trending/movie/day?language=en-US"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response["results"]
 
     def get_now_playing_movies(self):
         """Retrieve the list of movies that are currently playing in theaters."""
         url = self.base_url + "movie/now_playing"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response["results"]
 
     def get_movie_recommendations(self, movie_id):
         """Fetch movie recommendations based on a specific movie ID."""
         url = self.base_url + f"movie/{movie_id}/recommendations"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response["results"]
 
     def get_popular_people(self):
         """Retrieve a list of popular personalities in the movie industry."""
         url = self.base_url + "person/popular"
-        response = requests.get(url, headers=self.headers).json()
+        response = requests.get(url, headers=self.headers, timeout=20).json()
         return response["results"]
