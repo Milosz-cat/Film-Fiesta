@@ -1,5 +1,5 @@
-# Movie-App
-FilmFIesta is a film-themed project, the appearance and some functionalities have been created in the likeness of internet sites such as [IMDB](https://www.imdb.com/), [Filmweb](https://www.filmweb.pl/) or [Letterboxd](https://letterboxd.com/).
+# Film Fiesta
+FilmFIesta is a film-themed project, the aim of which was to expand knowledge on team web development with good practices such as containerization, scrapping and others. The appearance and some functionalities have been created in the likeness of internet sites such as [IMDB](https://www.imdb.com/), [Filmweb](https://www.filmweb.pl/) or [Letterboxd](https://letterboxd.com/).
 
 ## Features
 - data scraping with BeautifulSoup and Selenium
